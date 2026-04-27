@@ -1,0 +1,42 @@
+# Environment
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# uv
+.python-version
+
+# Cache
+.cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code personal overrides
+.claude/settings.local.json
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Output data (optional — commit if you want results in version control)
+# outputs/
