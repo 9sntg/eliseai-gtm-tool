@@ -92,10 +92,17 @@ Optional (tool works without these, signals score zero):
 
 ## Rules for This Codebase
 
-- **Enrichment**: every API call must be in a `try/except`; use `FileCache`; respect rate limits
-- **Scoring**: no magic numbers; every weight is a named constant; weights must sum to 1.0
-- **Outreach**: only use data present in `EnrichedLead`; never hallucinate facts about a company
-- **Tests**: mock all external calls; no test touches the network
+Full rules live in `.claude/rules/`. Summary:
+
+- **File size**: max 200 lines per file; one responsibility per file
+- **Functions**: max ~30 lines; type hints and docstrings on all public functions
+- **Logging**: `logging` module everywhere in `src/`; never `print()` except in `main.py` and `app.py`; never log API keys or PII
+- **Constants**: no magic numbers; thresholds and weights are named constants
+- **Enrichment**: every API call in `try/except`; return empty model on failure; randomized delays; use `FileCache`; handle HTTP status codes per `.claude/rules/enrichment.md`
+- **Scoring**: all weights referenced by name from `config.py`; all thresholds named in `scorer.py`; weights must sum to 1.0
+- **Outreach**: only use data present in `EnrichedLead`; never hallucinate; system prompt is cached
+- **Tests**: mock all external calls; no test touches the network; every module independently testable
+- **Reproducibility**: no hardcoded paths; `mkdir(parents=True, exist_ok=True)` everywhere; API keys from `.env` only
 
 ## Docs
 
