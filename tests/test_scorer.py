@@ -1,4 +1,4 @@
-"""Scorer tests — signal boundaries, weight validation, and redistribution."""
+"""Scorer tests — signal boundaries, point constant validation, and additive model."""
 
 from __future__ import annotations
 
@@ -11,17 +11,19 @@ from gtm.models import CompanyData, EnrichedLead, MarketData, PersonData, RawLea
 from gtm.models.company import SerperOrganicItem, SerperSearchBucket
 from gtm.scoring.scorer import compute_tier, generate_insights, score_lead
 from gtm.scoring.scorer_signals import (
-    EMPLOYEE_FLOOR,
-    EMPLOYEE_HIGH,
-    EMPLOYEE_MAX,
-    EMPLOYEE_MID,
+    EMPLOYEE_MIN,
     MEDIAN_RENT_HIGH,
     MEDIAN_RENT_LOW,
     MEDIAN_RENT_MID,
+    PORTFOLIO_SIZE_LARGE,
+    PORTFOLIO_SIZE_MID,
+    PORTFOLIO_SIZE_SMALL,
     RENTER_UNITS_HIGH,
     RENTER_UNITS_LOW,
     RENTER_UNITS_MAX,
     RENTER_UNITS_MID,
+    SOCIAL_PLATFORMS_HIGH,
+    SOCIAL_PLATFORMS_MID,
     score_company_age,
     score_corporate_email,
     score_department_function,
@@ -31,9 +33,11 @@ from gtm.scoring.scorer_signals import (
     score_median_rent,
     score_population_growth,
     score_portfolio_news,
+    score_portfolio_size,
     score_renter_rate,
     score_renter_units,
     score_seniority,
+    score_social_presence,
     score_tech_stack,
 )
 
@@ -55,18 +59,18 @@ def _inc_date(years_ago: float) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Weight validation
+# Point constant validation
 # ---------------------------------------------------------------------------
 
-def test_weights_sum_to_one():
+def test_baseline_points_sum_to_100():
     total = (
-        cfg.WEIGHT_RENTER_UNITS + cfg.WEIGHT_RENTER_RATE + cfg.WEIGHT_MEDIAN_RENT
-        + cfg.WEIGHT_POPULATION_GROWTH + cfg.WEIGHT_ECONOMIC_MOMENTUM
-        + cfg.WEIGHT_JOB_POSTINGS + cfg.WEIGHT_PORTFOLIO_NEWS + cfg.WEIGHT_TECH_STACK
-        + cfg.WEIGHT_EMPLOYEE_COUNT + cfg.WEIGHT_COMPANY_AGE
-        + cfg.WEIGHT_SENIORITY + cfg.WEIGHT_DEPARTMENT_FUNCTION + cfg.WEIGHT_CORPORATE_EMAIL
+        cfg.POINTS_RENTER_UNITS + cfg.POINTS_RENTER_RATE + cfg.POINTS_MEDIAN_RENT
+        + cfg.POINTS_POPULATION_GROWTH + cfg.POINTS_ECONOMIC_MOMENTUM
+        + cfg.POINTS_JOB_POSTINGS + cfg.POINTS_PORTFOLIO_NEWS + cfg.POINTS_TECH_STACK
+        + cfg.POINTS_EMPLOYEE_COUNT + cfg.POINTS_COMPANY_AGE
+        + cfg.POINTS_SENIORITY + cfg.POINTS_DEPARTMENT_FUNCTION + cfg.POINTS_CORPORATE_EMAIL
     )
-    assert abs(total - 1.0) < 1e-6
+    assert abs(total - 100.0) < 1e-6
 
 
 # ---------------------------------------------------------------------------
@@ -179,13 +183,12 @@ def test_score_tech_stack(stack, expected):
 
 
 @pytest.mark.parametrize("count,expected", [
-    (None, 0.0),
-    (10, 0.1),
-    (EMPLOYEE_FLOOR, 0.3),
-    (EMPLOYEE_MID, 0.6),
-    (EMPLOYEE_HIGH, 0.8),
-    (EMPLOYEE_MAX, 1.0),
-    (5000, 1.0),
+    (None,          0.0),
+    (5,             0.3),
+    (19,            0.3),
+    (EMPLOYEE_MIN,  1.0),
+    (100,           1.0),
+    (5000,          1.0),
 ])
 def test_score_employee_count(count, expected):
     assert score_employee_count(count) == pytest.approx(expected)
@@ -305,43 +308,28 @@ def test_score_lead_full_enrichment_produces_high_score():
 
 
 # ---------------------------------------------------------------------------
-# BuiltWith redistribution
+# Additive model — absent signals do not affect other signals
 # ---------------------------------------------------------------------------
 
-def test_builtwith_redistribution_increases_portfolio_news_contribution():
-    """When tech_stack is empty the portfolio_news effective weight must grow by WEIGHT_TECH_STACK."""
+def test_tech_stack_absent_does_not_affect_other_signals():
+    """Missing tech_stack contributes 0 pts but leaves all other signals unchanged."""
     org = SerperOrganicItem(title="X", link="https://x.com", snippet="s", position=1)
     pm_bucket = SerperSearchBucket(
         query="q", organic=[org, org, org], knowledge_graph_title="BigPM"
     )
+    base = CompanyData(serper_property_management=pm_bucket, tech_stack=[])
+    lead_no_tech = _make_lead(company=base)
 
-    base_company = CompanyData(
-        serper_property_management=pm_bucket,
-        tech_stack=[],        # BuiltWith absent
-    )
-    lead_no_tech = _make_lead(company=base_company)
-
-    company_with_tech = base_company.model_copy(update={"tech_stack": ["Salesforce"]})
-    lead_with_tech = _make_lead(company=company_with_tech)
+    with_tech = base.model_copy(update={"tech_stack": ["Salesforce"]})
+    lead_with_tech = _make_lead(company=with_tech)
 
     score_no_tech, _, bd_no_tech = score_lead(lead_no_tech)
     score_with_tech, _, bd_with_tech = score_lead(lead_with_tech)
 
-    # With redistribution, company_score should be higher when tech_stack is absent
-    # because portfolio_news absorbs the extra weight (sig_news=1.0 > sig_tech=0.5)
-    assert bd_no_tech.company_score > bd_with_tech.company_score
-
-
-def test_builtwith_absent_overall_weight_unchanged():
-    """Redistributing BuiltWith weight must not change the sum of category weights."""
-    total = (
-        cfg.WEIGHT_RENTER_UNITS + cfg.WEIGHT_RENTER_RATE + cfg.WEIGHT_MEDIAN_RENT
-        + cfg.WEIGHT_POPULATION_GROWTH + cfg.WEIGHT_ECONOMIC_MOMENTUM
-        + cfg.WEIGHT_JOB_POSTINGS + cfg.WEIGHT_PORTFOLIO_NEWS + cfg.WEIGHT_TECH_STACK
-        + cfg.WEIGHT_EMPLOYEE_COUNT + cfg.WEIGHT_COMPANY_AGE
-        + cfg.WEIGHT_SENIORITY + cfg.WEIGHT_DEPARTMENT_FUNCTION + cfg.WEIGHT_CORPORATE_EMAIL
-    )
-    assert abs(total - 1.0) < 1e-6
+    # tech_stack adds points when present — score with tech must be higher
+    assert score_with_tech > score_no_tech
+    # portfolio_news signal must be identical regardless of tech_stack presence
+    assert bd_no_tech.portfolio_news == bd_with_tech.portfolio_news
 
 
 # ---------------------------------------------------------------------------
@@ -370,6 +358,70 @@ def test_generate_insights_fallback_on_empty_data():
     bullets = generate_insights(lead, breakdown)
     assert len(bullets) >= 1
     assert any("manual research" in b for b in bullets)
+
+
+# ---------------------------------------------------------------------------
+# Bonus signal boundaries
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("size,expected", [
+    (None, 0.0),
+    (0, 0.2),
+    (PORTFOLIO_SIZE_SMALL - 1, 0.2),
+    (PORTFOLIO_SIZE_SMALL, 0.5),
+    (PORTFOLIO_SIZE_MID - 1, 0.5),
+    (PORTFOLIO_SIZE_MID, 0.75),
+    (PORTFOLIO_SIZE_LARGE - 1, 0.75),
+    (PORTFOLIO_SIZE_LARGE, 1.0),
+    (50_000, 1.0),
+])
+def test_score_portfolio_size(size, expected):
+    assert score_portfolio_size(size) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("count,expected", [
+    (0, 0.0),
+    (SOCIAL_PLATFORMS_MID - 1, 0.0),
+    (SOCIAL_PLATFORMS_MID, 0.5),
+    (SOCIAL_PLATFORMS_HIGH - 1, 0.5),
+    (SOCIAL_PLATFORMS_HIGH, 1.0),
+    (5, 1.0),
+])
+def test_score_social_presence(count, expected):
+    assert score_social_presence(count) == pytest.approx(expected)
+
+
+def test_bonus_signals_push_score_above_100():
+    """Bonus signals can push the final score above the 100-pt baseline."""
+    org = SerperOrganicItem(title="X", link="https://x.com", snippet="s", position=1)
+    lead = _make_lead(
+        market=MarketData(
+            renter_occupied_units=200_000, renter_rate=0.6,
+            median_gross_rent=2_500, population_growth_yoy=0.03,
+            median_income_growth_yoy=0.03,
+        ),
+        company=CompanyData(
+            serper_property_management=SerperSearchBucket(
+                query="q", organic=[org, org, org], knowledge_graph_title="BigPM"
+            ),
+            serper_jobs=SerperSearchBucket(query="q", organic=[org, org, org, org, org]),
+            tech_stack=["Yardi Voyager"],
+            linkedin_employee_count=1_500,
+            founded_year=date.today().year - 15,
+            portfolio_size=PORTFOLIO_SIZE_LARGE,
+            social_platform_count=SOCIAL_PLATFORMS_HIGH,
+        ),
+        person=PersonData(
+            job_title="VP of Operations",
+            seniority="vp",
+            department="operations",
+            is_corporate_email=True,
+        ),
+    )
+    overall, _, breakdown = score_lead(lead)
+    assert overall > 100.0
+    assert breakdown.portfolio_size == pytest.approx(1.0)
+    assert breakdown.social_presence == pytest.approx(1.0)
 
 
 def test_generate_insights_max_five_bullets():

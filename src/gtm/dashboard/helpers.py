@@ -28,6 +28,8 @@ SIGNAL_META: list[tuple[str, str, str]] = [
     ("seniority",          "Contact Seniority",         "Person"),
     ("department_function","Department / Function",     "Person"),
     ("corporate_email",    "Corporate Email",           "Person"),
+    ("portfolio_size",     "Portfolio Size",            "Bonus"),
+    ("social_presence",    "Social Media Presence",     "Bonus"),
 ]
 
 TIER_COLOR: dict[str, str] = {"High": "🟢", "Medium": "🟡", "Low": "🔴"}

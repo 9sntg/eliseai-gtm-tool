@@ -8,7 +8,13 @@ import httpx
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
 from gtm.config import settings
-from gtm.enrichment.serper_helpers import extract_company_profile, parse_serper_response
+from gtm.enrichment.serper_helpers import (
+    extract_company_profile,
+    extract_job_count,
+    extract_social_platforms,
+    extract_yelp_alias,
+    parse_serper_response,
+)
 from gtm.exceptions import ConfigurationError
 from gtm.models.company import CompanyData, SerperSearchBucket
 from gtm.models.lead import RawLead
@@ -60,8 +66,15 @@ async def enrich(lead: RawLead, client: httpx.AsyncClient, cache: FileCache) -> 
         client, cache, linkedin_query, f"linkedin:{lead.company.lower()}", req="3/3"
     )
 
-    snippets = [item.snippet for item in linkedin_bucket.organic if item.snippet]
-    profile = await extract_company_profile(snippets, lead.company)
+    # Combine LinkedIn + PM snippets for richer profile extraction; LinkedIn first (more structured)
+    linkedin_snippets = [item.snippet for item in linkedin_bucket.organic if item.snippet]
+    pm_snippets = [item.snippet for item in pm_bucket.organic if item.snippet]
+    profile = await extract_company_profile(linkedin_snippets + pm_snippets, lead.company)
+
+    jobs_snippets = [item.snippet for item in jobs_bucket.organic if item.snippet]
+    job_count = extract_job_count(jobs_snippets)
+    yelp_alias = extract_yelp_alias(pm_bucket.organic)
+    social_platform_count = extract_social_platforms(pm_bucket.organic)
 
     return CompanyData(
         serper_property_management=pm_bucket,
@@ -69,6 +82,10 @@ async def enrich(lead: RawLead, client: httpx.AsyncClient, cache: FileCache) -> 
         serper_linkedin=linkedin_bucket,
         linkedin_employee_count=profile.get("employee_count"),
         founded_year=profile.get("founded_year"),
+        job_count=job_count,
+        portfolio_size=profile.get("portfolio_size"),
+        yelp_alias=yelp_alias,
+        social_platform_count=social_platform_count,
     )
 
 

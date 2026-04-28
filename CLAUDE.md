@@ -32,8 +32,8 @@ pipeline/runner.py        ← orchestrates everything
       ↓ asyncio.gather()
 ┌─────────────────────────────────────┐
 │  census.py    datausa.py            │  ← Market signals
-│  serper.py    opencorporates.py     │  ← Company signals
-│  hunter.py    builtwith.py  pdl.py  │  ← Company + Person signals
+│  serper.py    edgar.py              │  ← Company signals
+│  builtwith.py pdl.py                │  ← Company + Person signals
 └─────────────────────────────────────┘
       ↓
 scoring/scorer.py         ← 0–100 score, 3-category breakdown
@@ -45,6 +45,18 @@ outputs/{company}-{city}-{state}/
   assessment.json
   email.txt
 ```
+
+## Ideal Customer Profile (ICP)
+
+EliseAI's documented customer base spans **mid-market to enterprise property management companies** — not solo operators. Named customers include Greystar, Landmark Properties, Summit Property Management (10,000+ units), and GoldOller. The company serves 1-in-6 rental units in the US across 150+ PM companies.
+
+**Scoring implications:**
+- Large companies (Greystar-scale) are valid targets — do not penalize for size
+- The floor for meaningful interest is ~20 employees (past solo-operator scale)
+- Student housing, affordable housing, and single-family rental are all in-scope asset types
+- Job postings (active hiring of leasing staff) and company age (legacy tech debt) remain strong signals regardless of company size
+
+---
 
 ## Scoring Model (3 Categories)
 
@@ -70,21 +82,20 @@ Pipeline skips any lead whose output folder already exists (incremental processi
 
 ## Key Design Decisions
 
-- **All API calls are async** (`asyncio` + `httpx`): 7 enrichment calls fire concurrently per lead
+- **All API calls are async** (`asyncio` + `httpx`): 6 enrichment calls fire concurrently per lead
 - **All API calls wrap in try/except**: missing data scores zero, pipeline never crashes
 - **BuiltWith is optional**: if no key, its 8% weight redistributes to Serper company signal
 - **Census requires FIPS codes**: `src/gtm/utils/geocoder.py` converts city+state → FIPS before Census/DataUSA calls
-- **OpenCorporates uses fuzzy matching**: `difflib` similarity filter (0.6 threshold) to avoid false company matches
 - **Claude prompt is cached**: system prompt uses `cache_control: ephemeral` — one cache hit covers all leads in a batch
 - **No magic numbers in scoring**: all weights and thresholds are named constants in `src/gtm/config.py`
+- **Haiku for extraction**: LinkedIn snippets are passed to Claude Haiku to extract `founded_year` and `linkedin_employee_count`; responses are stripped of markdown fences before JSON parsing
 
 ## Environment Variables
 
 See `.env.example` for the full list. Required for production:
-- `SERPER_API_KEY` — company search + hiring signals
-- `HUNTER_API_KEY` — employee count from domain
+- `SERPER_API_KEY` — company search + hiring signals (3 queries/lead)
 - `PDL_API_KEY` — contact seniority and function
-- `ANTHROPIC_API_KEY` — email draft generation
+- `ANTHROPIC_API_KEY` — email draft (Sonnet) + LinkedIn extraction (Haiku)
 
 Optional (tool works without these, signals score zero):
 - `BUILTWITH_API_KEY` — tech stack detection

@@ -27,6 +27,9 @@ class ScoreBreakdown(BaseModel):
     department_function: float = Field(default=0.0, description="Contact department / function relevance signal [0–1]")
     corporate_email: float = Field(default=0.0, description="Corporate (non-free-provider) email signal [0–1]")
 
+    portfolio_size: float = Field(default=0.0, description="Managed portfolio size signal [0–1]; bonus, 0 when absent")
+    social_presence: float = Field(default=0.0, description="Social media platform presence signal [0–1]; bonus, 0 when absent")
+
     market_score: float = Field(default=0.0, description="Market Fit subtotal 0–100")
     company_score: float = Field(default=0.0, description="Company Fit subtotal 0–100")
     person_score: float = Field(default=0.0, description="Person Fit subtotal 0–100")

@@ -48,6 +48,22 @@ class CompanyData(BaseModel):
         default=False,
         description="True if SEC EDGAR shows the company files 10-K reports",
     )
+    job_count: int | None = Field(
+        default=None,
+        description="Real open-role count extracted from Indeed/ZipRecruiter snippets",
+    )
+    portfolio_size: int | None = Field(
+        default=None,
+        description="Units/communities under management, extracted from search snippets via Haiku",
+    )
+    yelp_alias: str | None = Field(
+        default=None,
+        description="Yelp business alias extracted from Serper PM query results (yelp.com/biz/<alias>)",
+    )
+    social_platform_count: int = Field(
+        default=0,
+        description="Distinct non-LinkedIn social platforms detected in PM query results",
+    )
     tech_stack: list[str] = Field(
         default_factory=list,
         description="Technology names from BuiltWith (Yardi, RealPage, Entrata, …)",

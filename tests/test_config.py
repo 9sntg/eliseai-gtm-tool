@@ -1,42 +1,36 @@
-"""Tests for settings and weight constants."""
+"""Tests for settings and point constants."""
 
 import pytest
 
 from gtm.config import (
-    WEIGHT_COMPANY_AGE,
-    WEIGHT_CORPORATE_EMAIL,
-    WEIGHT_DEPARTMENT_FUNCTION,
-    WEIGHT_ECONOMIC_MOMENTUM,
-    WEIGHT_EMPLOYEE_COUNT,
-    WEIGHT_JOB_POSTINGS,
-    WEIGHT_MEDIAN_RENT,
-    WEIGHT_POPULATION_GROWTH,
-    WEIGHT_PORTFOLIO_NEWS,
-    WEIGHT_RENTER_RATE,
-    WEIGHT_RENTER_UNITS,
-    WEIGHT_SENIORITY,
-    WEIGHT_TECH_STACK,
+    BASELINE_MAX_SCORE,
+    POINTS_COMPANY_AGE,
+    POINTS_CORPORATE_EMAIL,
+    POINTS_DEPARTMENT_FUNCTION,
+    POINTS_ECONOMIC_MOMENTUM,
+    POINTS_EMPLOYEE_COUNT,
+    POINTS_JOB_POSTINGS,
+    POINTS_MEDIAN_RENT,
+    POINTS_POPULATION_GROWTH,
+    POINTS_PORTFOLIO_NEWS,
+    POINTS_RENTER_RATE,
+    POINTS_RENTER_UNITS,
+    POINTS_SENIORITY,
+    POINTS_TECH_STACK,
     Settings,
 )
 
 
-def test_all_weights_sum_to_one() -> None:
+def test_baseline_points_sum_to_100() -> None:
     total = (
-        WEIGHT_RENTER_UNITS
-        + WEIGHT_RENTER_RATE
-        + WEIGHT_MEDIAN_RENT
-        + WEIGHT_POPULATION_GROWTH
-        + WEIGHT_ECONOMIC_MOMENTUM
-        + WEIGHT_JOB_POSTINGS
-        + WEIGHT_PORTFOLIO_NEWS
-        + WEIGHT_TECH_STACK
-        + WEIGHT_EMPLOYEE_COUNT
-        + WEIGHT_COMPANY_AGE
-        + WEIGHT_SENIORITY
-        + WEIGHT_DEPARTMENT_FUNCTION
-        + WEIGHT_CORPORATE_EMAIL
+        POINTS_RENTER_UNITS + POINTS_RENTER_RATE + POINTS_MEDIAN_RENT
+        + POINTS_POPULATION_GROWTH + POINTS_ECONOMIC_MOMENTUM
+        + POINTS_JOB_POSTINGS + POINTS_PORTFOLIO_NEWS + POINTS_TECH_STACK
+        + POINTS_EMPLOYEE_COUNT + POINTS_COMPANY_AGE
+        + POINTS_SENIORITY + POINTS_DEPARTMENT_FUNCTION + POINTS_CORPORATE_EMAIL
     )
-    assert abs(total - 1.0) < 1e-9
+    assert abs(total - 100.0) < 1e-9
+    assert abs(BASELINE_MAX_SCORE - 100.0) < 1e-9
 
 
 def test_settings_loads_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -61,10 +55,22 @@ def test_settings_optional_keys_default_none(monkeypatch: pytest.MonkeyPatch) ->
     assert s.census_api_key is None
 
 
-def test_settings_rejects_broken_weights(monkeypatch: pytest.MonkeyPatch) -> None:
-    """If module weights were tampered with, Settings validator should fail."""
-    import gtm.config as cfg
+def test_market_points_sum() -> None:
+    market = (
+        POINTS_RENTER_UNITS + POINTS_RENTER_RATE + POINTS_MEDIAN_RENT
+        + POINTS_POPULATION_GROWTH + POINTS_ECONOMIC_MOMENTUM
+    )
+    assert abs(market - 38.0) < 1e-9
 
-    monkeypatch.setattr(cfg, "WEIGHT_RENTER_UNITS", 0.99)
-    with pytest.raises(ValueError, match="sum to 1.0"):
-        Settings()
+
+def test_company_points_sum() -> None:
+    company = (
+        POINTS_JOB_POSTINGS + POINTS_PORTFOLIO_NEWS + POINTS_TECH_STACK
+        + POINTS_EMPLOYEE_COUNT + POINTS_COMPANY_AGE
+    )
+    assert abs(company - 41.0) < 1e-9
+
+
+def test_person_points_sum() -> None:
+    person = POINTS_SENIORITY + POINTS_DEPARTMENT_FUNCTION + POINTS_CORPORATE_EMAIL
+    assert abs(person - 21.0) < 1e-9

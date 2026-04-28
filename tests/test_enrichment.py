@@ -126,18 +126,21 @@ async def test_serper_happy_path(
     ]))
     mocker.patch("gtm.enrichment.serper.settings.serper_api_key", "test-key")
     mocker.patch("gtm.enrichment.serper.extract_company_profile", mocker.AsyncMock(
-        return_value={"employee_count": 10_001, "founded_year": 1993}
+        return_value={"employee_count": 10_001, "founded_year": 1993, "portfolio_size": 3_600}
     ))
 
     result = await serper.enrich(raw_lead, mocker.AsyncMock(), cache)
 
     assert isinstance(result, CompanyData)
-    assert len(result.serper_property_management.organic) == 1
+    assert len(result.serper_property_management.organic) == 2
     assert result.serper_property_management.knowledge_graph_title == "Greystar"
     assert len(result.serper_jobs.organic) == 2
     assert len(result.serper_linkedin.organic) == 1
     assert result.linkedin_employee_count == 10_001
     assert result.founded_year == 1993
+    assert result.portfolio_size == 3_600
+    assert result.job_count == 15          # extracted from "15 Greystar leasing consultant jobs"
+    assert result.yelp_alias == "greystar-austin"  # extracted from yelp.com/biz/greystar-austin
 
 
 async def test_serper_no_key_returns_empty(tmp_path, mocker, raw_lead):

@@ -61,6 +61,8 @@ def serper_pm_response():
         "organic": [
             {"title": "Greystar Real Estate", "link": "https://greystar.com",
              "snippet": "Leading PM firm with 500+ communities", "position": 1},
+            {"title": "Greystar - Yelp", "link": "https://www.yelp.com/biz/greystar-austin",
+             "snippet": "37 reviews of Greystar Real Estate", "position": 2},
         ],
         "knowledgeGraph": {"title": "Greystar", "description": "Global rental housing leader"},
     }
@@ -72,8 +74,9 @@ def serper_jobs_response():
         "organic": [
             {"title": "Leasing Consultant - Greystar", "link": "https://jobs.greystar.com",
              "snippet": "Now hiring leasing consultants in Austin TX", "position": 1},
-            {"title": "Leasing Agent - Austin", "link": "https://indeed.com/greystar",
-             "snippet": "Greystar hiring leasing consultants", "position": 2},
+            {"title": "Greystar Leasing Jobs - Indeed", "link": "https://indeed.com/greystar",
+             "snippet": "15 Greystar leasing consultant jobs available on Indeed.com",
+             "position": 2},
         ],
         "knowledgeGraph": None,
     }

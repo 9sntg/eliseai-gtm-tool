@@ -53,6 +53,10 @@ def _merge_company(
         serper_linkedin=serper_data.serper_linkedin,
         linkedin_employee_count=serper_data.linkedin_employee_count,
         founded_year=serper_data.founded_year,
+        job_count=serper_data.job_count,
+        portfolio_size=serper_data.portfolio_size,
+        yelp_alias=serper_data.yelp_alias,
+        social_platform_count=serper_data.social_platform_count,
         is_publicly_traded=edgar_data.is_publicly_traded,
         tech_stack=bw_data.tech_stack,
     )

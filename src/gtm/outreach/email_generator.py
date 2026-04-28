@@ -61,12 +61,14 @@ def _build_context(lead: EnrichedLead) -> str:
 
     if c.linkedin_employee_count:
         lines.append(f"Estimated employees: {c.linkedin_employee_count:,}+")
+    if c.portfolio_size:
+        lines.append(f"Portfolio: ~{c.portfolio_size:,} units/communities under management")
     if c.founded_year:
         age = date.today().year - c.founded_year
         lines.append(f"Founded: {c.founded_year} (~{age} years ago)")
     if c.tech_stack:
         lines.append(f"Tech stack detected: {', '.join(c.tech_stack)}")
-    job_count = len(c.serper_jobs.organic)
+    job_count = c.job_count if c.job_count is not None else len(c.serper_jobs.organic)
     if job_count:
         lines.append(f"Open leasing job postings: {job_count}")
     if c.serper_property_management.knowledge_graph_title:

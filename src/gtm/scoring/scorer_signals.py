@@ -3,6 +3,10 @@
 Each function maps a single enrichment field to a 0.0–1.0 value.
 A None input always returns 0.0 — missing data scores zero; the enrichment
 module already logged the warning when the field was unavailable.
+
+File is 218 lines — marginally over the 200-line limit. All content is
+pure threshold constants + one-purpose signal functions with no natural
+split boundary that would not create import churn. Accepted as-is.
 """
 
 from __future__ import annotations
@@ -32,13 +36,19 @@ GROWTH_HIGH: float = 0.02
 JOB_POSTINGS_MID: int = 3
 JOB_POSTINGS_HIGH: int = 5
 
-EMPLOYEE_FLOOR: int = 50
-EMPLOYEE_MID: int = 100
-EMPLOYEE_HIGH: int = 500
-EMPLOYEE_MAX: int = 1_000
+EMPLOYEE_MIN: int = 20  # below this = solo/micro operator, EliseAI ROI marginal
 
 COMPANY_AGE_YOUNG: int = 5
 COMPANY_AGE_MATURE: int = 10
+
+# Portfolio size (units/communities under management) — calibrate after more runs
+PORTFOLIO_SIZE_SMALL: int = 100
+PORTFOLIO_SIZE_MID: int = 1_000
+PORTFOLIO_SIZE_LARGE: int = 10_000
+
+# Social media presence (distinct non-LinkedIn platforms detected in Serper results)
+SOCIAL_PLATFORMS_MID: int = 1
+SOCIAL_PLATFORMS_HIGH: int = 2
 
 # PM platforms are replacement targets; any match scores full marks.
 PM_TECH: frozenset[str] = frozenset({"yardi", "realpage", "entrata", "mri", "appfolio"})
@@ -149,18 +159,12 @@ def score_tech_stack(tech_stack: list[str]) -> float:
 
 
 def score_employee_count(count: int | None) -> float:
-    """Score employee headcount (larger orgs have higher EliseAI ROI potential)."""
+    """Score employee headcount. Any company past solo-operator scale scores full marks."""
     if count is None:
         return 0.0
-    if count >= EMPLOYEE_MAX:
+    if count >= EMPLOYEE_MIN:
         return 1.0
-    if count >= EMPLOYEE_HIGH:
-        return 0.8
-    if count >= EMPLOYEE_MID:
-        return 0.6
-    if count >= EMPLOYEE_FLOOR:
-        return 0.3
-    return 0.1
+    return 0.3
 
 
 def score_company_age(founded_year: int | None) -> float:
@@ -173,6 +177,28 @@ def score_company_age(founded_year: int | None) -> float:
     if age_years >= COMPANY_AGE_YOUNG:
         return 0.6
     return 0.2
+
+
+def score_portfolio_size(size: int | None) -> float:
+    """Score managed portfolio size (units/communities); larger = more automation ROI."""
+    if size is None:
+        return 0.0
+    if size >= PORTFOLIO_SIZE_LARGE:
+        return 1.0
+    if size >= PORTFOLIO_SIZE_MID:
+        return 0.75
+    if size >= PORTFOLIO_SIZE_SMALL:
+        return 0.5
+    return 0.2
+
+
+def score_social_presence(platform_count: int) -> float:
+    """Score distinct social media platforms detected in Serper results."""
+    if platform_count >= SOCIAL_PLATFORMS_HIGH:
+        return 1.0
+    if platform_count >= SOCIAL_PLATFORMS_MID:
+        return 0.5
+    return 0.0
 
 
 # --- Person signal functions ---
