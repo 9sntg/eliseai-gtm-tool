@@ -127,12 +127,49 @@ Post-fetch extractions from Serper results (all in `serper_helpers.py`):
 
 ---
 
+## Yelp Fusion v3 (company + building enrichment)
+
+| | |
+|---|---|
+| **Base** | `https://api.yelp.com/v3/businesses` |
+| **Auth** | `Authorization: Bearer {YELP_API_KEY}` header |
+| **Modules** | `yelp.py` (orchestration) + `yelp_helpers.py` (parsing + Haiku extraction) |
+
+**Endpoints used:**
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /v3/businesses/search?term={name}&location={city,state}&categories=propertymgmt` | Find company by name → returns `businesses` array with `id`, `alias`, `rating`, `review_count` |
+| `GET /v3/businesses/{id}` | Full profile: `is_claimed`, `attributes.about_this_biz_year_established`, full category list |
+| `GET /v3/businesses/{id}/reviews` | Up to 3 recent reviews with text + star rating |
+| `GET /v3/businesses/{id}/review_highlights` | Aggregated highlight sentences with `review_count`. Strips `[[HIGHLIGHT]]...[ENDHIGHLIGHT]]` tags before use. |
+| `GET /v3/businesses/search?categories=apartments,propertymgmt&location={city,state}` | Comparables: 3–5 competitor businesses for `market_avg_rating` baseline |
+
+**Response shapes:**
+
+- `/search` → `{ "businesses": [{ "id", "alias", "name", "rating", "review_count", "categories", "location" }] }`
+- `/businesses/{id}` → full Yelp business object; `attributes` dict includes `about_this_biz_year_established` (string year)
+- `/reviews` → `{ "reviews": [{ "text", "rating" }] }`
+- `/review_highlights` → `{ "review_highlights": [{ "sentence": "..[[HIGHLIGHT]]..[[ENDHIGHLIGHT]]..", "review_count": N }] }`
+
+**Notes:**
+- `yelp.enrich_company` does its own `/search` independently (does not depend on Serper running first), so both modules can run concurrently.
+- `yelp.enrich_building` searches using `lead.property_address` + `categories=apartments` for building-level data.
+- `yelp_alias` from Yelp's own response is authoritative; `serper.yelp_alias` is a fallback.
+- `yelp_year_established` (from attributes) is used as a fallback for `founded_year` in `scorer.py`: `c.founded_year or c.yelp_year_established`.
+- Pain themes are extracted from `review_highlights` + `reviews` by Claude Haiku (`claude-haiku-4-5-20251001`). If `ANTHROPIC_API_KEY` is absent, pain themes default to `[]`.
+- Market avg rating computed from `/search` comparables (excluding the target company's own alias). Used in `score_yelp_company_rating` to produce a relative performance signal.
+- All Yelp calls are cached via `FileCache`. Keys: `yelp:search:{company}:{city}:{state}`, `yelp:biz:{id}`, etc.
+
+---
+
 ## Quick reference: env vars
 
 | Variable | Used for |
 |---|---|
 | `SERPER_API_KEY` | Serper (3 queries/lead — required) |
 | `PDL_API_KEY` | People Data Labs — person enrichment |
-| `ANTHROPIC_API_KEY` | Claude Sonnet (email) + Claude Haiku (LinkedIn extraction) |
+| `ANTHROPIC_API_KEY` | Claude Sonnet (email) + Claude Haiku (LinkedIn extraction + Yelp pain theme extraction) |
 | `BUILTWITH_API_KEY` | BuiltWith tech stack (optional — paid key required) |
 | `CENSUS_API_KEY` | Census Data API rate limit boost (optional) |
+| `YELP_API_KEY` | Yelp Fusion — company rating, reviews, building data (optional — absent signals score 0) |

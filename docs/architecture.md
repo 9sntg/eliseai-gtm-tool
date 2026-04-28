@@ -27,17 +27,18 @@ data/leads_input.csv
   │                                                 │
   │  Market:   census.py ──────── datausa.py        │
   │  Company:  serper.py ─────── builtwith.py       │
-  │            edgar.py                             │
+  │            edgar.py ──────── yelp.py (company) │
   │  Person:   pdl.py                               │
+  │  Building: yelp.py (building)                   │
   │                                                 │
-  │  All 6 calls fire concurrently via              │
-  │  asyncio.gather() — ~2s per lead                │
+  │  All 8 calls fire concurrently via              │
+  │  asyncio.gather() — ~2–3s per lead              │
   └─────────────────────────────────────────────────┘
         │
         ▼
   [Scoring Layer]
-  scorer.py → 0–100 score + ScoreBreakdown
-  (Market: 38%, Company: 41%, Person: 21%)
+  scorer.py → 0–117 pts score + ScoreBreakdown
+  (Market: 38 pts, Company: 58 pts, Person: 21 pts, Building: bonus up to +12 pts)
         │
         ▼
   [Email Generation]
@@ -60,16 +61,17 @@ data/leads_input.csv
 ## Components
 
 ### `src/gtm/config.py`
-Centralized settings via `pydantic-settings`. Loads all API keys from `.env`. Defines all scoring point values as named constants (`POINTS_RENTER_UNITS`, `POINTS_SENIORITY`, etc.) so no magic numbers appear in scoring logic. An assertion at module level confirms that the 13 baseline signals sum to exactly 100 pts. Bonus signal point values (`POINTS_PORTFOLIO_SIZE`, `POINTS_SOCIAL_PRESENCE`) sit outside the 100-pt baseline.
+Centralized settings via `pydantic-settings`. Loads all API keys from `.env` (including `YELP_API_KEY`). Defines all scoring point values as named constants (`POINTS_RENTER_UNITS`, `POINTS_SENIORITY`, etc.) so no magic numbers appear in scoring logic. An assertion at module level confirms that the 16 baseline signals sum to exactly 117 pts. Building Fit bonus signals (`POINTS_BUILDING_RATING`, `POINTS_BUILDING_REVIEWS`) sit outside the 117-pt baseline.
 
 ### `src/gtm/models/`
 Pydantic models for every data shape in the system (one module per concern, re-exported from `gtm.models`):
 - `RawLead` — raw input from CSV
 - `MarketData` — Census + DataUSA fields (all optional, default None)
-- `CompanyData` — Serper (3 buckets), LinkedIn-extracted employee count + founded year, Haiku-extracted portfolio size, job count from regex extraction, yelp alias, social platform count, EDGAR public flag, BuiltWith tech stack (all optional)
+- `CompanyData` — Serper (3 buckets), LinkedIn-extracted employee count + founded year, Haiku-extracted portfolio size, job count from regex extraction, yelp alias, Yelp rating/review/market-avg/pain-themes/year-established, Google rating, social platform count, EDGAR public flag, BuiltWith tech stack (all optional)
+- `BuildingData` — Yelp building-level data: alias, rating, review count, pain themes, year established (all optional)
 - `PersonData` — PDL fields + `is_corporate_email` (derived locally)
-- `ScoreBreakdown` — one float per signal + `market_score`, `company_score`, `person_score` subtotals
-- `EnrichedLead` — full record: raw lead + all enrichment + score + insights + email draft + slug
+- `ScoreBreakdown` — one float per signal + `market_score`, `company_score`, `person_score`, `building_score` subtotals
+- `EnrichedLead` — full record: raw lead + all enrichment + building + score + insights + email draft + slug
 
 ### `src/gtm/utils/geocoder.py`
 Converts `city + state` → `(state_fips, place_fips)` using the Census Geocoder API (free). Required before any Census or DataUSA queries because those APIs use numeric FIPS codes, not city names. Results are cached to avoid redundant calls for repeated cities.
@@ -81,7 +83,7 @@ Generates the output folder name for each lead: `{company}-{city}-{state}` (lowe
 Simple JSON file cache backed by `.cache/`. Keyed by SHA-256 of the cache key string. TTL of 24 hours. Used by all enrichment modules to avoid re-hitting APIs during development or re-runs.
 
 ### `src/gtm/enrichment/*.py`
-Seven modules, one per API. All share the same async interface:
+Eight modules, one per API. All share the same async interface:
 ```python
 async def enrich(lead: RawLead, client: httpx.AsyncClient) -> DataType
 ```
@@ -91,25 +93,26 @@ All wrap API calls in `try/except`. All return an empty/default model on failure
 |---|---|---|---|
 | `census.py` | U.S. Census ACS5 | `MarketData` partial | Requires FIPS from geocoder |
 | `datausa.py` | Census ACS5 (multi-year) | `MarketData` (growth fields) | Compares 2022 vs 2021 ACS for YoY growth |
-| `serper.py` | Serper (Google) | `CompanyData` partial | 3 queries: PM presence, jobs, LinkedIn profile |
+| `serper.py` | Serper (Google) | `CompanyData` partial | 3 queries: PM presence, jobs, LinkedIn profile; Google rating from knowledgeGraph |
 | `edgar.py` | SEC EDGAR EFTS | `CompanyData` partial | Public company detection; insight only, not scored |
 | `builtwith.py` | BuiltWith | `CompanyData` partial | Optional (paid key required) |
 | `pdl.py` | People Data Labs | `PersonData` | Email-only lookup |
+| `yelp.py` | Yelp Fusion v3 | `CompanyData` + `BuildingData` | `enrich_company`: rating, reviews, market avg, pain themes; `enrich_building`: building-level Yelp data. Both optional — requires `YELP_API_KEY`. |
 
 ### `src/gtm/scoring/scorer_signals.py`
-All 13 signal functions and their threshold constants. Each function takes one or two enrichment fields and returns a `float` in `[0.0, 1.0]`. None input always returns `0.0`. No I/O, no config reads — pure computation. Threshold constants are named at module level (no magic numbers in function bodies).
+All 18 signal functions and their threshold constants. Each function takes one or two enrichment fields and returns a `float` in `[0.0, 1.0]`. None input always returns `0.0`. No I/O, no config reads — pure computation. Threshold constants are named at module level (no magic numbers in function bodies).
 
 ### `src/gtm/scoring/scorer.py`
-Orchestrates signal functions into a final score using an additive point model. Each signal contributes 0–N points when it fires, 0 when data is absent — no redistribution needed. Baseline max is 100 pts; two bonus signals can push the score above 100. Computes category subtotals (normalised to 0–100 for display), maps the score to a tier, and generates 3–5 insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
+Orchestrates signal functions into a final score using an additive point model. Each signal contributes 0–N points when it fires, 0 when data is absent — no redistribution needed. Baseline max is 117 pts; two Building Fit bonus signals can push the score above 117. Computes category subtotals (normalised to 0–100 for display), maps the score to a tier, and generates 3–5 insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
 
-**Scoring signals (baseline 100 pts):**
+**Scoring signals (baseline 117 pts):**
 
 | Category | Points | Signals |
 |---|---|---|
 | Market Fit | 38 pts | Renter units (15), renter rate (8), median rent (5), population growth (5), economic momentum (5) |
-| Company Fit | 41 pts | Job postings (12), portfolio news (8), tech stack (8), employee count (8), company age (5) |
+| Company Fit | 58 pts | Job postings (12), portfolio news (8), tech stack (8), employee count (8), company age (5), portfolio size (6), social media presence (5), Yelp company rating vs. market avg (6) |
 | Person Fit | 21 pts | Seniority (10), function/department (7), corporate email (4) |
-| Bonus | up to +11 pts | Portfolio size (+6), social media presence (+5) — score 0 when data absent |
+| Building Fit (bonus) | up to +12 pts | Building rating inverted (8), building review count (4) — score 0 when Yelp data absent |
 
 ### `src/gtm/outreach/email_generator.py`
 Drafts a personalized 150–200 word outreach email via Claude Sonnet 4.6. Public entry point: `generate_email(lead) → str | None`.
@@ -120,7 +123,7 @@ Drafts a personalized 150–200 word outreach email via Claude Sonnet 4.6. Publi
 
 ### `src/gtm/pipeline/runner.py`
 Async orchestration layer:
-- `enrich_lead(lead, outputs_dir)`: generates slug, skips if output folder exists, fires all 6 enrichment calls concurrently, scores, generates email, writes 3 output files
+- `enrich_lead(lead, outputs_dir)`: generates slug, skips if output folder exists, fires all 8 enrichment calls concurrently (including `yelp.enrich_company` and `yelp.enrich_building`), scores, generates email, writes 3 output files
 - `run_pipeline(leads, outputs_dir)`: processes leads sequentially (outer loop respects rate limits), async within each lead
 
 ### `main.py`
@@ -131,13 +134,13 @@ Rendering helpers and sync pipeline runner for the Streamlit dashboard. Keeps `a
 - `load_leads_from_csv` / `append_lead_to_csv` — CSV I/O with error suppression
 - `list_output_folders` / `load_lead_data` — filesystem navigation for the results tab
 - `run_pipeline_sync` — runs the async pipeline in a dedicated thread to avoid Streamlit's event-loop conflict
-- `render_*` helpers — score header, category metrics, signal table, market/company/person/email sections
+- `render_*` helpers — score header, 4-category metrics (Market/Company/Person/Building), signal table, market/company/person/building/email sections
 
 ### `app.py`
 Streamlit dashboard with 3 tabs:
 - **Add Lead** — form to append a new row to `leads_input.csv`
 - **Run Pipeline** — lists pending leads, runs enrichment on unprocessed ones, shows progress spinner
-- **View Results** — selectbox over processed leads; renders score, tier, Market/Company/Person subtotals, 13-signal breakdown table, enrichment data, and email draft in a 2-column layout
+- **View Results** — selectbox over processed leads; renders score, tier, Market/Company/Person/Building subtotals, 18-signal breakdown table, enrichment data (including Yelp company + building sections), and email draft in a 2-column layout
 
 ---
 
@@ -160,7 +163,7 @@ The pipeline checks for slug folder existence before processing any lead. This i
 ## Key Architectural Decisions
 
 ### Why async?
-All 6 enrichment calls per lead are fully independent of each other. Firing them concurrently via `asyncio.gather()` brings per-lead enrichment time from ~6s (sequential) to ~2s. The outer loop stays sequential to respect API rate limits.
+All 8 enrichment calls per lead are fully independent of each other. Firing them concurrently via `asyncio.gather()` brings per-lead enrichment time from ~8s (sequential) to ~2–3s. The outer loop stays sequential to respect API rate limits.
 
 ### Why file-based output instead of a database?
 For an MVP with tens to low-hundreds of leads, a filesystem is the most portable and inspectable option. Each lead's folder is self-contained — no schema migrations, no connection strings, and an SDR can open any file directly. A future production version would push these records into a CRM via API.
@@ -210,3 +213,4 @@ Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.
 | Phase 7 | API migration: removed Hunter + OpenCorporates; added `serper.py` LinkedIn 3rd query + Claude Haiku extraction (`founded_year`, `linkedin_employee_count`); added `edgar.py` (SEC EDGAR public company flag); EDGAR `User-Agent` fix; geocoder places fallback; `_safe()` wrapper in runner; Census ACS multi-year in `datausa.py` | ✅ Done |
 | Phase 8 | Streamlit dashboard: `app.py` (3-tab UI), `src/gtm/dashboard/helpers.py` (render helpers, sync pipeline runner, CSV I/O) | ✅ Done |
 | Phase 9 | Additive point scoring model, Serper signal expansion (job_count regex, portfolio_size via Haiku, yelp_alias, social_platform_count), bonus signals (portfolio_size +6 pts, social_presence +5 pts), ICP documentation, docs + rollout plan | ✅ Done |
+| Phase 10 | Yelp Fusion enrichment (company: rating/reviews/market avg/pain themes; building: rating/reviews/pain themes), BuildingData model, Company Fit expanded to 58 pts (portfolio_size + social_presence moved into baseline; yelp_company_rating +6 pts), Building Fit bonus (+12 pts), baseline max 100→117 pts, Serper Google rating extraction, Yelp fallback for founded_year, dashboard and email updated for 4-category model | ✅ Done |

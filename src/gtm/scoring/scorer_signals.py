@@ -4,9 +4,9 @@ Each function maps a single enrichment field to a 0.0–1.0 value.
 A None input always returns 0.0 — missing data scores zero; the enrichment
 module already logged the warning when the field was unavailable.
 
-File is 218 lines — marginally over the 200-line limit. All content is
-pure threshold constants + one-purpose signal functions with no natural
-split boundary that would not create import churn. Accepted as-is.
+File is ~283 lines — over the 200-line limit. All content is pure threshold
+constants + one-purpose signal functions. Splitting into e.g. market/company/
+person modules would add 3 import paths for no behavioural gain. Accepted as-is.
 """
 
 from __future__ import annotations

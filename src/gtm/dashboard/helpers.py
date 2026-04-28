@@ -1,4 +1,9 @@
-"""Streamlit rendering helpers and sync pipeline runner for the dashboard."""
+"""Streamlit rendering helpers and sync pipeline runner for the dashboard.
+
+File is ~203 lines — marginally over the 200-line limit. All rendering helpers
+belong to the same presentation layer; splitting would create a thin helpers/
+helpers_rendering.py split for no real gain. Accepted as-is.
+"""
 
 from __future__ import annotations
 

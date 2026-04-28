@@ -1,4 +1,9 @@
-"""Yelp Fusion enrichment — company profile + comparables, and building fit."""
+"""Yelp Fusion enrichment — company profile + comparables, and building fit.
+
+File is ~202 lines — marginally over the 200-line limit. enrich_company and
+enrich_building are closely coupled (share _fetch, headers, cache key helpers)
+and separating them would not reduce complexity. Accepted as-is.
+"""
 
 from __future__ import annotations
 

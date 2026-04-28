@@ -131,10 +131,11 @@ The pipeline already produces clean JSON with `.model_dump(mode="json")`, so the
 |---|---|---|---|
 | Serper | ~$0.001/query × 3 | ~$0.003 | ~$0.30 |
 | PDL | ~$0.10/enrichment | ~$0.10 | ~$10 |
-| Anthropic (Haiku) | ~$0.0003/1K tokens | ~$0.001 | ~$0.10 |
+| Anthropic (Haiku) | ~$0.0003/1K tokens | ~$0.002 | ~$0.20 |
 | Anthropic (Sonnet email) | ~$0.003/1K tokens | ~$0.01 | ~$1.00 |
 | BuiltWith | flat plan | ~$0 marginal | ~$0 marginal |
+| Yelp Fusion | free tier (500 req/day) | ~$0 | ~$0 |
 | Census / EDGAR | free | $0 | $0 |
-| **Total** | | **~$0.11–$0.12** | **~$11–$12/week** |
+| **Total** | | **~$0.11–$0.13** | **~$11–$13/week** |
 
 At $11–12/week for 100 leads, API costs are negligible relative to SDR time savings (~8 hrs/week × SDR hourly rate).
