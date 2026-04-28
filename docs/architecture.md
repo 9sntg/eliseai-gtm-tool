@@ -112,7 +112,11 @@ Orchestrates the 13 signal functions into a final 0–100 score. Handles BuiltWi
 | Person Fit | 21% | Seniority (10%), function/department (7%), corporate email (4%) |
 
 ### `src/gtm/outreach/email_generator.py`
-Calls Claude Sonnet 4.6 via the Anthropic SDK to draft a 150–200 word outreach email. The system prompt (EliseAI context, tone guidelines, no-hallucination instructions) is marked with `cache_control: {"type": "ephemeral"}` — one cache hit covers all leads in a batch, reducing API cost. The user message injects only data present in the `EnrichedLead` object.
+Drafts a personalized 150–200 word outreach email via Claude Sonnet 4.6. Public entry point: `generate_email(lead) → str | None`.
+
+- `_build_context(lead)` assembles a structured user message from non-None enrichment fields only (contact, market signals, company signals, score). Fields that are None are silently omitted — the email is grounded only in data that was actually retrieved.
+- The system prompt (EliseAI context, tone guidelines, no-hallucination constraint, word count) is a module-level constant sent with `cache_control: {"type": "ephemeral"}` — one cache hit covers all leads in a batch.
+- Returns `None` on any failure (missing key, API error, empty response). Never returns a generic template.
 
 ### `src/gtm/pipeline/runner.py`
 Async orchestration layer:
@@ -194,7 +198,7 @@ Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.
 | Phase 2 | Utilities: `geocoder.py`, `slug.py`, `cache.py` + `tests/conftest.py` | ✅ Done |
 | Phase 3 | Enrichment: 7 modules + `exceptions.py` + `utils/email.py` + `test_enrichment.py` | ✅ Done |
 | Phase 4 | Scoring: `src/gtm/scoring/scorer.py`, `scorer_signals.py`, `tests/test_scorer.py`, `docs/scoring-logic.md` | ✅ Done |
-| Phase 5 | Email generation | — |
+| Phase 5 | Email generation: `src/gtm/outreach/email_generator.py`, `tests/test_email_generator.py` | ✅ Done |
 | Phase 6 | Pipeline runner + main.py | — |
 | Phase 7 | Streamlit dashboard | — |
 | Phase 8 | Tests | — |
