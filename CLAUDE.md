@@ -73,10 +73,10 @@ Pipeline skips any lead whose output folder already exists (incremental processi
 - **All API calls are async** (`asyncio` + `httpx`): 7 enrichment calls fire concurrently per lead
 - **All API calls wrap in try/except**: missing data scores zero, pipeline never crashes
 - **BuiltWith is optional**: if no key, its 8% weight redistributes to Serper company signal
-- **Census requires FIPS codes**: `src/utils/geocoder.py` converts city+state → FIPS before Census/DataUSA calls
+- **Census requires FIPS codes**: `src/gtm/utils/geocoder.py` converts city+state → FIPS before Census/DataUSA calls
 - **OpenCorporates uses fuzzy matching**: `difflib` similarity filter (0.6 threshold) to avoid false company matches
 - **Claude prompt is cached**: system prompt uses `cache_control: ephemeral` — one cache hit covers all leads in a batch
-- **No magic numbers in scoring**: all weights and thresholds are named constants in `src/config.py`
+- **No magic numbers in scoring**: all weights and thresholds are named constants in `src/gtm/config.py`
 
 ## Environment Variables
 
@@ -108,5 +108,5 @@ Full rules live in `.claude/rules/`. Summary:
 
 - `docs/architecture.md` — full system design, updated after each implementation phase
 - `docs/scoring-logic.md` — threshold rationale for every signal
-- `docs/api-notes.md` — per-API quirks, endpoints, rate limits
+- `docs/api-notes.md` — per-API quirks, endpoints, response shapes, rate limits
 - `docs/rollout-plan.md` — how to roll this out in a real sales org (Part B of assessment)

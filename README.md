@@ -179,17 +179,18 @@ eliseai-gtm-tool/
 ├── data/leads_input.csv     # Lead input file
 ├── outputs/                 # Per-lead output folders
 ├── src/
-│   ├── config.py            # Settings and scoring weight constants
-│   ├── models.py            # Pydantic models
-│   ├── utils/               # Geocoder, slug generation, file cache
-│   ├── enrichment/          # One module per API (7 total)
-│   ├── scoring/             # Scoring logic
-│   ├── outreach/            # Claude email generation
-│   └── pipeline/            # Async orchestration
+│   └── gtm/                 # Installable package (import as `gtm`)
+│       ├── config.py        # Settings and scoring weight constants
+│       ├── models/          # Pydantic models (lead, market, company, person, scoring, enriched)
+│       ├── utils/           # Geocoder, slug generation, file cache
+│       ├── enrichment/      # One module per API (7 total)
+│       ├── scoring/         # Scoring logic
+│       ├── outreach/        # Claude email generation
+│       └── pipeline/        # Async orchestration
 ├── docs/
 │   ├── architecture.md      # System design (updated each phase)
+│   ├── api-notes.md         # Per-API quirks, endpoints, response shapes
 │   ├── scoring-logic.md     # Signal thresholds and rationale
-│   ├── api-notes.md         # Per-API quirks and rate limits
 │   └── rollout-plan.md      # Sales org rollout plan
 └── tests/                   # Fully mocked unit + integration tests
 ```

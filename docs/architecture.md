@@ -59,11 +59,11 @@ data/leads_input.csv
 
 ## Components
 
-### `src/config.py`
-Centralized settings via `pydantic-settings`. Loads all API keys from `.env`. Defines all scoring weights as named constants (`WEIGHT_RENTER_UNITS`, `WEIGHT_SENIORITY`, etc.) so no magic numbers appear in scoring logic. Weights are validated to sum to 1.0 at startup.
+### `src/gtm/config.py`
+Centralized settings via `pydantic-settings`. Loads all API keys from `.env`. Defines all scoring weights as named constants (`WEIGHT_RENTER_UNITS`, `WEIGHT_SENIORITY`, etc.) so no magic numbers appear in scoring logic. `Settings` validates that category weights sum to 1.0 at instantiation.
 
-### `src/models.py`
-Pydantic models for every data shape in the system:
+### `src/gtm/models/`
+Pydantic models for every data shape in the system (one module per concern, re-exported from `gtm.models`):
 - `RawLead` — raw input from CSV
 - `MarketData` — Census + DataUSA fields (all optional, default None)
 - `CompanyData` — Serper, OpenCorporates, Hunter, BuiltWith fields (all optional)
@@ -71,16 +71,16 @@ Pydantic models for every data shape in the system:
 - `ScoreBreakdown` — one float per signal + `market_score`, `company_score`, `person_score` subtotals
 - `EnrichedLead` — full record: raw lead + all enrichment + score + insights + email draft + slug
 
-### `src/utils/geocoder.py`
+### `src/gtm/utils/geocoder.py`
 Converts `city + state` → `(state_fips, place_fips)` using the Census Geocoder API (free). Required before any Census or DataUSA queries because those APIs use numeric FIPS codes, not city names. Results are cached to avoid redundant calls for repeated cities.
 
-### `src/utils/slug.py`
+### `src/gtm/utils/slug.py`
 Generates the output folder name for each lead: `{company}-{city}-{state}` (lowercased, non-alphanumeric stripped, spaces to hyphens). Handles slug collisions by appending `-2`, `-3`, etc.
 
-### `src/utils/cache.py`
+### `src/gtm/utils/cache.py`
 Simple JSON file cache backed by `.cache/`. Keyed by SHA-256 of the cache key string. TTL of 24 hours. Used by all enrichment modules to avoid re-hitting APIs during development or re-runs.
 
-### `src/enrichment/*.py`
+### `src/gtm/enrichment/*.py`
 Seven modules, one per API. All share the same async interface:
 ```python
 async def enrich(lead: RawLead, client: httpx.AsyncClient) -> DataType
@@ -97,7 +97,7 @@ All wrap API calls in `try/except`. All return an empty/default model on failure
 | `builtwith.py` | BuiltWith | `CompanyData` partial | Optional (key required) |
 | `pdl.py` | People Data Labs | `PersonData` | Email-only lookup |
 
-### `src/scoring/scorer.py`
+### `src/gtm/scoring/scorer.py`
 Scores a lead 0–100 using 13 signals across 3 categories. Each signal is independently evaluated against documented thresholds, returning a 0.0–1.0 value, then multiplied by its weight. If BuiltWith returns no data, its 8% weight is redistributed proportionally to the Serper portfolio signal. Category subtotals are computed alongside the overall score.
 
 **Scoring categories:**
@@ -108,10 +108,10 @@ Scores a lead 0–100 using 13 signals across 3 categories. Each signal is indep
 | Company Fit | 41% | Job postings (12%), portfolio news (8%), tech stack (8%), employee count (8%), company age (5%) |
 | Person Fit | 21% | Seniority (10%), function/department (7%), corporate email (4%) |
 
-### `src/outreach/email_generator.py`
+### `src/gtm/outreach/email_generator.py`
 Calls Claude Sonnet 4.6 via the Anthropic SDK to draft a 150–200 word outreach email. The system prompt (EliseAI context, tone guidelines, no-hallucination instructions) is marked with `cache_control: {"type": "ephemeral"}` — one cache hit covers all leads in a batch, reducing API cost. The user message injects only data present in the `EnrichedLead` object.
 
-### `src/pipeline/runner.py`
+### `src/gtm/pipeline/runner.py`
 Async orchestration layer:
 - `enrich_lead(lead, outputs_dir)`: generates slug, skips if output folder exists, fires all 7 enrichment calls concurrently, scores, generates email, writes 3 output files
 - `run_pipeline(leads, outputs_dir)`: processes leads sequentially (outer loop respects rate limits), async within each lead
@@ -178,6 +178,8 @@ The Census ACS API requires FIPS place codes. The Geocoder API converts free-tex
 | Linting | `ruff` | Single tool replacing flake8 + isort + black |
 | Testing | `pytest` + `pytest-asyncio` + `pytest-mock` | Standard Python testing; async support; easy mocking |
 
+Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.md`](./api-notes.md).
+
 ---
 
 ## Phase Log
@@ -185,7 +187,7 @@ The Census ACS API requires FIPS place codes. The Geocoder API converts free-tex
 | Phase | What was built | Status |
 |---|---|---|
 | Phase 0 | Scaffolding: pyproject.toml, .env.example, .gitignore, CLAUDE.md, sample CSV, docs stub | ✅ Done |
-| Phase 1 | Config + Models | — |
+| Phase 1 | Config + Models (`src/gtm/config.py`, `src/gtm/models/`, import path `gtm`) | ✅ Done |
 | Phase 2 | Utilities: geocoder, slug, cache | — |
 | Phase 3 | Enrichment modules (7) | — |
 | Phase 4 | Scoring | — |
