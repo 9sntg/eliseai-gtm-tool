@@ -199,7 +199,7 @@ Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.
 | Phase 3 | Enrichment: 7 modules + `exceptions.py` + `utils/email.py` + `test_enrichment.py` | ✅ Done |
 | Phase 4 | Scoring: `src/gtm/scoring/scorer.py`, `scorer_signals.py`, `tests/test_scorer.py`, `docs/scoring-logic.md` | ✅ Done |
 | Phase 5 | Email generation: `src/gtm/outreach/email_generator.py`, `tests/test_email_generator.py` | ✅ Done |
-| Phase 6 | Pipeline runner + main.py | — |
+| Phase 6 | Pipeline runner + main.py: `src/gtm/pipeline/runner.py` (`enrich_lead`, `run_pipeline`, merge helpers, file writer), `main.py` (CLI, Rich progress, `--watch`) + `tests/test_pipeline.py` | ✅ Done |
 | Phase 7 | Streamlit dashboard | — |
 | Phase 8 | Tests | — |
 | Phase 9 | Docs + Claude Code setup + README | — |
