@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 
 import anthropic
 
@@ -64,7 +65,12 @@ async def extract_company_profile(snippets: list[str], company_name: str) -> dic
             messages=[{"role": "user", "content": prompt}],
         )
         text = message.content[0].text.strip()
-        data = json.loads(text)
+        # Haiku sometimes wraps output in markdown code fences — extract raw JSON
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if not match:
+            logger.debug("Haiku: no JSON object found in response for %s", company_name)
+            return {}
+        data = json.loads(match.group(0))
         result: dict = {}
         if data.get("employee_count") is not None:
             result["employee_count"] = int(data["employee_count"])

@@ -24,6 +24,23 @@ Output folders appear under `outputs/` — one per lead. Each contains `enrichme
 
 ---
 
+## Streamlit Dashboard
+
+The dashboard (`app.py`) provides a no-code interface for the full pipeline. Launch with:
+
+```bash
+streamlit run app.py
+```
+
+Three tabs:
+- **Add Lead** — fill in contact name, email, company, city, state; appends a row to `data/leads_input.csv`
+- **Run Pipeline** — shows pending vs. processed lead counts; click "Run Pipeline" to enrich all new leads with a progress spinner
+- **View Results** — select any processed lead from a dropdown; displays score, tier, Market/Company/Person subtotals, per-signal breakdown, enrichment data (market stats, company data, contact info), and the draft outreach email
+
+The dashboard is designed for SDR use: no terminal access required after initial setup.
+
+---
+
 ## Rollout Strategy (Phase 9)
 
 > Full rollout plan to be completed in Phase 9 (Part B of the assessment). Sections planned:

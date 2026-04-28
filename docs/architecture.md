@@ -125,11 +125,18 @@ Async orchestration layer:
 ### `main.py`
 CLI entry point. Reads `data/leads_input.csv`, calls `run_pipeline()`, renders a Rich progress bar and summary table. Optional `--watch` flag wraps the pipeline in a `watchdog` file-watch loop.
 
+### `src/gtm/dashboard/helpers.py`
+Rendering helpers and sync pipeline runner for the Streamlit dashboard. Keeps `app.py` under 200 lines by extracting all reusable logic:
+- `load_leads_from_csv` / `append_lead_to_csv` — CSV I/O with error suppression
+- `list_output_folders` / `load_lead_data` — filesystem navigation for the results tab
+- `run_pipeline_sync` — runs the async pipeline in a dedicated thread to avoid Streamlit's event-loop conflict
+- `render_*` helpers — score header, category metrics, signal table, market/company/person/email sections
+
 ### `app.py`
 Streamlit dashboard with 3 tabs:
 - **Add Lead** — form to append a new row to `leads_input.csv`
-- **Run Pipeline** — lists pending leads, runs enrichment on unprocessed ones
-- **View Results** — browse output folders; shows score, Market/Company/Person bar chart, signal breakdown, and email draft
+- **Run Pipeline** — lists pending leads, runs enrichment on unprocessed ones, shows progress spinner
+- **View Results** — selectbox over processed leads; renders score, tier, Market/Company/Person subtotals, 13-signal breakdown table, enrichment data, and email draft in a 2-column layout
 
 ---
 
@@ -200,5 +207,5 @@ Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.
 | Phase 5 | Email generation: `src/gtm/outreach/email_generator.py`, `tests/test_email_generator.py` | ✅ Done |
 | Phase 6 | Pipeline runner + main.py: `src/gtm/pipeline/runner.py` (`enrich_lead`, `run_pipeline`, merge helpers, file writer), `main.py` (CLI, Rich progress, `--watch`) + `tests/test_pipeline.py` | ✅ Done |
 | Phase 7 | API migration: removed Hunter + OpenCorporates; added `serper.py` LinkedIn 3rd query + Claude Haiku extraction (`founded_year`, `linkedin_employee_count`); added `edgar.py` (SEC EDGAR public company flag); EDGAR `User-Agent` fix; geocoder places fallback; `_safe()` wrapper in runner; Census ACS multi-year in `datausa.py` | ✅ Done |
-| Phase 8 | Streamlit dashboard | — |
+| Phase 8 | Streamlit dashboard: `app.py` (3-tab UI), `src/gtm/dashboard/helpers.py` (render helpers, sync pipeline runner, CSV I/O) | ✅ Done |
 | Phase 9 | Docs + README polish + rollout plan (Part B) | — |
