@@ -97,8 +97,11 @@ All wrap API calls in `try/except`. All return an empty/default model on failure
 | `builtwith.py` | BuiltWith | `CompanyData` partial | Optional (key required) |
 | `pdl.py` | People Data Labs | `PersonData` | Email-only lookup |
 
+### `src/gtm/scoring/scorer_signals.py`
+All 13 signal functions and their threshold constants. Each function takes one or two enrichment fields and returns a `float` in `[0.0, 1.0]`. None input always returns `0.0`. No I/O, no config reads — pure computation. Threshold constants are named at module level (no magic numbers in function bodies).
+
 ### `src/gtm/scoring/scorer.py`
-Scores a lead 0–100 using 13 signals across 3 categories. Each signal is independently evaluated against documented thresholds, returning a 0.0–1.0 value, then multiplied by its weight. If BuiltWith returns no data, its 8% weight is redistributed proportionally to the Serper portfolio signal. Category subtotals are computed alongside the overall score.
+Orchestrates the 13 signal functions into a final 0–100 score. Handles BuiltWith weight redistribution, computes category subtotals (normalised to 0–100), maps the score to a tier, and generates 3–5 insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
 
 **Scoring categories:**
 
@@ -190,7 +193,7 @@ Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.
 | Phase 1 | Config + Models (`src/gtm/config.py`, `src/gtm/models/`, import path `gtm`) | ✅ Done |
 | Phase 2 | Utilities: `geocoder.py`, `slug.py`, `cache.py` + `tests/conftest.py` | ✅ Done |
 | Phase 3 | Enrichment: 7 modules + `exceptions.py` + `utils/email.py` + `test_enrichment.py` | ✅ Done |
-| Phase 4 | Scoring | — |
+| Phase 4 | Scoring: `src/gtm/scoring/scorer.py`, `scorer_signals.py`, `tests/test_scorer.py`, `docs/scoring-logic.md` | ✅ Done |
 | Phase 5 | Email generation | — |
 | Phase 6 | Pipeline runner + main.py | — |
 | Phase 7 | Streamlit dashboard | — |

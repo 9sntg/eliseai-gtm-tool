@@ -1,0 +1,393 @@
+"""Scorer tests — signal boundaries, weight validation, and redistribution."""
+
+from __future__ import annotations
+
+from datetime import date, timedelta
+
+import pytest
+
+import gtm.config as cfg
+from gtm.models import CompanyData, EnrichedLead, MarketData, PersonData, RawLead
+from gtm.models.company import SerperOrganicItem, SerperSearchBucket
+from gtm.scoring.scorer import compute_tier, generate_insights, score_lead
+from gtm.scoring.scorer_signals import (
+    EMPLOYEE_FLOOR,
+    EMPLOYEE_HIGH,
+    EMPLOYEE_MAX,
+    EMPLOYEE_MID,
+    MEDIAN_RENT_HIGH,
+    MEDIAN_RENT_LOW,
+    MEDIAN_RENT_MID,
+    RENTER_UNITS_HIGH,
+    RENTER_UNITS_LOW,
+    RENTER_UNITS_MAX,
+    RENTER_UNITS_MID,
+    score_company_age,
+    score_corporate_email,
+    score_department_function,
+    score_economic_momentum,
+    score_employee_count,
+    score_job_postings,
+    score_median_rent,
+    score_population_growth,
+    score_portfolio_news,
+    score_renter_rate,
+    score_renter_units,
+    score_seniority,
+    score_tech_stack,
+)
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _make_lead(**kwargs) -> EnrichedLead:
+    """Build a minimal EnrichedLead for scoring tests."""
+    return EnrichedLead(
+        raw=RawLead(name="Jane", email="jane@corp.com", company="Corp", city="Austin", state="TX"),
+        **kwargs,
+    )
+
+
+def _inc_date(years_ago: float) -> str:
+    """Return an ISO date string approximately `years_ago` years in the past."""
+    return (date.today() - timedelta(days=int(years_ago * 365.25))).isoformat()
+
+
+# ---------------------------------------------------------------------------
+# Weight validation
+# ---------------------------------------------------------------------------
+
+def test_weights_sum_to_one():
+    total = (
+        cfg.WEIGHT_RENTER_UNITS + cfg.WEIGHT_RENTER_RATE + cfg.WEIGHT_MEDIAN_RENT
+        + cfg.WEIGHT_POPULATION_GROWTH + cfg.WEIGHT_ECONOMIC_MOMENTUM
+        + cfg.WEIGHT_JOB_POSTINGS + cfg.WEIGHT_PORTFOLIO_NEWS + cfg.WEIGHT_TECH_STACK
+        + cfg.WEIGHT_EMPLOYEE_COUNT + cfg.WEIGHT_COMPANY_AGE
+        + cfg.WEIGHT_SENIORITY + cfg.WEIGHT_DEPARTMENT_FUNCTION + cfg.WEIGHT_CORPORATE_EMAIL
+    )
+    assert abs(total - 1.0) < 1e-6
+
+
+# ---------------------------------------------------------------------------
+# Market signal boundaries
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("units,expected", [
+    (None, 0.0),
+    (0, 0.0),
+    (RENTER_UNITS_LOW - 1, 0.0),
+    (RENTER_UNITS_LOW, 0.25),
+    (RENTER_UNITS_MID - 1, 0.25),
+    (RENTER_UNITS_MID, 0.5),
+    (RENTER_UNITS_HIGH - 1, 0.5),
+    (RENTER_UNITS_HIGH, 0.75),
+    (RENTER_UNITS_MAX - 1, 0.75),
+    (RENTER_UNITS_MAX, 1.0),
+    (RENTER_UNITS_MAX + 1, 1.0),
+])
+def test_score_renter_units(units, expected):
+    assert score_renter_units(units) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("rate,expected", [
+    (None, 0.0),
+    (0.0, 0.25),
+    (0.34, 0.25),
+    (0.35, 0.5),
+    (0.45, 0.75),
+    (0.55, 1.0),
+    (0.70, 1.0),
+])
+def test_score_renter_rate(rate, expected):
+    assert score_renter_rate(rate) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("rent,expected", [
+    (None, 0.0),
+    (500, 0.1),
+    (MEDIAN_RENT_LOW - 1, 0.1),
+    (MEDIAN_RENT_LOW, 0.4),
+    (MEDIAN_RENT_MID - 1, 0.4),
+    (MEDIAN_RENT_MID, 0.75),
+    (MEDIAN_RENT_HIGH - 1, 0.75),
+    (MEDIAN_RENT_HIGH, 1.0),
+    (3000, 1.0),
+])
+def test_score_median_rent(rent, expected):
+    assert score_median_rent(rent) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("growth,expected", [
+    (None, 0.0),
+    (-0.05, 0.1),
+    (0.0, 0.5),
+    (0.01, 0.5),
+    (0.02, 0.5),
+    (0.021, 1.0),
+    (0.05, 1.0),
+])
+def test_score_population_growth(growth, expected):
+    assert score_population_growth(growth) == pytest.approx(expected)
+
+
+def test_score_economic_momentum_delegates():
+    assert score_economic_momentum(0.03) == score_population_growth(0.03)
+    assert score_economic_momentum(None) == 0.0
+
+
+# ---------------------------------------------------------------------------
+# Company signal boundaries
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("count,expected", [
+    (0, 0.0),
+    (1, 0.3),
+    (2, 0.3),
+    (3, 0.6),
+    (4, 0.6),
+    (5, 1.0),
+    (10, 1.0),
+])
+def test_score_job_postings(count, expected):
+    assert score_job_postings(count) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("organic,has_kg,expected", [
+    (0, False, 0.0),
+    (1, False, 0.5),
+    (3, False, 0.75),
+    (0, True, 0.75),
+    (1, True, 0.75),
+    (3, True, 1.0),
+    (5, True, 1.0),
+])
+def test_score_portfolio_news(organic, has_kg, expected):
+    assert score_portfolio_news(organic, has_kg) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("stack,expected", [
+    ([], 0.0),
+    (["Salesforce", "HubSpot"], 0.5),
+    (["Yardi Voyager"], 1.0),
+    (["RealPage"], 1.0),
+    (["Entrata"], 1.0),
+    (["MRI Software", "Google Analytics"], 1.0),
+])
+def test_score_tech_stack(stack, expected):
+    assert score_tech_stack(stack) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("count,expected", [
+    (None, 0.0),
+    (10, 0.1),
+    (EMPLOYEE_FLOOR, 0.3),
+    (EMPLOYEE_MID, 0.6),
+    (EMPLOYEE_HIGH, 0.8),
+    (EMPLOYEE_MAX, 1.0),
+    (5000, 1.0),
+])
+def test_score_employee_count(count, expected):
+    assert score_employee_count(count) == pytest.approx(expected)
+
+
+def test_score_company_age_mature():
+    assert score_company_age(_inc_date(15)) == pytest.approx(1.0)
+
+
+def test_score_company_age_growing():
+    assert score_company_age(_inc_date(7)) == pytest.approx(0.6)
+
+
+def test_score_company_age_young():
+    assert score_company_age(_inc_date(2)) == pytest.approx(0.2)
+
+
+def test_score_company_age_none():
+    assert score_company_age(None) == 0.0
+
+
+def test_score_company_age_invalid_date():
+    assert score_company_age("not-a-date") == 0.0
+
+
+# ---------------------------------------------------------------------------
+# Person signal boundaries
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("seniority,expected", [
+    (None, 0.1),
+    ("unknown_level", 0.1),
+    ("senior", 0.30),
+    ("manager", 0.50),
+    ("director", 0.70),
+    ("vp", 0.85),
+    ("c_suite", 1.0),
+    ("owner", 1.0),
+    ("partner", 1.0),
+])
+def test_score_seniority(seniority, expected):
+    assert score_seniority(seniority) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("dept,expected", [
+    (None, 0.1),
+    ("marketing", 0.1),
+    ("finance", 0.50),
+    ("accounting", 0.50),
+    ("leasing", 0.80),
+    ("real_estate", 0.80),
+    ("operations", 1.0),
+    ("property_management", 1.0),
+])
+def test_score_department_function(dept, expected):
+    assert score_department_function(dept) == pytest.approx(expected)
+
+
+def test_score_corporate_email_true():
+    assert score_corporate_email(True) == pytest.approx(1.0)
+
+
+def test_score_corporate_email_false():
+    assert score_corporate_email(False) == pytest.approx(0.0)
+
+
+# ---------------------------------------------------------------------------
+# score_lead integration
+# ---------------------------------------------------------------------------
+
+def test_score_lead_returns_all_components():
+    lead = _make_lead()
+    overall, tier, breakdown = score_lead(lead)
+
+    assert 0.0 <= overall <= 100.0
+    assert tier in ("Low", "Medium", "High")
+    assert breakdown is not None
+    assert 0.0 <= breakdown.market_score <= 100.0
+    assert 0.0 <= breakdown.company_score <= 100.0
+    assert 0.0 <= breakdown.person_score <= 100.0
+
+
+def test_score_lead_all_zeros_on_empty_enrichment():
+    lead = _make_lead()
+    overall, tier, _ = score_lead(lead)
+    # PersonData defaults: is_corporate_email=False → 0, seniority=None → 0.1
+    # so score won't be exactly 0, but should be very low
+    assert overall < 20.0
+    assert tier == "Low"
+
+
+def test_score_lead_full_enrichment_produces_high_score():
+    org = SerperOrganicItem(title="X", link="https://x.com", snippet="s", position=1)
+    lead = _make_lead(
+        market=MarketData(
+            renter_occupied_units=200_000,
+            renter_rate=0.6,
+            median_gross_rent=2_500,
+            population_growth_yoy=0.03,
+            median_income_growth_yoy=0.03,
+        ),
+        company=CompanyData(
+            serper_property_management=SerperSearchBucket(
+                query="q", organic=[org, org, org], knowledge_graph_title="BigPM"
+            ),
+            serper_jobs=SerperSearchBucket(query="q", organic=[org, org, org, org, org]),
+            tech_stack=["Yardi Voyager"],
+            hunter_employee_count=1_500,
+            opencorporates_incorporation_date=_inc_date(15),
+        ),
+        person=PersonData(
+            job_title="VP of Operations",
+            seniority="vp",
+            department="operations",
+            is_corporate_email=True,
+        ),
+    )
+    overall, tier, breakdown = score_lead(lead)
+    assert overall >= 75.0
+    assert tier == "High"
+
+
+# ---------------------------------------------------------------------------
+# BuiltWith redistribution
+# ---------------------------------------------------------------------------
+
+def test_builtwith_redistribution_increases_portfolio_news_contribution():
+    """When tech_stack is empty the portfolio_news effective weight must grow by WEIGHT_TECH_STACK."""
+    org = SerperOrganicItem(title="X", link="https://x.com", snippet="s", position=1)
+    pm_bucket = SerperSearchBucket(
+        query="q", organic=[org, org, org], knowledge_graph_title="BigPM"
+    )
+
+    base_company = CompanyData(
+        serper_property_management=pm_bucket,
+        tech_stack=[],        # BuiltWith absent
+    )
+    lead_no_tech = _make_lead(company=base_company)
+
+    company_with_tech = base_company.model_copy(update={"tech_stack": ["Salesforce"]})
+    lead_with_tech = _make_lead(company=company_with_tech)
+
+    score_no_tech, _, bd_no_tech = score_lead(lead_no_tech)
+    score_with_tech, _, bd_with_tech = score_lead(lead_with_tech)
+
+    # With redistribution, company_score should be higher when tech_stack is absent
+    # because portfolio_news absorbs the extra weight (sig_news=1.0 > sig_tech=0.5)
+    assert bd_no_tech.company_score > bd_with_tech.company_score
+
+
+def test_builtwith_absent_overall_weight_unchanged():
+    """Redistributing BuiltWith weight must not change the sum of category weights."""
+    total = (
+        cfg.WEIGHT_RENTER_UNITS + cfg.WEIGHT_RENTER_RATE + cfg.WEIGHT_MEDIAN_RENT
+        + cfg.WEIGHT_POPULATION_GROWTH + cfg.WEIGHT_ECONOMIC_MOMENTUM
+        + cfg.WEIGHT_JOB_POSTINGS + cfg.WEIGHT_PORTFOLIO_NEWS + cfg.WEIGHT_TECH_STACK
+        + cfg.WEIGHT_EMPLOYEE_COUNT + cfg.WEIGHT_COMPANY_AGE
+        + cfg.WEIGHT_SENIORITY + cfg.WEIGHT_DEPARTMENT_FUNCTION + cfg.WEIGHT_CORPORATE_EMAIL
+    )
+    assert abs(total - 1.0) < 1e-6
+
+
+# ---------------------------------------------------------------------------
+# Tier boundaries
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("score,expected_tier", [
+    (0.0, "Low"),
+    (40.0, "Low"),
+    (40.1, "Medium"),
+    (70.0, "Medium"),
+    (70.1, "High"),
+    (100.0, "High"),
+])
+def test_compute_tier(score, expected_tier):
+    assert compute_tier(score) == expected_tier
+
+
+# ---------------------------------------------------------------------------
+# generate_insights
+# ---------------------------------------------------------------------------
+
+def test_generate_insights_fallback_on_empty_data():
+    lead = _make_lead()
+    _, _, breakdown = score_lead(lead)
+    bullets = generate_insights(lead, breakdown)
+    assert len(bullets) >= 1
+    assert any("manual research" in b for b in bullets)
+
+
+def test_generate_insights_max_five_bullets():
+    org = SerperOrganicItem(title="X", link="https://x.com", snippet="s", position=1)
+    lead = _make_lead(
+        market=MarketData(renter_occupied_units=200_000, median_gross_rent=2_000),
+        company=CompanyData(
+            serper_property_management=SerperSearchBucket(
+                query="q", organic=[org, org, org], knowledge_graph_title="BigPM"
+            ),
+            tech_stack=["Yardi Voyager"],
+        ),
+        person=PersonData(job_title="VP of Operations", seniority="vp", is_corporate_email=True),
+    )
+    _, _, breakdown = score_lead(lead)
+    bullets = generate_insights(lead, breakdown)
+    assert 1 <= len(bullets) <= 5

@@ -99,7 +99,7 @@ def _parse(rows: list) -> MarketData:
     """Parse ACS5 2D-array response (header row + data row) into MarketData."""
     if len(rows) < 2:
         return MarketData()
-    data = dict(zip(rows[0], rows[1]))
+    data = dict(zip(rows[0], rows[1], strict=False))
 
     def int_or_none(key: str) -> int | None:
         val = data.get(key)

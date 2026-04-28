@@ -1,10 +1,8 @@
 """Tests for cache, slug, and geocoder utilities."""
 
 import json
-import time
 
 import httpx
-import pytest
 
 from gtm.utils.cache import FileCache
 from gtm.utils.geocoder import FipsResult, get_fips

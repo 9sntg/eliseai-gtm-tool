@@ -1,4 +1,8 @@
-"""Serper API response parsing helpers."""
+"""Serper API response parsing helpers.
+
+Shared by ``serper.py`` to keep the main module under the 200-line limit.
+Converts raw Serper JSON into typed ``SerperSearchBucket`` objects.
+"""
 
 from gtm.models.company import SerperOrganicItem, SerperSearchBucket
 

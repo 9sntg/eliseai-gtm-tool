@@ -1,5 +1,11 @@
-"""Email domain utilities."""
+"""Email domain utilities for corporate vs. free-provider detection.
 
+Used by the PDL enrichment module to derive the ``is_corporate_email`` signal
+without requiring a PDL API response.
+"""
+
+# Known free/consumer email providers — any domain not in this set is treated
+# as a corporate address for scoring purposes.
 FREE_DOMAINS: frozenset[str] = frozenset({
     "gmail.com", "yahoo.com", "hotmail.com", "outlook.com",
     "aol.com", "icloud.com", "mail.com", "protonmail.com",
