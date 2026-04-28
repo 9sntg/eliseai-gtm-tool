@@ -188,7 +188,7 @@ Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.
 |---|---|---|
 | Phase 0 | Scaffolding: pyproject.toml, .env.example, .gitignore, CLAUDE.md, sample CSV, docs stub | ✅ Done |
 | Phase 1 | Config + Models (`src/gtm/config.py`, `src/gtm/models/`, import path `gtm`) | ✅ Done |
-| Phase 2 | Utilities: geocoder, slug, cache | — |
+| Phase 2 | Utilities: `geocoder.py`, `slug.py`, `cache.py` + `tests/conftest.py` | ✅ Done |
 | Phase 3 | Enrichment modules (7) | — |
 | Phase 4 | Scoring | — |
 | Phase 5 | Email generation | — |
