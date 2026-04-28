@@ -25,11 +25,14 @@ SIGNAL_META: list[tuple[str, str, str]] = [
     ("tech_stack",         "Tech Stack",                "Company"),
     ("employee_count",     "Employee Count",            "Company"),
     ("company_age",        "Company Age",               "Company"),
-    ("seniority",          "Contact Seniority",         "Person"),
-    ("department_function","Department / Function",     "Person"),
-    ("corporate_email",    "Corporate Email",           "Person"),
-    ("portfolio_size",     "Portfolio Size",            "Bonus"),
-    ("social_presence",    "Social Media Presence",     "Bonus"),
+    ("portfolio_size",      "Portfolio Size",            "Company"),
+    ("social_presence",     "Social Media Presence",    "Company"),
+    ("yelp_company_rating", "Yelp Rating vs. Market",   "Company"),
+    ("seniority",           "Contact Seniority",        "Person"),
+    ("department_function", "Department / Function",    "Person"),
+    ("corporate_email",     "Corporate Email",          "Person"),
+    ("building_rating",     "Building Yelp Rating",     "Building"),
+    ("building_reviews",    "Building Review Volume",   "Building"),
 ]
 
 TIER_COLOR: dict[str, str] = {"High": "🟢", "Medium": "🟡", "Low": "🔴"}
@@ -114,11 +117,12 @@ def render_score_header(score: float, tier: str, insights: list[str]) -> None:
 
 
 def render_category_metrics(breakdown: dict) -> None:
-    """Render Market / Company / Person subtotals as three metric tiles."""
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Market Fit",  f"{breakdown.get('market_score',  0):.1f} / 100")
-    c2.metric("Company Fit", f"{breakdown.get('company_score', 0):.1f} / 100")
-    c3.metric("Person Fit",  f"{breakdown.get('person_score',  0):.1f} / 100")
+    """Render Market / Company / Person / Building subtotals as metric tiles."""
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Market Fit",   f"{breakdown.get('market_score',   0):.1f} / 100")
+    c2.metric("Company Fit",  f"{breakdown.get('company_score',  0):.1f} / 100")
+    c3.metric("Person Fit",   f"{breakdown.get('person_score',   0):.1f} / 100")
+    c4.metric("Building Fit", f"{breakdown.get('building_score', 0):.1f} / 100")
 
 
 def render_signal_table(breakdown: dict) -> None:
@@ -170,6 +174,17 @@ def render_person_section(person: dict) -> None:
         _field(person, "department",  "Department", lambda v: v.replace("_", " ").title())
         st.write(f"**Corporate email:** {'Yes' if person.get('is_corporate_email') else 'No'}")
         _field(person, "pdl_likelihood", "PDL match confidence", lambda v: f"{v}/10")
+
+
+def render_building_section(building: dict) -> None:
+    """Render building enrichment fields in a labelled expander."""
+    with st.expander("🏢 Building Data", expanded=True):
+        _field(building, "address",           "Address",        lambda v: v)
+        _field(building, "yelp_rating",       "Yelp rating",    lambda v: f"{v}/5")
+        _field(building, "yelp_review_count", "Yelp reviews",   lambda v: f"{v:,}")
+        _field(building, "google_rating",     "Google rating",  lambda v: f"{v}/5")
+        if building.get("pain_themes"):
+            st.write(f"**Resident pain themes:** {', '.join(building['pain_themes'])}")
 
 
 def render_email_section(email_text: str) -> None:

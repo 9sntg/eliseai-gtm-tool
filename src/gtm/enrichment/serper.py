@@ -75,6 +75,7 @@ async def enrich(lead: RawLead, client: httpx.AsyncClient, cache: FileCache) -> 
     job_count = extract_job_count(jobs_snippets)
     yelp_alias = extract_yelp_alias(pm_bucket.organic)
     social_platform_count = extract_social_platforms(pm_bucket.organic)
+    google_rating = pm_bucket.knowledge_graph_rating
 
     return CompanyData(
         serper_property_management=pm_bucket,
@@ -86,6 +87,7 @@ async def enrich(lead: RawLead, client: httpx.AsyncClient, cache: FileCache) -> 
         portfolio_size=profile.get("portfolio_size"),
         yelp_alias=yelp_alias,
         social_platform_count=social_platform_count,
+        google_rating=google_rating,
     )
 
 

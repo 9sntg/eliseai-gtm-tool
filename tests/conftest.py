@@ -148,3 +148,70 @@ def pdl_response():
             "job_title_role": "operations",
         },
     }
+
+
+@pytest.fixture
+def yelp_search_response():
+    return {
+        "businesses": [
+            {
+                "id": "abc123",
+                "alias": "greystar-austin",
+                "name": "Greystar",
+                "rating": 3.2,
+                "review_count": 45,
+                "categories": [{"alias": "propertymgmt", "title": "Property Management"}],
+                "location": {"city": "Austin", "state": "TX"},
+            }
+        ]
+    }
+
+
+@pytest.fixture
+def yelp_profile_response():
+    return {
+        "id": "abc123",
+        "alias": "greystar-austin",
+        "name": "Greystar",
+        "rating": 3.2,
+        "review_count": 45,
+        "is_claimed": True,
+        "attributes": {"about_this_biz_year_established": "2003"},
+    }
+
+
+@pytest.fixture
+def yelp_reviews_response():
+    return {
+        "reviews": [
+            {"text": "Management never responds to maintenance requests.", "rating": 2},
+            {"text": "Hard to reach anyone in the leasing office.", "rating": 1},
+        ]
+    }
+
+
+@pytest.fixture
+def yelp_highlights_response():
+    return {
+        "review_highlights": [
+            {
+                "sentence": "[[HIGHLIGHT]]Slow[[ENDHIGHLIGHT]] to respond to issues.",
+                "review_count": 12,
+            },
+            {
+                "sentence": "Leasing office is [[HIGHLIGHT]]hard to reach[[ENDHIGHLIGHT]].",
+                "review_count": 8,
+            },
+        ]
+    }
+
+
+@pytest.fixture
+def yelp_comparables_response():
+    return {
+        "businesses": [
+            {"alias": "comp-a", "rating": 4.0, "review_count": 30},
+            {"alias": "comp-b", "rating": 3.8, "review_count": 20},
+            {"alias": "comp-c", "rating": 4.2, "review_count": 50},
+        ]
+    }

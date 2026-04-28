@@ -13,24 +13,28 @@ from gtm.config import (
     POINTS_MEDIAN_RENT,
     POINTS_POPULATION_GROWTH,
     POINTS_PORTFOLIO_NEWS,
+    POINTS_PORTFOLIO_SIZE,
     POINTS_RENTER_RATE,
     POINTS_RENTER_UNITS,
     POINTS_SENIORITY,
+    POINTS_SOCIAL_PRESENCE,
     POINTS_TECH_STACK,
+    POINTS_YELP_COMPANY_RATING,
     Settings,
 )
 
 
-def test_baseline_points_sum_to_100() -> None:
+def test_baseline_points_sum_to_117() -> None:
     total = (
         POINTS_RENTER_UNITS + POINTS_RENTER_RATE + POINTS_MEDIAN_RENT
         + POINTS_POPULATION_GROWTH + POINTS_ECONOMIC_MOMENTUM
         + POINTS_JOB_POSTINGS + POINTS_PORTFOLIO_NEWS + POINTS_TECH_STACK
         + POINTS_EMPLOYEE_COUNT + POINTS_COMPANY_AGE
+        + POINTS_PORTFOLIO_SIZE + POINTS_SOCIAL_PRESENCE + POINTS_YELP_COMPANY_RATING
         + POINTS_SENIORITY + POINTS_DEPARTMENT_FUNCTION + POINTS_CORPORATE_EMAIL
     )
-    assert abs(total - 100.0) < 1e-9
-    assert abs(BASELINE_MAX_SCORE - 100.0) < 1e-9
+    assert abs(total - 117.0) < 1e-9
+    assert abs(BASELINE_MAX_SCORE - 117.0) < 1e-9
 
 
 def test_settings_loads_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -67,8 +71,9 @@ def test_company_points_sum() -> None:
     company = (
         POINTS_JOB_POSTINGS + POINTS_PORTFOLIO_NEWS + POINTS_TECH_STACK
         + POINTS_EMPLOYEE_COUNT + POINTS_COMPANY_AGE
+        + POINTS_PORTFOLIO_SIZE + POINTS_SOCIAL_PRESENCE + POINTS_YELP_COMPANY_RATING
     )
-    assert abs(company - 41.0) < 1e-9
+    assert abs(company - 58.0) < 1e-9
 
 
 def test_person_points_sum() -> None:

@@ -44,7 +44,7 @@ SYSTEM_PROMPT: str = (
 def _build_context(lead: EnrichedLead) -> str:
     """Build a structured lead context string for the Claude user message."""
     lines: list[str] = []
-    r, m, c, p = lead.raw, lead.market, lead.company, lead.person
+    r, m, c, p, b = lead.raw, lead.market, lead.company, lead.person, lead.building
 
     lines.append(f"Contact name: {r.name}")
     if p.job_title:
@@ -77,8 +77,26 @@ def _build_context(lead: EnrichedLead) -> str:
             f"'{c.serper_property_management.knowledge_graph_title}'"
         )
 
+    # Yelp company signals
+    if c.yelp_rating is not None and c.yelp_market_avg_rating is not None:
+        lines.append(
+            f"Yelp rating: {c.yelp_rating}/5 "
+            f"(market avg: {c.yelp_market_avg_rating}/5, {c.yelp_review_count or 0} reviews)"
+        )
+    if c.yelp_pain_themes:
+        lines.append(f"Resident pain themes (company): {', '.join(c.yelp_pain_themes)}")
+
+    # Building signals
+    if b.yelp_rating is not None:
+        lines.append(
+            f"Building Yelp rating: {b.yelp_rating}/5 "
+            f"({b.yelp_review_count or 0} reviews) — {r.property_address}"
+        )
+    if b.pain_themes:
+        lines.append(f"Building review themes: {', '.join(b.pain_themes)}")
+
     if lead.score is not None:
-        lines.append(f"Lead score: {lead.score:.0f}/100 ({lead.tier})")
+        lines.append(f"Lead score: {lead.score:.0f}/117 ({lead.tier})")
 
     return "\n".join(lines)
 

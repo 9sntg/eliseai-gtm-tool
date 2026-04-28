@@ -6,13 +6,13 @@ Automates the top-of-funnel SDR workflow for property management leads. Takes a 
 
 ## What It Does
 
-1. **Enriches** each lead across three layers using 7 public APIs:
+1. **Enriches** each lead across three layers using public APIs:
    - **Market** — renter density, rent levels, population growth (Census, DataUSA)
-   - **Company** — portfolio signals, hiring activity, tech stack, employee count, legitimacy (Serper, BuiltWith, Hunter.io, OpenCorporates)
+   - **Company** — portfolio signals, hiring activity, tech stack, employee count, portfolio size, social presence (Serper, BuiltWith, SEC EDGAR)
    - **Person** — seniority, department, decision-maker signals (People Data Labs)
 
-2. **Scores** each lead 0–100 across three categories:
-   - Market Fit (38%) · Company Fit (41%) · Person Fit (21%)
+2. **Scores** each lead using an additive point model (baseline 100 pts, bonus signals add up to +11):
+   - Market Fit (38 pts) · Company Fit (41 pts) · Person Fit (21 pts) · Bonus signals (+11 pts max)
 
 3. **Drafts** a personalized outreach email using Claude, grounded only in enriched data
 
@@ -67,12 +67,13 @@ Add these to your `.env` file. The tool degrades gracefully when optional keys a
 |---|---|---|---|
 | `ANTHROPIC_API_KEY` | Yes | Pay-per-use | [console.anthropic.com](https://console.anthropic.com) |
 | `SERPER_API_KEY` | Yes | 2,500 searches | [serper.dev](https://serper.dev) |
-| `HUNTER_API_KEY` | Yes | 25 req/month | [hunter.io](https://hunter.io) |
 | `PDL_API_KEY` | Yes | 100 req/month | [peopledatalabs.com](https://peopledatalabs.com) |
 | `BUILTWITH_API_KEY` | No | Paid only for tech stack | [builtwith.com/api](https://builtwith.com/api) |
 | `CENSUS_API_KEY` | No | Generous without key | [api.census.gov](https://api.census.gov/data/key_signup.html) |
 
-> **Note on BuiltWith:** The free tier does not expose named technology detections. Detecting Yardi/RealPage/Entrata requires a paid plan. When absent, the tool uses Serper search snippets as a proxy signal.
+> **Note on BuiltWith:** The free tier does not expose named technology detections. Detecting Yardi/RealPage/Entrata requires a paid plan. When absent, the tech stack signal scores 0 — other signals are unaffected (additive model).
+
+> **Note on SEC EDGAR:** Used for public company detection (free, no key required). Surfaces as an insight bullet only — not scored, since most PM companies are private.
 
 ---
 
@@ -144,16 +145,20 @@ The pipeline is **incremental** — it checks for existing output folders before
 
 ## Scoring Model
 
-Thirteen signals across three categories:
+Additive point model — each signal contributes 0–N points when it fires, 0 when data is absent. Missing signals don't affect other signals. Baseline max is 100 pts; two bonus signals can push above that.
 
-**Market Fit (38%)** — Is this market worth targeting?
-- Renter-occupied units (15%), renter rate (8%), median rent (5%), population growth (5%), economic momentum (5%)
+**Market Fit (38 pts)** — Is this market worth targeting?
+- Renter-occupied units (15 pts), renter rate (8 pts), median rent (5 pts), population growth (5 pts), economic momentum (5 pts)
 
-**Company Fit (41%)** — Is this company a real opportunity?
-- Active leasing job postings (12%), portfolio news (8%), legacy tech stack (8%), employee count (8%), company age (5%)
+**Company Fit (41 pts)** — Is this company a real opportunity?
+- Active leasing job postings (12 pts), portfolio news/web presence (8 pts), legacy tech stack (8 pts), employee count (8 pts), company age (5 pts)
 
-**Person Fit (21%)** — Is this contact a decision maker?
-- Seniority (10%), department/function (7%), corporate email domain (4%)
+**Person Fit (21 pts)** — Is this contact a decision maker?
+- Seniority (10 pts), department/function (7 pts), corporate email domain (4 pts)
+
+**Bonus signals (up to +11 pts)** — fire when data is available, never penalise absence:
+- Portfolio size — units/communities under management (+6 pts)
+- Social media presence — distinct platforms detected (+5 pts)
 
 Full threshold documentation: [`docs/scoring-logic.md`](docs/scoring-logic.md)
 
@@ -180,7 +185,7 @@ eliseai-gtm-tool/
 ├── outputs/                 # Per-lead output folders
 ├── src/
 │   └── gtm/                 # Installable package (import as `gtm`)
-│       ├── config.py        # Settings and scoring weight constants
+│       ├── config.py        # Settings and scoring point constants
 │       ├── models/          # Pydantic models (lead, market, company, person, scoring, enriched)
 │       ├── utils/           # Geocoder, slug generation, file cache
 │       ├── enrichment/      # One module per API (7 total)

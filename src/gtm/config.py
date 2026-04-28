@@ -21,34 +21,37 @@ POINTS_MEDIAN_RENT: float = 5.0
 POINTS_POPULATION_GROWTH: float = 5.0
 POINTS_ECONOMIC_MOMENTUM: float = 5.0
 
-# --- Company Fit point values (baseline total = 41 pts) ---
+# --- Company Fit point values (baseline total = 58 pts) ---
 POINTS_JOB_POSTINGS: float = 12.0
 POINTS_PORTFOLIO_NEWS: float = 8.0
 POINTS_TECH_STACK: float = 8.0
 POINTS_EMPLOYEE_COUNT: float = 8.0
 POINTS_COMPANY_AGE: float = 5.0
+POINTS_PORTFOLIO_SIZE: float = 6.0        # calibrate after more runs
+POINTS_SOCIAL_PRESENCE: float = 5.0      # calibrate after more runs
+POINTS_YELP_COMPANY_RATING: float = 6.0  # rating vs. local market avg
 
 # --- Person Fit point values (baseline total = 21 pts) ---
 POINTS_SENIORITY: float = 10.0
 POINTS_DEPARTMENT_FUNCTION: float = 7.0
 POINTS_CORPORATE_EMAIL: float = 4.0
 
-# --- Bonus signal point values (fire when data available; 0 when absent) ---
-# These sit outside the 100-pt baseline so their absence never penalises a lead.
-POINTS_PORTFOLIO_SIZE: float = 6.0    # calibrate after more runs
-POINTS_SOCIAL_PRESENCE: float = 5.0  # calibrate after more runs
+# --- Building Fit point values (bonus; fire when building data available) ---
+POINTS_BUILDING_RATING: float = 8.0   # inverted: low rating = strong pain signal
+POINTS_BUILDING_REVIEWS: float = 4.0  # review volume = active, addressable building
 
-# Baseline max = 38 + 41 + 21 = 100 pts
+# Baseline max = 38 + 58 + 21 = 117 pts
 BASELINE_MAX_SCORE: float = (
     POINTS_RENTER_UNITS + POINTS_RENTER_RATE + POINTS_MEDIAN_RENT
     + POINTS_POPULATION_GROWTH + POINTS_ECONOMIC_MOMENTUM
     + POINTS_JOB_POSTINGS + POINTS_PORTFOLIO_NEWS + POINTS_TECH_STACK
     + POINTS_EMPLOYEE_COUNT + POINTS_COMPANY_AGE
+    + POINTS_PORTFOLIO_SIZE + POINTS_SOCIAL_PRESENCE + POINTS_YELP_COMPANY_RATING
     + POINTS_SENIORITY + POINTS_DEPARTMENT_FUNCTION + POINTS_CORPORATE_EMAIL
 )
 
-assert abs(BASELINE_MAX_SCORE - 100.0) < 1e-6, (
-    f"Baseline point values must sum to 100, got {BASELINE_MAX_SCORE}"
+assert abs(BASELINE_MAX_SCORE - 117.0) < 1e-6, (
+    f"Baseline point values must sum to 117, got {BASELINE_MAX_SCORE}"
 )
 
 
@@ -66,6 +69,7 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = None
     builtwith_api_key: str | None = None
     census_api_key: str | None = None
+    yelp_api_key: str | None = None
 
 
 settings = Settings()

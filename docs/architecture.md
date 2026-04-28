@@ -60,13 +60,13 @@ data/leads_input.csv
 ## Components
 
 ### `src/gtm/config.py`
-Centralized settings via `pydantic-settings`. Loads all API keys from `.env`. Defines all scoring weights as named constants (`WEIGHT_RENTER_UNITS`, `WEIGHT_SENIORITY`, etc.) so no magic numbers appear in scoring logic. `Settings` validates that category weights sum to 1.0 at instantiation.
+Centralized settings via `pydantic-settings`. Loads all API keys from `.env`. Defines all scoring point values as named constants (`POINTS_RENTER_UNITS`, `POINTS_SENIORITY`, etc.) so no magic numbers appear in scoring logic. An assertion at module level confirms that the 13 baseline signals sum to exactly 100 pts. Bonus signal point values (`POINTS_PORTFOLIO_SIZE`, `POINTS_SOCIAL_PRESENCE`) sit outside the 100-pt baseline.
 
 ### `src/gtm/models/`
 Pydantic models for every data shape in the system (one module per concern, re-exported from `gtm.models`):
 - `RawLead` — raw input from CSV
 - `MarketData` — Census + DataUSA fields (all optional, default None)
-- `CompanyData` — Serper (3 buckets), LinkedIn-extracted employee count + founded year, EDGAR public flag, BuiltWith tech stack (all optional)
+- `CompanyData` — Serper (3 buckets), LinkedIn-extracted employee count + founded year, Haiku-extracted portfolio size, job count from regex extraction, yelp alias, social platform count, EDGAR public flag, BuiltWith tech stack (all optional)
 - `PersonData` — PDL fields + `is_corporate_email` (derived locally)
 - `ScoreBreakdown` — one float per signal + `market_score`, `company_score`, `person_score` subtotals
 - `EnrichedLead` — full record: raw lead + all enrichment + score + insights + email draft + slug
@@ -100,15 +100,16 @@ All wrap API calls in `try/except`. All return an empty/default model on failure
 All 13 signal functions and their threshold constants. Each function takes one or two enrichment fields and returns a `float` in `[0.0, 1.0]`. None input always returns `0.0`. No I/O, no config reads — pure computation. Threshold constants are named at module level (no magic numbers in function bodies).
 
 ### `src/gtm/scoring/scorer.py`
-Orchestrates the 13 signal functions into a final 0–100 score. Handles BuiltWith weight redistribution, computes category subtotals (normalised to 0–100), maps the score to a tier, and generates 3–5 insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
+Orchestrates signal functions into a final score using an additive point model. Each signal contributes 0–N points when it fires, 0 when data is absent — no redistribution needed. Baseline max is 100 pts; two bonus signals can push the score above 100. Computes category subtotals (normalised to 0–100 for display), maps the score to a tier, and generates 3–5 insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
 
-**Scoring categories:**
+**Scoring signals (baseline 100 pts):**
 
-| Category | Weight | Signals |
+| Category | Points | Signals |
 |---|---|---|
-| Market Fit | 38% | Renter units (15%), renter rate (8%), median rent (5%), population growth (5%), economic momentum (5%) |
-| Company Fit | 41% | Job postings (12%), portfolio news (8%), tech stack (8%), employee count (8%), company age (5%) |
-| Person Fit | 21% | Seniority (10%), function/department (7%), corporate email (4%) |
+| Market Fit | 38 pts | Renter units (15), renter rate (8), median rent (5), population growth (5), economic momentum (5) |
+| Company Fit | 41 pts | Job postings (12), portfolio news (8), tech stack (8), employee count (8), company age (5) |
+| Person Fit | 21 pts | Seniority (10), function/department (7), corporate email (4) |
+| Bonus | up to +11 pts | Portfolio size (+6), social media presence (+5) — score 0 when data absent |
 
 ### `src/gtm/outreach/email_generator.py`
 Drafts a personalized 150–200 word outreach email via Claude Sonnet 4.6. Public entry point: `generate_email(lead) → str | None`.
@@ -168,7 +169,7 @@ For an MVP with tens to low-hundreds of leads, a filesystem is the most portable
 A CSV cell cannot cleanly hold a multi-paragraph email, a full enrichment JSON, and a score breakdown simultaneously. Per-lead folders give each piece of data its natural format (`.json` for structured data, `.txt` for prose) while remaining trivially readable and portable.
 
 ### Why BuiltWith is optional
-BuiltWith's free tier does not expose named technology detections (only group counts). Detecting Yardi/RealPage/Entrata requires a paid plan. Rather than hardcoding a broken signal, the tool treats BuiltWith as an enhancement: present if a key is configured and returning data, absent otherwise. Its weight redistributes to Serper when absent.
+BuiltWith's free tier does not expose named technology detections (only group counts). Detecting Yardi/RealPage/Entrata requires a paid plan. Rather than hardcoding a broken signal, the tool treats BuiltWith as an enhancement: present if a key is configured and returning data, absent otherwise. In the additive model, absent signals simply contribute 0 pts — no redistribution needed.
 
 ### Why prompt caching for email generation?
 All leads in a batch share the same system prompt (EliseAI context, tone, constraints). Anthropic's `cache_control: ephemeral` caches this token block across requests within the 5-minute TTL window. For a 5-lead batch, this cuts input tokens ~80% on leads 2–5.
@@ -208,4 +209,4 @@ Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.
 | Phase 6 | Pipeline runner + main.py: `src/gtm/pipeline/runner.py` (`enrich_lead`, `run_pipeline`, merge helpers, file writer), `main.py` (CLI, Rich progress, `--watch`) + `tests/test_pipeline.py` | ✅ Done |
 | Phase 7 | API migration: removed Hunter + OpenCorporates; added `serper.py` LinkedIn 3rd query + Claude Haiku extraction (`founded_year`, `linkedin_employee_count`); added `edgar.py` (SEC EDGAR public company flag); EDGAR `User-Agent` fix; geocoder places fallback; `_safe()` wrapper in runner; Census ACS multi-year in `datausa.py` | ✅ Done |
 | Phase 8 | Streamlit dashboard: `app.py` (3-tab UI), `src/gtm/dashboard/helpers.py` (render helpers, sync pipeline runner, CSV I/O) | ✅ Done |
-| Phase 9 | Docs + README polish + rollout plan (Part B) | — |
+| Phase 9 | Additive point scoring model, Serper signal expansion (job_count regex, portfolio_size via Haiku, yelp_alias, social_platform_count), bonus signals (portfolio_size +6 pts, social_presence +5 pts), ICP documentation, docs + rollout plan | ✅ Done |

@@ -62,7 +62,13 @@ Per-source quirks, endpoints, response shapes, and rate-limit notes for enrichme
 - `knowledgeGraph`: optional `{ "title", "type", "description", "website", "attributes", … }`
 - `searchParameters`, `relatedSearches`, `credits`, …
 
-**Notes:** Three queries per lead — `"{company} property management"`, `"{company} leasing consultant jobs"`, and `site:linkedin.com/company {company}`. Knowledge graph may be absent. LinkedIn snippets are passed to Claude Haiku to extract `employee_count` and `founded_year`.
+**Notes:** Three queries per lead — `"{company} property management"`, `"{company} leasing consultant jobs"`, and `site:linkedin.com/company {company}`. Knowledge graph may be absent.
+
+Post-fetch extractions from Serper results (all in `serper_helpers.py`):
+- `extract_job_count`: regex `(\d[\d,]*)\s+(?:\w+\s+){0,3}jobs?` over jobs-query snippets; returns the largest real job count found (not organic result count)
+- `extract_yelp_alias`: scans PM-query organic links for `yelp.com/biz/<alias>` pattern
+- `extract_social_platforms`: counts distinct non-LinkedIn social domains (Facebook, Instagram, YouTube, Twitter/X, TikTok) in PM-query organic links
+- `extract_company_profile` (Haiku): LinkedIn + PM snippets → JSON with `employee_count`, `founded_year`, `portfolio_size`
 
 ---
 
@@ -117,7 +123,7 @@ Per-source quirks, endpoints, response shapes, and rate-limit notes for enrichme
 | **Email model** | `claude-sonnet-4-6` — 150–200 word outreach draft per lead |
 | **Extraction model** | `claude-haiku-4-5-20251001` — structured JSON extraction from LinkedIn snippets |
 
-**Notes:** Email system prompt uses `cache_control: ephemeral` — one cache hit covers all leads in a batch. Haiku extraction parses `employee_count` (int) and `founded_year` (int) from raw LinkedIn search snippets; returns `{}` on any failure. Haiku is ~50× cheaper than Sonnet per token, appropriate for this simple extraction task.
+**Notes:** Email system prompt uses `cache_control: ephemeral` — one cache hit covers all leads in a batch. Haiku extraction schema: `{"employee_count": int|null, "founded_year": int|null, "portfolio_size": int|null}` — extracts from combined LinkedIn + PM snippets (up to 8). Haiku sometimes wraps output in markdown code fences; `serper_helpers.py` strips them with `re.search(r"\{.*\}", text, re.DOTALL)` before `json.loads`. Returns `{}` on any failure. Haiku is ~50× cheaper than Sonnet per token, appropriate for this simple extraction task.
 
 ---
 

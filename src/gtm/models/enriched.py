@@ -4,6 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from gtm.models.building import BuildingData
 from gtm.models.company import CompanyData
 from gtm.models.lead import RawLead
 from gtm.models.market import MarketData
@@ -20,6 +21,7 @@ class EnrichedLead(BaseModel):
     market: MarketData = Field(default_factory=MarketData)
     company: CompanyData = Field(default_factory=CompanyData)
     person: PersonData = Field(default_factory=PersonData)
+    building: BuildingData = Field(default_factory=BuildingData)
     slug: str = Field(default="", description="Output folder slug: company-city-state")
 
     score: float | None = Field(default=None, description="Overall score 0–100")

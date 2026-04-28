@@ -201,6 +201,67 @@ def score_social_presence(platform_count: int) -> float:
     return 0.0
 
 
+# --- Yelp company signal ---
+
+YELP_RATING_BELOW_MARKET: float = 0.5   # below market_avg by this much → max score
+
+def score_yelp_company_rating(rating: float | None, market_avg: float | None) -> float:
+    """Score company Yelp rating relative to local market average.
+
+    A below-average rating signals resident dissatisfaction — a direct EliseAI pitch opportunity.
+    None → 0.0 (company not on Yelp; no signal either way).
+    """
+    if rating is None or market_avg is None:
+        return 0.0
+    diff = market_avg - rating  # positive = below market
+    if diff >= YELP_RATING_BELOW_MARKET:
+        return 1.0  # noticeably below market — strong pain signal
+    if diff > 0:
+        return 0.6  # below market
+    if diff == 0:
+        return 0.3  # at market average
+    return 0.1      # above market average (still valid target, less pain)
+
+
+# --- Building signal functions ---
+
+BUILDING_RATING_STRONG_PAIN: float = 3.0
+BUILDING_RATING_MODERATE_PAIN: float = 3.5
+BUILDING_RATING_MILD_PAIN: float = 4.0
+
+BUILDING_REVIEWS_HIGH: int = 50
+BUILDING_REVIEWS_MID: int = 20
+BUILDING_REVIEWS_LOW: int = 5
+
+
+def score_building_rating(rating: float | None) -> float:
+    """Score building Yelp rating — inverted, low rating = resident pain = strong pitch."""
+    if rating is None:
+        return 0.0
+    if rating <= BUILDING_RATING_STRONG_PAIN:
+        return 1.0
+    if rating <= BUILDING_RATING_MODERATE_PAIN:
+        return 0.75
+    if rating <= BUILDING_RATING_MILD_PAIN:
+        return 0.5
+    return 0.2
+
+
+def score_building_reviews(review_count: int | None) -> float:
+    """Score building review volume — more reviews = more resident activity = more automation need."""
+    if review_count is None:
+        return 0.0
+    if review_count >= BUILDING_REVIEWS_HIGH:
+        return 1.0
+    if review_count >= BUILDING_REVIEWS_MID:
+        return 0.75
+    if review_count >= BUILDING_REVIEWS_LOW:
+        return 0.5
+    if review_count >= 1:
+        return 0.25
+    return 0.0
+
+
 # --- Person signal functions ---
 
 def score_seniority(seniority: str | None) -> float:

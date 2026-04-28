@@ -9,7 +9,8 @@ from pathlib import Path
 
 import httpx
 
-from gtm.enrichment import builtwith, census, datausa, edgar, pdl, serper
+from gtm.enrichment import builtwith, census, datausa, edgar, pdl, serper, yelp
+from gtm.models.building import BuildingData
 from gtm.models.company import CompanyData
 from gtm.models.enriched import EnrichedLead
 from gtm.models.lead import RawLead
@@ -45,8 +46,9 @@ def _merge_company(
     serper_data: CompanyData,
     bw_data: CompanyData,
     edgar_data: CompanyData,
+    yelp_data: CompanyData,
 ) -> CompanyData:
-    """Combine Serper, BuiltWith, and EDGAR fields into one CompanyData."""
+    """Combine Serper, BuiltWith, EDGAR, and Yelp fields into one CompanyData."""
     return CompanyData(
         serper_property_management=serper_data.serper_property_management,
         serper_jobs=serper_data.serper_jobs,
@@ -55,10 +57,16 @@ def _merge_company(
         founded_year=serper_data.founded_year,
         job_count=serper_data.job_count,
         portfolio_size=serper_data.portfolio_size,
-        yelp_alias=serper_data.yelp_alias,
+        yelp_alias=yelp_data.yelp_alias or serper_data.yelp_alias,
         social_platform_count=serper_data.social_platform_count,
+        google_rating=serper_data.google_rating,
         is_publicly_traded=edgar_data.is_publicly_traded,
         tech_stack=bw_data.tech_stack,
+        yelp_rating=yelp_data.yelp_rating,
+        yelp_review_count=yelp_data.yelp_review_count,
+        yelp_market_avg_rating=yelp_data.yelp_market_avg_rating,
+        yelp_pain_themes=yelp_data.yelp_pain_themes,
+        yelp_year_established=yelp_data.yelp_year_established,
     )
 
 
@@ -70,6 +78,7 @@ def _write_outputs(lead: EnrichedLead, lead_dir: Path) -> None:
         "market": lead.market.model_dump(mode="json"),
         "company": lead.company.model_dump(mode="json"),
         "person": lead.person.model_dump(mode="json"),
+        "building": lead.building.model_dump(mode="json"),
     }
     (lead_dir / "enrichment.json").write_text(json.dumps(enrichment_payload, indent=2))
 
@@ -115,6 +124,8 @@ async def enrich_lead(
         bw_data,
         edgar_data,
         person_data,
+        yelp_company_data,
+        building_data,
     ) = await asyncio.gather(
         _safe(census.enrich(lead, client, cache), MarketData()),
         _safe(datausa.enrich(lead, client, cache), MarketData()),
@@ -122,12 +133,15 @@ async def enrich_lead(
         _safe(builtwith.enrich(lead, client, cache), CompanyData()),
         _safe(edgar.enrich(lead, client, cache), CompanyData()),
         _safe(pdl.enrich(lead, client, cache), PersonData()),
+        _safe(yelp.enrich_company(lead, client, cache), CompanyData()),
+        _safe(yelp.enrich_building(lead, client, cache), BuildingData()),
     )
 
     market = _merge_market(census_data, datausa_data)
-    company = _merge_company(serper_data, bw_data, edgar_data)
+    company = _merge_company(serper_data, bw_data, edgar_data, yelp_company_data)
     enriched = EnrichedLead(
-        raw=lead, market=market, company=company, person=person_data, slug=slug,
+        raw=lead, market=market, company=company, person=person_data,
+        building=building_data, slug=slug,
     )
     overall, tier, breakdown = score_lead(enriched)
     insights = generate_insights(enriched, breakdown)

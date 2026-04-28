@@ -3,7 +3,8 @@
 import httpx
 import pytest
 
-from gtm.enrichment import builtwith, census, datausa, edgar, pdl, serper
+from gtm.enrichment import builtwith, census, datausa, edgar, pdl, serper, yelp
+from gtm.models.building import BuildingData
 from gtm.models.company import CompanyData
 from gtm.models.market import MarketData
 from gtm.models.person import PersonData
@@ -261,3 +262,102 @@ async def test_pdl_no_key_returns_email_signal_only(tmp_path, mocker, raw_lead):
 
     assert result.seniority is None
     assert result.is_corporate_email is True
+
+
+# ---------------------------------------------------------------------------
+# Yelp enrichment
+# ---------------------------------------------------------------------------
+
+async def test_yelp_enrich_company_happy_path(
+    tmp_path, mocker, raw_lead,
+    yelp_search_response, yelp_profile_response,
+    yelp_reviews_response, yelp_highlights_response, yelp_comparables_response,
+):
+    cache = FileCache(tmp_path)
+    mocker.patch("gtm.enrichment.yelp.settings.yelp_api_key", "fake-key")
+    mocker.patch("gtm.enrichment.yelp_helpers.settings.anthropic_api_key", None)
+    mocker.patch("gtm.enrichment.yelp.asyncio.sleep")
+
+    call_count = 0
+    search_responses = [yelp_search_response, yelp_comparables_response]
+
+    async def mock_get(url, **kwargs):
+        nonlocal call_count
+        if "/search" in url:
+            body = search_responses[min(call_count, 1)]
+            call_count += 1
+        elif "/review_highlights" in url:
+            body = yelp_highlights_response
+        elif "/reviews" in url:
+            body = yelp_reviews_response
+        else:
+            body = yelp_profile_response
+        return _mock_resp(mocker, 200, body)
+
+    client = mocker.AsyncMock()
+    client.get = mock_get
+
+    result = await yelp.enrich_company(raw_lead, client, cache)
+
+    assert result.yelp_rating == 3.2
+    assert result.yelp_review_count == 45
+    assert result.yelp_alias == "greystar-austin"
+    assert result.yelp_year_established == 2003
+    assert result.yelp_market_avg_rating == pytest.approx(4.0)
+
+
+async def test_yelp_enrich_company_no_key_returns_empty(tmp_path, mocker, raw_lead):
+    cache = FileCache(tmp_path)
+    mocker.patch("gtm.enrichment.yelp.settings.yelp_api_key", None)
+
+    result = await yelp.enrich_company(raw_lead, mocker.AsyncMock(), cache)
+
+    assert isinstance(result, CompanyData)
+    assert result.yelp_rating is None
+
+
+async def test_yelp_enrich_building_happy_path(
+    tmp_path, mocker, raw_lead,
+    yelp_search_response, yelp_profile_response,
+    yelp_reviews_response, yelp_highlights_response,
+):
+    cache = FileCache(tmp_path)
+    mocker.patch("gtm.enrichment.yelp.settings.yelp_api_key", "fake-key")
+    mocker.patch("gtm.enrichment.yelp_helpers.settings.anthropic_api_key", None)
+    mocker.patch("gtm.enrichment.yelp.asyncio.sleep")
+
+    async def mock_get(url, **kwargs):
+        if "/search" in url:
+            return _mock_resp(mocker, 200, yelp_search_response)
+        if "/review_highlights" in url:
+            return _mock_resp(mocker, 200, yelp_highlights_response)
+        if "/reviews" in url:
+            return _mock_resp(mocker, 200, yelp_reviews_response)
+        return _mock_resp(mocker, 200, yelp_profile_response)
+
+    client = mocker.AsyncMock()
+    client.get = mock_get
+
+    result = await yelp.enrich_building(raw_lead, client, cache)
+
+    assert isinstance(result, BuildingData)
+    assert result.yelp_rating == 3.2
+    assert result.yelp_review_count == 45
+    assert result.yelp_alias == "greystar-austin"
+
+
+async def test_yelp_enrich_building_no_match_returns_empty(tmp_path, mocker, raw_lead):
+    cache = FileCache(tmp_path)
+    mocker.patch("gtm.enrichment.yelp.settings.yelp_api_key", "fake-key")
+    mocker.patch("gtm.enrichment.yelp.asyncio.sleep")
+
+    async def mock_get(url, **kwargs):
+        return _mock_resp(mocker, 200, {"businesses": []})
+
+    client = mocker.AsyncMock()
+    client.get = mock_get
+
+    result = await yelp.enrich_building(raw_lead, client, cache)
+
+    assert isinstance(result, BuildingData)
+    assert result.yelp_rating is None

@@ -11,6 +11,9 @@ from gtm.models import CompanyData, EnrichedLead, MarketData, PersonData, RawLea
 from gtm.models.company import SerperOrganicItem, SerperSearchBucket
 from gtm.scoring.scorer import compute_tier, generate_insights, score_lead
 from gtm.scoring.scorer_signals import (
+    BUILDING_REVIEWS_HIGH,
+    BUILDING_REVIEWS_LOW,
+    BUILDING_REVIEWS_MID,
     EMPLOYEE_MIN,
     MEDIAN_RENT_HIGH,
     MEDIAN_RENT_LOW,
@@ -24,6 +27,8 @@ from gtm.scoring.scorer_signals import (
     RENTER_UNITS_MID,
     SOCIAL_PLATFORMS_HIGH,
     SOCIAL_PLATFORMS_MID,
+    score_building_rating,
+    score_building_reviews,
     score_company_age,
     score_corporate_email,
     score_department_function,
@@ -39,6 +44,7 @@ from gtm.scoring.scorer_signals import (
     score_seniority,
     score_social_presence,
     score_tech_stack,
+    score_yelp_company_rating,
 )
 
 # ---------------------------------------------------------------------------
@@ -62,15 +68,16 @@ def _inc_date(years_ago: float) -> str:
 # Point constant validation
 # ---------------------------------------------------------------------------
 
-def test_baseline_points_sum_to_100():
+def test_baseline_points_sum_to_117():
     total = (
         cfg.POINTS_RENTER_UNITS + cfg.POINTS_RENTER_RATE + cfg.POINTS_MEDIAN_RENT
         + cfg.POINTS_POPULATION_GROWTH + cfg.POINTS_ECONOMIC_MOMENTUM
         + cfg.POINTS_JOB_POSTINGS + cfg.POINTS_PORTFOLIO_NEWS + cfg.POINTS_TECH_STACK
         + cfg.POINTS_EMPLOYEE_COUNT + cfg.POINTS_COMPANY_AGE
+        + cfg.POINTS_PORTFOLIO_SIZE + cfg.POINTS_SOCIAL_PRESENCE + cfg.POINTS_YELP_COMPANY_RATING
         + cfg.POINTS_SENIORITY + cfg.POINTS_DEPARTMENT_FUNCTION + cfg.POINTS_CORPORATE_EMAIL
     )
-    assert abs(total - 100.0) < 1e-6
+    assert abs(total - 117.0) < 1e-6
 
 
 # ---------------------------------------------------------------------------
@@ -389,6 +396,47 @@ def test_score_portfolio_size(size, expected):
 ])
 def test_score_social_presence(count, expected):
     assert score_social_presence(count) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("rating,market_avg,expected", [
+    (None,  None,  0.0),
+    (None,  4.0,   0.0),
+    (4.0,   None,  0.0),
+    (4.0,   4.0,   0.3),   # at market average
+    (3.9,   4.0,   0.6),   # slightly below market
+    (3.4,   4.0,   1.0),   # noticeably below market (diff >= 0.5)
+    (4.5,   4.0,   0.1),   # above market
+])
+def test_score_yelp_company_rating(rating, market_avg, expected):
+    assert score_yelp_company_rating(rating, market_avg) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("rating,expected", [
+    (None, 0.0),
+    (2.5,  1.0),
+    (3.0,  1.0),
+    (3.1,  0.75),
+    (3.5,  0.75),
+    (3.6,  0.5),
+    (4.0,  0.5),
+    (4.1,  0.2),
+    (5.0,  0.2),
+])
+def test_score_building_rating(rating, expected):
+    assert score_building_rating(rating) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("count,expected", [
+    (None,                    0.0),
+    (0,                       0.0),
+    (1,                       0.25),
+    (BUILDING_REVIEWS_LOW,    0.5),
+    (BUILDING_REVIEWS_MID,    0.75),
+    (BUILDING_REVIEWS_HIGH,   1.0),
+    (200,                     1.0),
+])
+def test_score_building_reviews(count, expected):
+    assert score_building_reviews(count) == pytest.approx(expected)
 
 
 def test_bonus_signals_push_score_above_100():

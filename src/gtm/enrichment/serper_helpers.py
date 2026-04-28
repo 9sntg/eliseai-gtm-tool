@@ -55,6 +55,19 @@ def extract_social_platforms(organic_items: list[SerperOrganicItem]) -> int:
     return len(found)
 
 
+def extract_google_rating(kg: dict) -> float | None:
+    """Extract Google rating from Serper knowledge graph attributes if present."""
+    if not kg:
+        return None
+    rating = kg.get("rating")
+    if rating is not None:
+        try:
+            return float(rating)
+        except (ValueError, TypeError):
+            return None
+    return None
+
+
 def parse_serper_response(raw: dict, query: str) -> SerperSearchBucket:
     """Parse a raw Serper JSON response into a SerperSearchBucket."""
     organic = [
@@ -72,6 +85,7 @@ def parse_serper_response(raw: dict, query: str) -> SerperSearchBucket:
         organic=organic,
         knowledge_graph_title=kg.get("title"),
         knowledge_graph_description=kg.get("description"),
+        knowledge_graph_rating=extract_google_rating(kg),
     )
 
 

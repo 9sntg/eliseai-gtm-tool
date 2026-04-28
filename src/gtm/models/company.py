@@ -19,6 +19,7 @@ class SerperSearchBucket(BaseModel):
     organic: list[SerperOrganicItem] = Field(default_factory=list)
     knowledge_graph_title: str | None = None
     knowledge_graph_description: str | None = None
+    knowledge_graph_rating: float | None = None
 
 
 class CompanyData(BaseModel):
@@ -67,4 +68,28 @@ class CompanyData(BaseModel):
     tech_stack: list[str] = Field(
         default_factory=list,
         description="Technology names from BuiltWith (Yardi, RealPage, Entrata, …)",
+    )
+    yelp_rating: float | None = Field(
+        default=None,
+        description="Yelp rating 1–5 for the company's Yelp listing",
+    )
+    yelp_review_count: int | None = Field(
+        default=None,
+        description="Number of Yelp reviews for the company",
+    )
+    yelp_market_avg_rating: float | None = Field(
+        default=None,
+        description="Average Yelp rating of comparable PM companies in the same city",
+    )
+    yelp_pain_themes: list[str] = Field(
+        default_factory=list,
+        description="Resident pain themes from company Yelp review highlights via Haiku",
+    )
+    yelp_year_established: int | None = Field(
+        default=None,
+        description="Year established from Yelp business attributes (fallback for founded_year)",
+    )
+    google_rating: float | None = Field(
+        default=None,
+        description="Google rating from Serper knowledge graph (when available)",
     )

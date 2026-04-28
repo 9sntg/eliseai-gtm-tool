@@ -147,7 +147,7 @@ def test_build_context_includes_present_fields():
     assert "Yardi Voyager" in context
     assert "501" in context
     assert "VP of Operations" in context
-    assert "74/100" in context
+    assert "74/117" in context
     assert "High" in context
 
 
