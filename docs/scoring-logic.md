@@ -116,7 +116,7 @@ Uses BuiltWith to detect property management software. PM platforms (Yardi, Real
 
 ### Employee Count (8%)
 
-Larger companies have more leasing staff, more manual processes, and higher EliseAI ROI. Hunter.io returns a headcount range; we take the lower bound.
+Larger companies have more leasing staff, more manual processes, and higher EliseAI ROI. Employee count is extracted from LinkedIn search snippets by Claude Haiku and stored as `linkedin_employee_count`.
 
 | Employees | Score |
 |---|---|
@@ -129,14 +129,14 @@ Larger companies have more leasing staff, more manual processes, and higher Elis
 
 ### Company Age (5%)
 
-Older companies have accumulated legacy processes and tech debt, making them more likely to need modernization. Derived from OpenCorporates `incorporation_date`.
+Older companies have accumulated legacy processes and tech debt, making them more likely to need modernization. Derived from `founded_year` (integer), extracted from LinkedIn snippets by Claude Haiku.
 
 | Age | Score | Rationale |
 |---|---|---|
 | > 10 years | 1.0 | Established operator — legacy tech likely |
 | ≥ 5 years | 0.6 | Mid-stage — open to tools |
 | < 5 years | 0.2 | Early stage — may lack budget or process maturity |
-| None / parse error | 0.0 | |
+| None | 0.0 | LinkedIn snippet had no founding year data |
 
 ---
 

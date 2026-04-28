@@ -59,15 +59,11 @@ def _build_context(lead: EnrichedLead) -> str:
     if m.population_growth_yoy is not None:
         lines.append(f"Population growth (YoY): {m.population_growth_yoy * 100:+.1f}%")
 
-    if c.hunter_employee_count:
-        lines.append(f"Estimated employees: {c.hunter_employee_count:,}+")
-    if c.opencorporates_incorporation_date:
-        try:
-            inc = date.fromisoformat(c.opencorporates_incorporation_date)
-            age = (date.today() - inc).days // 365
-            lines.append(f"Founded: {inc.year} (~{age} years ago)")
-        except ValueError:
-            pass  # malformed date from OC — omit the field rather than crash
+    if c.linkedin_employee_count:
+        lines.append(f"Estimated employees: {c.linkedin_employee_count:,}+")
+    if c.founded_year:
+        age = date.today().year - c.founded_year
+        lines.append(f"Founded: {c.founded_year} (~{age} years ago)")
     if c.tech_stack:
         lines.append(f"Tech stack detected: {', '.join(c.tech_stack)}")
     job_count = len(c.serper_jobs.organic)

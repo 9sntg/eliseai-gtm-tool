@@ -26,11 +26,11 @@ data/leads_input.csv
   │           Enrichment Layer (async)              │
   │                                                 │
   │  Market:   census.py ──────── datausa.py        │
-  │  Company:  serper.py ─── opencorporates.py      │
-  │            hunter.py ──────── builtwith.py      │
+  │  Company:  serper.py ─────── builtwith.py       │
+  │            edgar.py                             │
   │  Person:   pdl.py                               │
   │                                                 │
-  │  All 7 calls fire concurrently via              │
+  │  All 6 calls fire concurrently via              │
   │  asyncio.gather() — ~2s per lead                │
   └─────────────────────────────────────────────────┘
         │
@@ -66,7 +66,7 @@ Centralized settings via `pydantic-settings`. Loads all API keys from `.env`. De
 Pydantic models for every data shape in the system (one module per concern, re-exported from `gtm.models`):
 - `RawLead` — raw input from CSV
 - `MarketData` — Census + DataUSA fields (all optional, default None)
-- `CompanyData` — Serper, OpenCorporates, Hunter, BuiltWith fields (all optional)
+- `CompanyData` — Serper (3 buckets), LinkedIn-extracted employee count + founded year, EDGAR public flag, BuiltWith tech stack (all optional)
 - `PersonData` — PDL fields + `is_corporate_email` (derived locally)
 - `ScoreBreakdown` — one float per signal + `market_score`, `company_score`, `person_score` subtotals
 - `EnrichedLead` — full record: raw lead + all enrichment + score + insights + email draft + slug
@@ -90,11 +90,10 @@ All wrap API calls in `try/except`. All return an empty/default model on failure
 | Module | API | Returns | Notes |
 |---|---|---|---|
 | `census.py` | U.S. Census ACS5 | `MarketData` partial | Requires FIPS from geocoder |
-| `datausa.py` | DataUSA | `MarketData` (remaining fields) | Requires GEOID from FIPS |
-| `serper.py` | Serper (Google) | `CompanyData` partial | 2 queries per lead |
-| `opencorporates.py` | OpenCorporates | `CompanyData` partial | difflib similarity filter |
-| `hunter.py` | Hunter.io | `CompanyData` partial | Domain from email |
-| `builtwith.py` | BuiltWith | `CompanyData` partial | Optional (key required) |
+| `datausa.py` | Census ACS5 (multi-year) | `MarketData` (growth fields) | Compares 2022 vs 2021 ACS for YoY growth |
+| `serper.py` | Serper (Google) | `CompanyData` partial | 3 queries: PM presence, jobs, LinkedIn profile |
+| `edgar.py` | SEC EDGAR EFTS | `CompanyData` partial | Public company detection; insight only, not scored |
+| `builtwith.py` | BuiltWith | `CompanyData` partial | Optional (paid key required) |
 | `pdl.py` | People Data Labs | `PersonData` | Email-only lookup |
 
 ### `src/gtm/scoring/scorer_signals.py`
@@ -120,7 +119,7 @@ Drafts a personalized 150–200 word outreach email via Claude Sonnet 4.6. Publi
 
 ### `src/gtm/pipeline/runner.py`
 Async orchestration layer:
-- `enrich_lead(lead, outputs_dir)`: generates slug, skips if output folder exists, fires all 7 enrichment calls concurrently, scores, generates email, writes 3 output files
+- `enrich_lead(lead, outputs_dir)`: generates slug, skips if output folder exists, fires all 6 enrichment calls concurrently, scores, generates email, writes 3 output files
 - `run_pipeline(leads, outputs_dir)`: processes leads sequentially (outer loop respects rate limits), async within each lead
 
 ### `main.py`
@@ -153,7 +152,7 @@ The pipeline checks for slug folder existence before processing any lead. This i
 ## Key Architectural Decisions
 
 ### Why async?
-All 7 enrichment calls per lead are fully independent of each other. Firing them concurrently via `asyncio.gather()` brings per-lead enrichment time from ~7s (sequential) to ~2s. The outer loop stays sequential to respect API rate limits.
+All 6 enrichment calls per lead are fully independent of each other. Firing them concurrently via `asyncio.gather()` brings per-lead enrichment time from ~6s (sequential) to ~2s. The outer loop stays sequential to respect API rate limits.
 
 ### Why file-based output instead of a database?
 For an MVP with tens to low-hundreds of leads, a filesystem is the most portable and inspectable option. Each lead's folder is self-contained — no schema migrations, no connection strings, and an SDR can open any file directly. A future production version would push these records into a CRM via API.
@@ -200,6 +199,6 @@ Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.
 | Phase 4 | Scoring: `src/gtm/scoring/scorer.py`, `scorer_signals.py`, `tests/test_scorer.py`, `docs/scoring-logic.md` | ✅ Done |
 | Phase 5 | Email generation: `src/gtm/outreach/email_generator.py`, `tests/test_email_generator.py` | ✅ Done |
 | Phase 6 | Pipeline runner + main.py: `src/gtm/pipeline/runner.py` (`enrich_lead`, `run_pipeline`, merge helpers, file writer), `main.py` (CLI, Rich progress, `--watch`) + `tests/test_pipeline.py` | ✅ Done |
-| Phase 7 | Streamlit dashboard | — |
-| Phase 8 | Tests | — |
-| Phase 9 | Docs + Claude Code setup + README | — |
+| Phase 7 | API migration: removed Hunter + OpenCorporates; added `serper.py` LinkedIn 3rd query + Claude Haiku extraction (`founded_year`, `linkedin_employee_count`); added `edgar.py` (SEC EDGAR public company flag); EDGAR `User-Agent` fix; geocoder places fallback; `_safe()` wrapper in runner; Census ACS multi-year in `datausa.py` | ✅ Done |
+| Phase 8 | Streamlit dashboard | — |
+| Phase 9 | Docs + README polish + rollout plan (Part B) | — |

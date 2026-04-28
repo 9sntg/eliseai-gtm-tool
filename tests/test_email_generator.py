@@ -130,8 +130,8 @@ def test_build_context_includes_present_fields():
         market=MarketData(renter_occupied_units=180_000, median_gross_rent=1_650),
         company=CompanyData(
             tech_stack=["Yardi Voyager"],
-            hunter_employee_count=501,
-            opencorporates_incorporation_date="2002-03-15",
+            linkedin_employee_count=501,
+            founded_year=2002,
             serper_jobs=SerperSearchBucket(
                 query="q",
                 organic=[SerperOrganicItem(title="Leasing Agent", link="https://x.com", snippet="s")],

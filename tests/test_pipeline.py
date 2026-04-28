@@ -9,13 +9,12 @@ from gtm.pipeline.runner import run_pipeline
 
 
 def _patch_enrichment(mocker) -> None:
-    """Patch all 7 enrichment calls and email generator to return safe defaults."""
+    """Patch all 6 enrichment calls and email generator to return safe defaults."""
     mocker.patch("gtm.pipeline.runner.census.enrich", return_value=MarketData())
     mocker.patch("gtm.pipeline.runner.datausa.enrich", return_value=MarketData())
     mocker.patch("gtm.pipeline.runner.serper.enrich", return_value=CompanyData())
-    mocker.patch("gtm.pipeline.runner.opencorporates.enrich", return_value=CompanyData())
-    mocker.patch("gtm.pipeline.runner.hunter.enrich", return_value=CompanyData())
     mocker.patch("gtm.pipeline.runner.builtwith.enrich", return_value=CompanyData())
+    mocker.patch("gtm.pipeline.runner.edgar.enrich", return_value=CompanyData())
     mocker.patch("gtm.pipeline.runner.pdl.enrich", return_value=PersonData())
     mocker.patch("gtm.pipeline.runner.generate_email", return_value=None)
 

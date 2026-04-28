@@ -1,4 +1,4 @@
-"""Serper enrichment — company portfolio signals and hiring activity."""
+"""Serper enrichment — company portfolio signals, hiring activity, and LinkedIn profile."""
 
 import asyncio
 import logging
@@ -8,7 +8,7 @@ import httpx
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
 from gtm.config import settings
-from gtm.enrichment.serper_helpers import parse_serper_response
+from gtm.enrichment.serper_helpers import extract_company_profile, parse_serper_response
 from gtm.exceptions import ConfigurationError
 from gtm.models.company import CompanyData, SerperSearchBucket
 from gtm.models.lead import RawLead
@@ -43,19 +43,33 @@ async def _post(client: httpx.AsyncClient, payload: dict, headers: dict) -> http
 
 
 async def enrich(lead: RawLead, client: httpx.AsyncClient, cache: FileCache) -> CompanyData:
-    """Run two Serper queries — company/portfolio signals and hiring signals."""
+    """Run three Serper queries — portfolio signals, hiring signals, and LinkedIn profile."""
     if not settings.serper_api_key:
         logger.warning("Serper: no API key configured, skipping")
         return CompanyData()
 
     pm_query = f"{lead.company} property management"
     jobs_query = f"{lead.company} leasing consultant jobs"
+    linkedin_query = f"site:linkedin.com/company {lead.company}"
 
-    pm_bucket = await _query(client, cache, pm_query, f"pm:{lead.company.lower()}", lead, req="1/2")
+    pm_bucket = await _query(client, cache, pm_query, f"pm:{lead.company.lower()}", req="1/3")
     await asyncio.sleep(random.uniform(DELAY_MIN, DELAY_MAX))
-    jobs_bucket = await _query(client, cache, jobs_query, f"jobs:{lead.company.lower()}", lead, req="2/2")
+    jobs_bucket = await _query(client, cache, jobs_query, f"jobs:{lead.company.lower()}", req="2/3")
+    await asyncio.sleep(random.uniform(DELAY_MIN, DELAY_MAX))
+    linkedin_bucket = await _query(
+        client, cache, linkedin_query, f"linkedin:{lead.company.lower()}", req="3/3"
+    )
 
-    return CompanyData(serper_property_management=pm_bucket, serper_jobs=jobs_bucket)
+    snippets = [item.snippet for item in linkedin_bucket.organic if item.snippet]
+    profile = await extract_company_profile(snippets, lead.company)
+
+    return CompanyData(
+        serper_property_management=pm_bucket,
+        serper_jobs=jobs_bucket,
+        serper_linkedin=linkedin_bucket,
+        linkedin_employee_count=profile.get("employee_count"),
+        founded_year=profile.get("founded_year"),
+    )
 
 
 async def _query(
@@ -63,7 +77,6 @@ async def _query(
     cache: FileCache,
     query: str,
     cache_key: str,
-    lead: RawLead,
     req: str,
 ) -> SerperSearchBucket:
     """Run one Serper search query; return empty bucket on any failure."""

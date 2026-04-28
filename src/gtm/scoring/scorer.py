@@ -94,6 +94,8 @@ def generate_insights(lead: EnrichedLead, breakdown: ScoreBreakdown) -> list[str
             bullets.append(f"Uses legacy PM tech ({', '.join(pm_found)}) — strong replacement pitch.")
         else:
             bullets.append(f"Tech-forward org: {len(c.tech_stack)} technology/tools detected.")
+    if c.is_publicly_traded:
+        bullets.append("Publicly traded company — executive contacts have fiduciary accountability.")
     if p.job_title and p.seniority in {"c_suite", "vp", "director", "owner", "partner"}:
         bullets.append(f"Decision-maker contact: {p.job_title} is a budget-authority role.")
     if not bullets:
@@ -117,8 +119,8 @@ def score_lead(lead: EnrichedLead) -> tuple[float, ScoreTier, ScoreBreakdown]:
         bool(c.serper_property_management.knowledge_graph_title),
     )
     sig_tech = score_tech_stack(c.tech_stack)
-    sig_emp = score_employee_count(c.hunter_employee_count)
-    sig_age = score_company_age(c.opencorporates_incorporation_date)
+    sig_emp = score_employee_count(c.linkedin_employee_count)
+    sig_age = score_company_age(c.founded_year)
 
     sig_seniority = score_seniority(p.seniority)
     sig_dept = score_department_function(p.department)

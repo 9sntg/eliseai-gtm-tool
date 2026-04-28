@@ -163,15 +163,11 @@ def score_employee_count(count: int | None) -> float:
     return 0.1
 
 
-def score_company_age(incorporation_date: str | None) -> float:
-    """Score company age (YYYY-MM-DD); older = more legacy tech debt = stronger pitch."""
-    if incorporation_date is None:
+def score_company_age(founded_year: int | None) -> float:
+    """Score company age by founding year; older = more legacy tech debt = stronger pitch."""
+    if founded_year is None:
         return 0.0
-    try:
-        inc = date.fromisoformat(incorporation_date)
-    except ValueError:
-        return 0.0
-    age_years = (date.today() - inc).days / 365.25
+    age_years = date.today().year - founded_year
     if age_years > COMPANY_AGE_MATURE:
         return 1.0
     if age_years >= COMPANY_AGE_YOUNG:

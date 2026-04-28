@@ -39,28 +39,20 @@ def census_response():
 
 @pytest.fixture
 def datausa_pop_response():
-    return {
-        "data": [
-            {"ID Geography": "16000US4805000", "Geography": "Austin, TX",
-             "ID Year": 2021, "Year": "2021", "Population": 978908},
-            {"ID Geography": "16000US4805000", "Geography": "Austin, TX",
-             "ID Year": 2020, "Year": "2020", "Population": 961855},
-        ],
-        "source": [],
-    }
+    # Census ACS format: [header_row, data_row] — used by the Census multi-year growth module
+    return [
+        ["B01003_001E", "B19013_001E", "state", "place"],
+        ["978908", "80000", "48", "05000"],
+    ]
 
 
 @pytest.fixture
 def datausa_income_response():
-    return {
-        "data": [
-            {"ID Geography": "16000US4805000", "Geography": "Austin, TX",
-             "ID Year": 2021, "Year": "2021", "Median Household Income": 75752},
-            {"ID Geography": "16000US4805000", "Geography": "Austin, TX",
-             "ID Year": 2020, "Year": "2020", "Median Household Income": 71000},
-        ],
-        "source": [],
-    }
+    # Prior-year ACS row for YoY growth comparison
+    return [
+        ["B01003_001E", "B19013_001E", "state", "place"],
+        ["944658", "75752", "48", "05000"],
+    ]
 
 
 @pytest.fixture
@@ -88,31 +80,40 @@ def serper_jobs_response():
 
 
 @pytest.fixture
-def opencorporates_response():
+def serper_linkedin_response():
     return {
-        "results": {
-            "companies": [
-                {"company": {
-                    "name": "GREYSTAR REAL ESTATE PARTNERS, LLC",
-                    "company_number": "4536728",
-                    "jurisdiction_code": "us_tx",
-                    "incorporation_date": "2002-03-15",
-                    "current_status": "Active",
-                }}
-            ]
+        "organic": [
+            {"title": "Greystar Real Estate Partners | LinkedIn",
+             "link": "https://www.linkedin.com/company/greystar-real-estate-partners",
+             "snippet": "Greystar Real Estate Partners | 47,527 followers on LinkedIn. "
+                        "The leading rental housing company in the world. "
+                        "Founded: 1993 · 10,001+ employees",
+             "position": 1},
+        ],
+        "knowledgeGraph": None,
+    }
+
+
+@pytest.fixture
+def edgar_public_response():
+    return {
+        "hits": {
+            "total": {"value": 3, "relation": "eq"},
+            "hits": [
+                {"_source": {"entity_name": "Greystar Real Estate Partners LLC",
+                             "file_date": "2024-03-15", "form_type": "10-K"}},
+            ],
         }
     }
 
 
 @pytest.fixture
-def hunter_response():
+def edgar_private_response():
     return {
-        "data": {
-            "domain": "greystar.com",
-            "organization": "Greystar Real Estate Partners",
-            "headcount": "501-1000",
-        },
-        "meta": {"results": 0},
+        "hits": {
+            "total": {"value": 0, "relation": "eq"},
+            "hits": [],
+        }
     }
 
 

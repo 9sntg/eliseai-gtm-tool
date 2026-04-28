@@ -33,17 +33,18 @@ Per-source quirks, endpoints, response shapes, and rate-limit notes for enrichme
 
 ---
 
-## Data USA API
+## Census ACS Multi-Year (replaces defunct DataUSA API)
 
 | | |
 |---|---|
-| **Base** | `https://datausa.io/api/data` (and related paths — confirm exact URL for your cube) |
-| **Auth** | None |
-| **Docs** | [Data USA API](https://datausa.io/about/api) |
+| **Base** | `https://api.census.gov/data/{year}/acs/acs5` |
+| **Auth** | Optional `CENSUS_API_KEY` query param |
+| **Variables** | `B01003_001E` (population), `B19013_001E` (median household income) |
+| **Geography** | `for=place:{place_fips}&in=state:{state_fips}` |
 
-**Response (JSON):** `{ “data”: [ { “ID Geography”: “…”, “Geography”: “…”, “Year”: “…”, <measure>: <value>, … }, … ], “source”: [ … ] }`. The `data` field is an array of **objects** (not arrays). Field names are human-readable strings, not codes.
+**Response (JSON):** Same 2D array format as Census ACS5 — first row is headers, subsequent rows are data. All values are strings.
 
-**Notes:** Access values by field name directly — no column-zipping needed. Pick measures for population growth and income / momentum aligned with PRD scoring.
+**Notes:** `datausa.py` fetches two consecutive years (2022 and 2021) concurrently via `asyncio.gather()`, then computes `(cur - prior) / prior` for population and income YoY growth. The DataUSA.io API was retired in 2025; this module now queries Census directly.
 
 ---
 
@@ -61,37 +62,21 @@ Per-source quirks, endpoints, response shapes, and rate-limit notes for enrichme
 - `knowledgeGraph`: optional `{ "title", "type", "description", "website", "attributes", … }`
 - `searchParameters`, `relatedSearches`, `credits`, …
 
-**Notes:** Two queries per lead (company + jobs). Knowledge graph may be absent. Snippets are the main signal for hiring and news.
+**Notes:** Three queries per lead — `"{company} property management"`, `"{company} leasing consultant jobs"`, and `site:linkedin.com/company {company}`. Knowledge graph may be absent. LinkedIn snippets are passed to Claude Haiku to extract `employee_count` and `founded_year`.
 
 ---
 
-## OpenCorporates
+## SEC EDGAR EFTS (public company detection)
 
 | | |
 |---|---|
-| **Base** | `https://api.opencorporates.com` (versioned path, e.g. `/v0.4/`) |
-| **Auth** | API token query param on paid; free tier limits apply |
-| **Search** | `GET .../companies/search?q=...` |
+| **Base** | `https://efts.sec.gov/LATEST/search-index` |
+| **Auth** | None — but **requires `User-Agent` header** per EDGAR fair-use policy |
+| **Endpoint** | `GET ?q="{company}"&forms=10-K` |
 
-**Response (JSON):** `{ "api_version", "results": { "companies": [ { "company": { … } } ], …pagination… } }`
+**Response (JSON):** `{ "hits": { "total": { "value": N }, "hits": [ { "_source": { "entity_name": "…", "file_date": "…", "form_type": "…" } } ] } }`
 
-**Company object (typical):** `name`, `company_number`, `jurisdiction_code`, `incorporation_date`, `current_status`, `company_type`, links, etc.
-
-**Notes:** Use fuzzy match / jurisdiction filters client-side per product rules. Pagination via `page` / `per_page`.
-
----
-
-## Hunter.io (Domain Search)
-
-| | |
-|---|---|
-| **Base** | `https://api.hunter.io/v2` |
-| **Auth** | `api_key` query parameter |
-| **Endpoint** | `GET /domain-search?domain=...` |
-
-**Response (JSON):** `data` + `meta`. `data` includes `domain`, `organization`, pattern flags (`webmail`, `disposable`, `accept_all`), `emails[]` (each with `value`, `confidence`, `seniority`, `department`, `position`, …). `meta` includes `results`, `limit`, `offset`, `params`.
-
-**Notes:** Employee count for the **organization** may not appear on all plans or endpoints; the PRD uses Hunter as a size signal — confirm which field your account returns and map it to `CompanyData.hunter_employee_count`. Do not log raw email payloads at INFO.
+**Notes:** We check if any hit's `entity_name` contains the company name (case-insensitive). A match means the company files 10-K reports → publicly traded. Property management companies are almost always private; a positive result surfaces as an insight bullet only — not scored. User-Agent format: `"EliseAI GTM Tool {contact_email}"`.
 
 ---
 
@@ -123,15 +108,16 @@ Per-source quirks, endpoints, response shapes, and rate-limit notes for enrichme
 
 ---
 
-## Anthropic (Claude) — outreach only
+## Anthropic (Claude) — email generation + LinkedIn extraction
 
 | | |
 |---|---|
 | **SDK** | `anthropic` Python package |
 | **Auth** | `ANTHROPIC_API_KEY` |
-| **Model** | `claude-sonnet-4-6` per `.claude/rules/outreach.md` |
+| **Email model** | `claude-sonnet-4-6` — 150–200 word outreach draft per lead |
+| **Extraction model** | `claude-haiku-4-5-20251001` — structured JSON extraction from LinkedIn snippets |
 
-**Notes:** System prompt uses prompt caching (`cache_control: ephemeral`). Not used in enrichment Phase 3.
+**Notes:** Email system prompt uses `cache_control: ephemeral` — one cache hit covers all leads in a batch. Haiku extraction parses `employee_count` (int) and `founded_year` (int) from raw LinkedIn search snippets; returns `{}` on any failure. Haiku is ~50× cheaper than Sonnet per token, appropriate for this simple extraction task.
 
 ---
 
@@ -139,9 +125,8 @@ Per-source quirks, endpoints, response shapes, and rate-limit notes for enrichme
 
 | Variable | Used for |
 |---|---|
-| `SERPER_API_KEY` | Serper |
-| `HUNTER_API_KEY` | Hunter |
-| `PDL_API_KEY` | PDL |
-| `ANTHROPIC_API_KEY` | Claude / email |
-| `BUILTWITH_API_KEY` | BuiltWith (optional) |
-| `CENSUS_API_KEY` | Census Data API (optional) |
+| `SERPER_API_KEY` | Serper (3 queries/lead — required) |
+| `PDL_API_KEY` | People Data Labs — person enrichment |
+| `ANTHROPIC_API_KEY` | Claude Sonnet (email) + Claude Haiku (LinkedIn extraction) |
+| `BUILTWITH_API_KEY` | BuiltWith tech stack (optional — paid key required) |
+| `CENSUS_API_KEY` | Census Data API rate limit boost (optional) |

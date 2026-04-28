@@ -1,9 +1,9 @@
-"""Enrichment module tests — happy path and degradation for all 7 modules."""
+"""Enrichment module tests — happy path and degradation for all active modules."""
 
 import httpx
 import pytest
 
-from gtm.enrichment import builtwith, census, datausa, hunter, opencorporates, pdl, serper
+from gtm.enrichment import builtwith, census, datausa, edgar, pdl, serper
 from gtm.models.company import CompanyData
 from gtm.models.market import MarketData
 from gtm.models.person import PersonData
@@ -75,7 +75,8 @@ async def test_datausa_happy_path(tmp_path, mocker, raw_lead, datausa_pop_respon
     cache = FileCache(tmp_path)
     mocker.patch("gtm.enrichment.datausa.get_fips", return_value=FIPS)
     mocker.patch("gtm.enrichment.datausa.asyncio.sleep")
-    mocker.patch("gtm.enrichment.datausa._fetch", mocker.AsyncMock(side_effect=[
+    # side_effect order: current year first, prior year second (asyncio.gather order)
+    mocker.patch("gtm.enrichment.datausa._fetch_acs_year", mocker.AsyncMock(side_effect=[
         _mock_resp(mocker, 200, datausa_pop_response),
         _mock_resp(mocker, 200, datausa_income_response),
     ]))
@@ -84,7 +85,7 @@ async def test_datausa_happy_path(tmp_path, mocker, raw_lead, datausa_pop_respon
 
     assert isinstance(result, MarketData)
     assert result.population_growth_yoy is not None
-    assert result.median_household_income == 75_752
+    assert result.median_household_income == 80_000
     assert result.median_income_growth_yoy is not None
 
 
@@ -100,7 +101,7 @@ async def test_datausa_fetch_error_returns_empty(tmp_path, mocker, raw_lead):
     cache = FileCache(tmp_path)
     mocker.patch("gtm.enrichment.datausa.get_fips", return_value=FIPS)
     mocker.patch("gtm.enrichment.datausa.asyncio.sleep")
-    mocker.patch("gtm.enrichment.datausa._fetch", mocker.AsyncMock(
+    mocker.patch("gtm.enrichment.datausa._fetch_acs_year", mocker.AsyncMock(
         side_effect=httpx.TimeoutException("timed out")
     ))
 
@@ -109,19 +110,24 @@ async def test_datausa_fetch_error_returns_empty(tmp_path, mocker, raw_lead):
 
 
 # ---------------------------------------------------------------------------
-# Serper
+# Serper (3 queries: PM, jobs, LinkedIn)
 # ---------------------------------------------------------------------------
 
-async def test_serper_happy_path(tmp_path, mocker, raw_lead, serper_pm_response, serper_jobs_response):
+async def test_serper_happy_path(
+    tmp_path, mocker, raw_lead,
+    serper_pm_response, serper_jobs_response, serper_linkedin_response,
+):
     cache = FileCache(tmp_path)
     mocker.patch("gtm.enrichment.serper.asyncio.sleep")
     mocker.patch("gtm.enrichment.serper._post", mocker.AsyncMock(side_effect=[
         _mock_resp(mocker, 200, serper_pm_response),
         _mock_resp(mocker, 200, serper_jobs_response),
+        _mock_resp(mocker, 200, serper_linkedin_response),
     ]))
-    mocker.patch.dict("os.environ", {"SERPER_API_KEY": "test-key"})
-    # Reload settings with the patched env
     mocker.patch("gtm.enrichment.serper.settings.serper_api_key", "test-key")
+    mocker.patch("gtm.enrichment.serper.extract_company_profile", mocker.AsyncMock(
+        return_value={"employee_count": 10_001, "founded_year": 1993}
+    ))
 
     result = await serper.enrich(raw_lead, mocker.AsyncMock(), cache)
 
@@ -129,6 +135,9 @@ async def test_serper_happy_path(tmp_path, mocker, raw_lead, serper_pm_response,
     assert len(result.serper_property_management.organic) == 1
     assert result.serper_property_management.knowledge_graph_title == "Greystar"
     assert len(result.serper_jobs.organic) == 2
+    assert len(result.serper_linkedin.organic) == 1
+    assert result.linkedin_employee_count == 10_001
+    assert result.founded_year == 1993
 
 
 async def test_serper_no_key_returns_empty(tmp_path, mocker, raw_lead):
@@ -140,73 +149,40 @@ async def test_serper_no_key_returns_empty(tmp_path, mocker, raw_lead):
 
 
 # ---------------------------------------------------------------------------
-# OpenCorporates
+# EDGAR
 # ---------------------------------------------------------------------------
 
-async def test_opencorporates_happy_path(tmp_path, mocker, raw_lead, opencorporates_response):
+async def test_edgar_public_company(tmp_path, mocker, raw_lead, edgar_public_response):
     cache = FileCache(tmp_path)
-    mocker.patch("gtm.enrichment.opencorporates.asyncio.sleep")
-    mocker.patch("gtm.enrichment.opencorporates._fetch", mocker.AsyncMock(
-        return_value=_mock_resp(mocker, 200, opencorporates_response)
-    ))
+    client = mocker.AsyncMock()
+    client.get = mocker.AsyncMock(
+        return_value=_mock_resp(mocker, 200, edgar_public_response)
+    )
 
-    result = await opencorporates.enrich(raw_lead, mocker.AsyncMock(), cache)
+    result = await edgar.enrich(raw_lead, client, cache)
 
     assert isinstance(result, CompanyData)
-    assert result.opencorporates_name == "GREYSTAR REAL ESTATE PARTNERS, LLC"
-    assert result.opencorporates_jurisdiction == "us_tx"
-    assert result.opencorporates_incorporation_date == "2002-03-15"
-    assert result.opencorporates_current_status == "Active"
+    assert result.is_publicly_traded is True
 
 
-async def test_opencorporates_404_returns_empty(tmp_path, mocker, raw_lead):
+async def test_edgar_private_company(tmp_path, mocker, raw_lead, edgar_private_response):
     cache = FileCache(tmp_path)
-    mocker.patch("gtm.enrichment.opencorporates.asyncio.sleep")
-    mocker.patch("gtm.enrichment.opencorporates._fetch", mocker.AsyncMock(
-        return_value=_mock_resp(mocker, 404, {})
-    ))
+    client = mocker.AsyncMock()
+    client.get = mocker.AsyncMock(
+        return_value=_mock_resp(mocker, 200, edgar_private_response)
+    )
 
-    result = await opencorporates.enrich(raw_lead, mocker.AsyncMock(), cache)
-    assert result == CompanyData()
+    result = await edgar.enrich(raw_lead, client, cache)
+
+    assert result.is_publicly_traded is False
 
 
-# ---------------------------------------------------------------------------
-# Hunter
-# ---------------------------------------------------------------------------
-
-async def test_hunter_happy_path(tmp_path, mocker, raw_lead, hunter_response):
+async def test_edgar_timeout_returns_empty(tmp_path, mocker, raw_lead):
     cache = FileCache(tmp_path)
-    mocker.patch("gtm.enrichment.hunter.asyncio.sleep")
-    mocker.patch("gtm.enrichment.hunter.settings.hunter_api_key", "test-key")
-    mocker.patch("gtm.enrichment.hunter._fetch", mocker.AsyncMock(
-        return_value=_mock_resp(mocker, 200, hunter_response)
-    ))
+    client = mocker.AsyncMock()
+    client.get = mocker.AsyncMock(side_effect=httpx.TimeoutException("timed out"))
 
-    result = await hunter.enrich(raw_lead, mocker.AsyncMock(), cache)
-
-    assert isinstance(result, CompanyData)
-    assert result.hunter_domain == "greystar.com"
-    assert result.hunter_organization == "Greystar Real Estate Partners"
-    assert result.hunter_employee_count == 501  # lower bound of "501-1000"
-
-
-async def test_hunter_no_key_returns_empty(tmp_path, mocker, raw_lead):
-    cache = FileCache(tmp_path)
-    mocker.patch("gtm.enrichment.hunter.settings.hunter_api_key", None)
-
-    result = await hunter.enrich(raw_lead, mocker.AsyncMock(), cache)
-    assert result == CompanyData()
-
-
-async def test_hunter_timeout_returns_empty(tmp_path, mocker, raw_lead):
-    cache = FileCache(tmp_path)
-    mocker.patch("gtm.enrichment.hunter.asyncio.sleep")
-    mocker.patch("gtm.enrichment.hunter.settings.hunter_api_key", "test-key")
-    mocker.patch("gtm.enrichment.hunter._fetch", mocker.AsyncMock(
-        side_effect=httpx.TimeoutException("timed out")
-    ))
-
-    result = await hunter.enrich(raw_lead, mocker.AsyncMock(), cache)
+    result = await edgar.enrich(raw_lead, client, cache)
     assert result == CompanyData()
 
 

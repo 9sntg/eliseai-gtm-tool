@@ -9,11 +9,12 @@ from pathlib import Path
 
 import httpx
 
-from gtm.enrichment import builtwith, census, datausa, hunter, opencorporates, pdl, serper
+from gtm.enrichment import builtwith, census, datausa, edgar, pdl, serper
 from gtm.models.company import CompanyData
 from gtm.models.enriched import EnrichedLead
 from gtm.models.lead import RawLead
 from gtm.models.market import MarketData
+from gtm.models.person import PersonData
 from gtm.outreach.email_generator import generate_email
 from gtm.scoring.scorer import generate_insights, score_lead
 from gtm.utils.cache import FileCache
@@ -42,22 +43,17 @@ def _merge_market(census_data: MarketData, datausa_data: MarketData) -> MarketDa
 
 def _merge_company(
     serper_data: CompanyData,
-    oc_data: CompanyData,
-    hunter_data: CompanyData,
     bw_data: CompanyData,
+    edgar_data: CompanyData,
 ) -> CompanyData:
-    """Combine Serper, OpenCorporates, Hunter, and BuiltWith fields."""
+    """Combine Serper, BuiltWith, and EDGAR fields into one CompanyData."""
     return CompanyData(
         serper_property_management=serper_data.serper_property_management,
         serper_jobs=serper_data.serper_jobs,
-        opencorporates_name=oc_data.opencorporates_name,
-        opencorporates_jurisdiction=oc_data.opencorporates_jurisdiction,
-        opencorporates_company_number=oc_data.opencorporates_company_number,
-        opencorporates_incorporation_date=oc_data.opencorporates_incorporation_date,
-        opencorporates_current_status=oc_data.opencorporates_current_status,
-        hunter_organization=hunter_data.hunter_organization,
-        hunter_employee_count=hunter_data.hunter_employee_count,
-        hunter_domain=hunter_data.hunter_domain,
+        serper_linkedin=serper_data.serper_linkedin,
+        linkedin_employee_count=serper_data.linkedin_employee_count,
+        founded_year=serper_data.founded_year,
+        is_publicly_traded=edgar_data.is_publicly_traded,
         tech_stack=bw_data.tech_stack,
     )
 
@@ -85,6 +81,15 @@ def _write_outputs(lead: EnrichedLead, lead_dir: Path) -> None:
     logger.info("outputs written: %s", lead_dir.name)
 
 
+async def _safe(coro, default):
+    """Run a coroutine and return default if it raises, logging the failure."""
+    try:
+        return await coro
+    except Exception as exc:
+        logger.warning("enrichment failed (%s): %s", type(exc).__name__, exc)
+        return default
+
+
 async def enrich_lead(
     lead: RawLead,
     outputs_dir: Path,
@@ -103,22 +108,20 @@ async def enrich_lead(
         census_data,
         datausa_data,
         serper_data,
-        oc_data,
-        hunter_data,
         bw_data,
+        edgar_data,
         person_data,
     ) = await asyncio.gather(
-        census.enrich(lead, client, cache),
-        datausa.enrich(lead, client, cache),
-        serper.enrich(lead, client, cache),
-        opencorporates.enrich(lead, client, cache),
-        hunter.enrich(lead, client, cache),
-        builtwith.enrich(lead, client, cache),
-        pdl.enrich(lead, client, cache),
+        _safe(census.enrich(lead, client, cache), MarketData()),
+        _safe(datausa.enrich(lead, client, cache), MarketData()),
+        _safe(serper.enrich(lead, client, cache), CompanyData()),
+        _safe(builtwith.enrich(lead, client, cache), CompanyData()),
+        _safe(edgar.enrich(lead, client, cache), CompanyData()),
+        _safe(pdl.enrich(lead, client, cache), PersonData()),
     )
 
     market = _merge_market(census_data, datausa_data)
-    company = _merge_company(serper_data, oc_data, hunter_data, bw_data)
+    company = _merge_company(serper_data, bw_data, edgar_data)
     enriched = EnrichedLead(
         raw=lead, market=market, company=company, person=person_data, slug=slug,
     )

@@ -1,4 +1,4 @@
-"""Normalized company-level enrichment (Serper, OpenCorporates, Hunter, BuiltWith)."""
+"""Normalized company-level enrichment (Serper, BuiltWith, EDGAR)."""
 
 from pydantic import BaseModel, Field
 
@@ -32,17 +32,22 @@ class CompanyData(BaseModel):
         default_factory=SerperSearchBucket,
         description="Results for leasing / jobs style query",
     )
-    opencorporates_name: str | None = None
-    opencorporates_jurisdiction: str | None = None
-    opencorporates_company_number: str | None = None
-    opencorporates_incorporation_date: str | None = None
-    opencorporates_current_status: str | None = None
-    hunter_organization: str | None = Field(default=None, description="Organization name from Hunter")
-    hunter_employee_count: int | None = Field(
-        default=None,
-        description="Employee estimate when API returns it (field varies by plan)",
+    serper_linkedin: SerperSearchBucket = Field(
+        default_factory=SerperSearchBucket,
+        description="Results for site:linkedin.com/company query",
     )
-    hunter_domain: str | None = None
+    linkedin_employee_count: int | None = Field(
+        default=None,
+        description="Employee count extracted from LinkedIn snippets via Haiku",
+    )
+    founded_year: int | None = Field(
+        default=None,
+        description="Year company was founded, extracted from LinkedIn snippets via Haiku",
+    )
+    is_publicly_traded: bool = Field(
+        default=False,
+        description="True if SEC EDGAR shows the company files 10-K reports",
+    )
     tech_stack: list[str] = Field(
         default_factory=list,
         description="Technology names from BuiltWith (Yardi, RealPage, Entrata, …)",

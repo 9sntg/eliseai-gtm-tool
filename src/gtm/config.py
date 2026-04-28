@@ -39,7 +39,6 @@ class Settings(BaseSettings):
     )
 
     serper_api_key: str | None = None
-    hunter_api_key: str | None = None
     pdl_api_key: str | None = None
     anthropic_api_key: str | None = None
     builtwith_api_key: str | None = None

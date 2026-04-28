@@ -103,7 +103,8 @@ async def test_get_fips_happy_path(tmp_path, mocker):
     client = mocker.AsyncMock(spec=httpx.AsyncClient)
     client.get.return_value = mock_resp
 
-    result = await get_fips("Austin", "TX", client, cache)
+    # Passing street triggers the geocoder address path, which returns GEOCODER_RESPONSE format
+    result = await get_fips("Austin", "TX", client, cache, street="100 Congress Ave")
     assert result == FipsResult(state_fips="48", place_fips="05000")
 
 

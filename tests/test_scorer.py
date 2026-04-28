@@ -192,23 +192,19 @@ def test_score_employee_count(count, expected):
 
 
 def test_score_company_age_mature():
-    assert score_company_age(_inc_date(15)) == pytest.approx(1.0)
+    assert score_company_age(date.today().year - 15) == pytest.approx(1.0)
 
 
 def test_score_company_age_growing():
-    assert score_company_age(_inc_date(7)) == pytest.approx(0.6)
+    assert score_company_age(date.today().year - 7) == pytest.approx(0.6)
 
 
 def test_score_company_age_young():
-    assert score_company_age(_inc_date(2)) == pytest.approx(0.2)
+    assert score_company_age(date.today().year - 2) == pytest.approx(0.2)
 
 
 def test_score_company_age_none():
     assert score_company_age(None) == 0.0
-
-
-def test_score_company_age_invalid_date():
-    assert score_company_age("not-a-date") == 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -293,8 +289,8 @@ def test_score_lead_full_enrichment_produces_high_score():
             ),
             serper_jobs=SerperSearchBucket(query="q", organic=[org, org, org, org, org]),
             tech_stack=["Yardi Voyager"],
-            hunter_employee_count=1_500,
-            opencorporates_incorporation_date=_inc_date(15),
+            linkedin_employee_count=1_500,
+            founded_year=date.today().year - 15,
         ),
         person=PersonData(
             job_title="VP of Operations",

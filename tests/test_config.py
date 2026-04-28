@@ -41,23 +41,22 @@ def test_all_weights_sum_to_one() -> None:
 
 def test_settings_loads_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("SERPER_API_KEY", "test-serper")
-    monkeypatch.setenv("HUNTER_API_KEY", "test-hunter")
+    monkeypatch.setenv("PDL_API_KEY", "test-pdl")
     s = Settings()
     assert s.serper_api_key == "test-serper"
-    assert s.hunter_api_key == "test-hunter"
+    assert s.pdl_api_key == "test-pdl"
 
 
 def test_settings_optional_keys_default_none(monkeypatch: pytest.MonkeyPatch) -> None:
     for key in (
         "SERPER_API_KEY",
-        "HUNTER_API_KEY",
         "PDL_API_KEY",
         "ANTHROPIC_API_KEY",
         "BUILTWITH_API_KEY",
         "CENSUS_API_KEY",
     ):
         monkeypatch.delenv(key, raising=False)
-    s = Settings()
+    s = Settings(_env_file=None)
     assert s.builtwith_api_key is None
     assert s.census_api_key is None
 

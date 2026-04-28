@@ -51,7 +51,7 @@ async def _fetch(client: httpx.AsyncClient, params: dict) -> httpx.Response:
 
 async def enrich(lead: RawLead, client: httpx.AsyncClient, cache: FileCache) -> MarketData:
     """Fetch Census ACS5 housing and population signals for the lead's city."""
-    fips = await get_fips(lead.city, lead.state, client, cache)
+    fips = await get_fips(lead.city, lead.state, client, cache, street=lead.property_address)
     if fips is None:
         logger.warning("Census: skipping %s, %s — FIPS lookup failed", lead.city, lead.state)
         return MarketData()
