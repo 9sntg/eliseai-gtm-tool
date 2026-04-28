@@ -9,7 +9,7 @@ Each signal contributes 0–N points when it fires, 0 when data is absent.
 Missing signals do not affect other signals. Baseline max = 117 pts.
 Building Fit bonus signals (up to +12 pts) can push the score above 117.
 
-File is ~218 lines — over the 200-line limit. All content belongs to a single
+File is ~252 lines — over the 200-line limit. All content belongs to a single
 responsibility: orchestrating signals into a score. Splitting would require
 passing many local variables across module boundaries. Accepted as-is.
 """
@@ -19,13 +19,18 @@ from __future__ import annotations
 import logging
 
 from gtm.config import (
+    POINTS_BUILDING_PAIN_THEMES,
+    POINTS_BUILDING_PRICE_TIER,
     POINTS_BUILDING_RATING,
     POINTS_BUILDING_REVIEWS,
     POINTS_COMPANY_AGE,
+    POINTS_COMPANY_PAIN_THEMES,
+    POINTS_COMPETITOR_RANK,
     POINTS_CORPORATE_EMAIL,
     POINTS_DEPARTMENT_FUNCTION,
     POINTS_ECONOMIC_MOMENTUM,
     POINTS_EMPLOYEE_COUNT,
+    POINTS_GOOGLE_COMPANY_RATING,
     POINTS_JOB_POSTINGS,
     POINTS_MEDIAN_RENT,
     POINTS_POPULATION_GROWTH,
@@ -45,13 +50,18 @@ from gtm.models.scoring import ScoreBreakdown
 from gtm.scoring.scorer_signals import (
     MEDIAN_RENT_MID,
     PM_TECH,
+    score_building_pain_themes,
+    score_building_price_tier,
     score_building_rating,
     score_building_reviews,
     score_company_age,
+    score_company_pain_themes,
+    score_competitor_rank,
     score_corporate_email,
     score_department_function,
     score_economic_momentum,
     score_employee_count,
+    score_google_company_rating,
     score_job_postings,
     score_median_rent,
     score_population_growth,
@@ -76,9 +86,13 @@ _COMPANY_MAX: float = (
     POINTS_JOB_POSTINGS + POINTS_PORTFOLIO_NEWS + POINTS_TECH_STACK
     + POINTS_EMPLOYEE_COUNT + POINTS_COMPANY_AGE
     + POINTS_PORTFOLIO_SIZE + POINTS_SOCIAL_PRESENCE + POINTS_YELP_COMPANY_RATING
+    + POINTS_GOOGLE_COMPANY_RATING + POINTS_COMPANY_PAIN_THEMES + POINTS_COMPETITOR_RANK
 )
 _PERSON_MAX: float = POINTS_SENIORITY + POINTS_DEPARTMENT_FUNCTION + POINTS_CORPORATE_EMAIL
-_BUILDING_MAX: float = POINTS_BUILDING_RATING + POINTS_BUILDING_REVIEWS
+_BUILDING_MAX: float = (
+    POINTS_BUILDING_RATING + POINTS_BUILDING_REVIEWS
+    + POINTS_BUILDING_PRICE_TIER + POINTS_BUILDING_PAIN_THEMES
+)
 
 
 def compute_tier(score: float) -> ScoreTier:
@@ -153,6 +167,9 @@ def score_lead(lead: EnrichedLead) -> tuple[float, ScoreTier, ScoreBreakdown]:
     sig_portfolio    = score_portfolio_size(c.portfolio_size)
     sig_social       = score_social_presence(c.social_platform_count)
     sig_yelp_co      = score_yelp_company_rating(c.yelp_rating, c.yelp_market_avg_rating)
+    sig_google_co    = score_google_company_rating(c.google_rating)
+    sig_co_pain      = score_company_pain_themes(len(c.yelp_pain_themes) + len(c.serper_pain_themes))
+    sig_comp_rank    = score_competitor_rank(c.competitor_rank_pct)
 
     # Person signals
     sig_seniority = score_seniority(p.seniority)
@@ -162,6 +179,8 @@ def score_lead(lead: EnrichedLead) -> tuple[float, ScoreTier, ScoreBreakdown]:
     # Building signals — bonus; fire when building data available
     sig_bldg_rating  = score_building_rating(b.yelp_rating)
     sig_bldg_reviews = score_building_reviews(b.yelp_review_count)
+    sig_bldg_price   = score_building_price_tier(b.price_tier)
+    sig_bldg_pain    = score_building_pain_themes(len(b.pain_themes))
 
     market_raw = (
         sig_renter_units * POINTS_RENTER_UNITS
@@ -179,6 +198,9 @@ def score_lead(lead: EnrichedLead) -> tuple[float, ScoreTier, ScoreBreakdown]:
         + sig_portfolio * POINTS_PORTFOLIO_SIZE
         + sig_social  * POINTS_SOCIAL_PRESENCE
         + sig_yelp_co * POINTS_YELP_COMPANY_RATING
+        + sig_google_co * POINTS_GOOGLE_COMPANY_RATING
+        + sig_co_pain   * POINTS_COMPANY_PAIN_THEMES
+        + sig_comp_rank * POINTS_COMPETITOR_RANK
     )
     person_raw = (
         sig_seniority * POINTS_SENIORITY
@@ -188,6 +210,8 @@ def score_lead(lead: EnrichedLead) -> tuple[float, ScoreTier, ScoreBreakdown]:
     building_raw = (
         sig_bldg_rating  * POINTS_BUILDING_RATING
         + sig_bldg_reviews * POINTS_BUILDING_REVIEWS
+        + sig_bldg_price   * POINTS_BUILDING_PRICE_TIER
+        + sig_bldg_pain    * POINTS_BUILDING_PAIN_THEMES
     )
 
     overall = round(market_raw + company_raw + person_raw + building_raw, 2)
@@ -206,18 +230,23 @@ def score_lead(lead: EnrichedLead) -> tuple[float, ScoreTier, ScoreBreakdown]:
         portfolio_size=sig_portfolio,
         social_presence=sig_social,
         yelp_company_rating=sig_yelp_co,
+        google_company_rating=sig_google_co,
+        company_pain_themes=sig_co_pain,
+        competitor_rank=sig_comp_rank,
         seniority=sig_seniority,
         department_function=sig_dept,
         corporate_email=sig_email,
         building_rating=sig_bldg_rating,
         building_reviews=sig_bldg_reviews,
+        building_price_tier=sig_bldg_price,
+        building_pain_themes=sig_bldg_pain,
         market_score=round(market_raw / _MARKET_MAX * 100, 2),
         company_score=round(company_raw / _COMPANY_MAX * 100, 2),
         person_score=round(person_raw / _PERSON_MAX * 100, 2),
         building_score=round(building_raw / _BUILDING_MAX * 100, 2) if building_raw > 0 else 0.0,
     )
     logger.info(
-        "scored lead: %.1f/100 %s — %s, %s",
+        "scored lead: %.1f/131 %s — %s, %s",
         overall, tier, lead.raw.company, lead.raw.city,
     )
     return overall, tier, breakdown

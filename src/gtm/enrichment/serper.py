@@ -11,6 +11,7 @@ from gtm.config import settings
 from gtm.enrichment.serper_helpers import (
     extract_company_profile,
     extract_job_count,
+    extract_serper_pain_themes,
     extract_social_platforms,
     extract_yelp_alias,
     parse_serper_response,
@@ -69,7 +70,11 @@ async def enrich(lead: RawLead, client: httpx.AsyncClient, cache: FileCache) -> 
     # Combine LinkedIn + PM snippets for richer profile extraction; LinkedIn first (more structured)
     linkedin_snippets = [item.snippet for item in linkedin_bucket.organic if item.snippet]
     pm_snippets = [item.snippet for item in pm_bucket.organic if item.snippet]
-    profile = await extract_company_profile(linkedin_snippets + pm_snippets, lead.company)
+
+    profile, serper_pain_themes = await asyncio.gather(
+        extract_company_profile(linkedin_snippets + pm_snippets, lead.company),
+        extract_serper_pain_themes(pm_snippets, lead.company),
+    )
 
     jobs_snippets = [item.snippet for item in jobs_bucket.organic if item.snippet]
     job_count = extract_job_count(jobs_snippets)
@@ -88,6 +93,7 @@ async def enrich(lead: RawLead, client: httpx.AsyncClient, cache: FileCache) -> 
         yelp_alias=yelp_alias,
         social_platform_count=social_platform_count,
         google_rating=google_rating,
+        serper_pain_themes=serper_pain_themes,
     )
 
 

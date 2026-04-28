@@ -1,6 +1,6 @@
 """Streamlit rendering helpers and sync pipeline runner for the dashboard.
 
-File is ~203 lines — marginally over the 200-line limit. All rendering helpers
+File is ~229 lines — over the 200-line limit. All rendering helpers
 belong to the same presentation layer; splitting would create a thin helpers/
 helpers_rendering.py split for no real gain. Accepted as-is.
 """
@@ -20,24 +20,29 @@ from gtm.models.lead import RawLead
 from gtm.pipeline.runner import run_pipeline
 
 SIGNAL_META: list[tuple[str, str, str]] = [
-    ("renter_units",       "Renter-Occupied Units",    "Market"),
-    ("renter_rate",        "Renter Rate",               "Market"),
-    ("median_rent",        "Median Gross Rent",         "Market"),
-    ("population_growth",  "Population Growth YoY",    "Market"),
-    ("economic_momentum",  "Economic Momentum",         "Market"),
-    ("job_postings",       "Job Postings",              "Company"),
-    ("portfolio_news",     "Portfolio / Web Presence",  "Company"),
-    ("tech_stack",         "Tech Stack",                "Company"),
-    ("employee_count",     "Employee Count",            "Company"),
-    ("company_age",        "Company Age",               "Company"),
-    ("portfolio_size",      "Portfolio Size",            "Company"),
-    ("social_presence",     "Social Media Presence",    "Company"),
-    ("yelp_company_rating", "Yelp Rating vs. Market",   "Company"),
-    ("seniority",           "Contact Seniority",        "Person"),
-    ("department_function", "Department / Function",    "Person"),
-    ("corporate_email",     "Corporate Email",          "Person"),
-    ("building_rating",     "Building Yelp Rating",     "Building"),
-    ("building_reviews",    "Building Review Volume",   "Building"),
+    ("renter_units",          "Renter-Occupied Units",      "Market"),
+    ("renter_rate",           "Renter Rate",                "Market"),
+    ("median_rent",           "Median Gross Rent",          "Market"),
+    ("population_growth",     "Population Growth YoY",      "Market"),
+    ("economic_momentum",     "Economic Momentum",          "Market"),
+    ("job_postings",          "Job Postings",               "Company"),
+    ("portfolio_news",        "Portfolio / Web Presence",   "Company"),
+    ("tech_stack",            "Tech Stack",                 "Company"),
+    ("employee_count",        "Employee Count",             "Company"),
+    ("company_age",           "Company Age",                "Company"),
+    ("portfolio_size",        "Portfolio Size",             "Company"),
+    ("social_presence",       "Social Media Presence",      "Company"),
+    ("yelp_company_rating",   "Yelp Rating vs. Market",     "Company"),
+    ("google_company_rating", "Google Rating",              "Company"),
+    ("company_pain_themes",   "Resident Pain Themes",       "Company"),
+    ("competitor_rank",       "Competitor Rank (Yelp)",     "Company"),
+    ("seniority",             "Contact Seniority",          "Person"),
+    ("department_function",   "Department / Function",      "Person"),
+    ("corporate_email",       "Corporate Email",            "Person"),
+    ("building_rating",       "Building Yelp Rating",       "Building"),
+    ("building_reviews",      "Building Review Volume",     "Building"),
+    ("building_price_tier",   "Building Price Tier",        "Building"),
+    ("building_pain_themes",  "Building Pain Themes",       "Building"),
 ]
 
 TIER_COLOR: dict[str, str] = {"High": "🟢", "Medium": "🟡", "Low": "🔴"}
@@ -114,7 +119,7 @@ def render_score_header(score: float, tier: str, insights: list[str]) -> None:
     """Render the lead score, tier badge, and insight bullets."""
     icon = TIER_COLOR.get(tier, "⚪")
     col1, col2 = st.columns([1, 3])
-    col1.metric("Lead Score", f"{score:.0f} / 100")
+    col1.metric("Lead Score", f"{score:.0f} / 131")
     with col2:
         st.markdown(f"### {icon} {tier} Priority")
         for bullet in insights:
@@ -169,6 +174,21 @@ def render_company_section(company: dict) -> None:
         kg = company.get("serper_property_management", {}).get("knowledge_graph_title")
         if kg:
             st.write(f"**Google Knowledge Graph:** {kg}")
+        if company.get("yelp_rating") is not None:
+            market_avg = company.get("yelp_market_avg_rating")
+            avg_str = f" (market avg {market_avg:.1f})" if market_avg else ""
+            st.write(f"**Yelp rating:** {company['yelp_rating']}/5 — {company.get('yelp_review_count', 0)} reviews{avg_str}")
+        if company.get("google_rating") is not None:
+            st.write(f"**Google rating:** {company['google_rating']}/5")
+        if company.get("yelp_pain_themes"):
+            st.write(f"**Yelp pain themes:** {', '.join(company['yelp_pain_themes'])}")
+        if company.get("serper_pain_themes"):
+            st.write(f"**Google pain themes:** {', '.join(company['serper_pain_themes'])}")
+        if company.get("competitor_rank_pct") is not None:
+            pct = company["competitor_rank_pct"]
+            st.write(f"**Competitor rank:** {pct:.0%} of local PM cos rate higher on Yelp")
+        if company.get("yelp_year_established"):
+            st.write(f"**Year established (Yelp):** {company['yelp_year_established']}")
 
 
 def render_person_section(person: dict) -> None:
@@ -184,10 +204,11 @@ def render_person_section(person: dict) -> None:
 def render_building_section(building: dict) -> None:
     """Render building enrichment fields in a labelled expander."""
     with st.expander("🏢 Building Data", expanded=True):
+        _field(building, "name",              "Building name",  lambda v: v)
         _field(building, "address",           "Address",        lambda v: v)
         _field(building, "yelp_rating",       "Yelp rating",    lambda v: f"{v}/5")
         _field(building, "yelp_review_count", "Yelp reviews",   lambda v: f"{v:,}")
-        _field(building, "google_rating",     "Google rating",  lambda v: f"{v}/5")
+        _field(building, "price_tier",        "Price tier",     lambda v: v)
         if building.get("pain_themes"):
             st.write(f"**Resident pain themes:** {', '.join(building['pain_themes'])}")
 

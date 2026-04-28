@@ -14,10 +14,19 @@ from gtm.scoring.scorer_signals import (
     BUILDING_REVIEWS_HIGH,
     BUILDING_REVIEWS_LOW,
     BUILDING_REVIEWS_MID,
+    COMPETITOR_RANK_BELOW_AVERAGE,
+    COMPETITOR_RANK_BELOW_MEDIAN,
+    COMPETITOR_RANK_BOTTOM_QUARTER,
     EMPLOYEE_MIN,
+    GOOGLE_RATING_HIGH,
+    GOOGLE_RATING_LOW,
+    GOOGLE_RATING_MID,
+    GOOGLE_RATING_VERY_LOW,
     MEDIAN_RENT_HIGH,
     MEDIAN_RENT_LOW,
     MEDIAN_RENT_MID,
+    PAIN_THEMES_HIGH,
+    PAIN_THEMES_MID,
     PORTFOLIO_SIZE_LARGE,
     PORTFOLIO_SIZE_MID,
     PORTFOLIO_SIZE_SMALL,
@@ -27,13 +36,18 @@ from gtm.scoring.scorer_signals import (
     RENTER_UNITS_MID,
     SOCIAL_PLATFORMS_HIGH,
     SOCIAL_PLATFORMS_MID,
+    score_building_pain_themes,
+    score_building_price_tier,
     score_building_rating,
     score_building_reviews,
     score_company_age,
+    score_company_pain_themes,
+    score_competitor_rank,
     score_corporate_email,
     score_department_function,
     score_economic_momentum,
     score_employee_count,
+    score_google_company_rating,
     score_job_postings,
     score_median_rent,
     score_population_growth,
@@ -68,16 +82,17 @@ def _inc_date(years_ago: float) -> str:
 # Point constant validation
 # ---------------------------------------------------------------------------
 
-def test_baseline_points_sum_to_117():
+def test_baseline_points_sum_to_131():
     total = (
         cfg.POINTS_RENTER_UNITS + cfg.POINTS_RENTER_RATE + cfg.POINTS_MEDIAN_RENT
         + cfg.POINTS_POPULATION_GROWTH + cfg.POINTS_ECONOMIC_MOMENTUM
         + cfg.POINTS_JOB_POSTINGS + cfg.POINTS_PORTFOLIO_NEWS + cfg.POINTS_TECH_STACK
         + cfg.POINTS_EMPLOYEE_COUNT + cfg.POINTS_COMPANY_AGE
         + cfg.POINTS_PORTFOLIO_SIZE + cfg.POINTS_SOCIAL_PRESENCE + cfg.POINTS_YELP_COMPANY_RATING
+        + cfg.POINTS_GOOGLE_COMPANY_RATING + cfg.POINTS_COMPANY_PAIN_THEMES + cfg.POINTS_COMPETITOR_RANK
         + cfg.POINTS_SENIORITY + cfg.POINTS_DEPARTMENT_FUNCTION + cfg.POINTS_CORPORATE_EMAIL
     )
-    assert abs(total - 117.0) < 1e-6
+    assert abs(total - 131.0) < 1e-6
 
 
 # ---------------------------------------------------------------------------
@@ -256,6 +271,70 @@ def test_score_corporate_email_true():
 
 def test_score_corporate_email_false():
     assert score_corporate_email(False) == pytest.approx(0.0)
+
+
+# ---------------------------------------------------------------------------
+# New signal boundaries (Phase 11)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("rating,expected", [
+    (None, 0.0),
+    (GOOGLE_RATING_VERY_LOW, 1.0),
+    (GOOGLE_RATING_VERY_LOW - 0.1, 1.0),
+    (GOOGLE_RATING_LOW, 0.8),
+    (GOOGLE_RATING_MID, 0.6),
+    (GOOGLE_RATING_HIGH, 0.3),
+    (4.5, 0.1),
+    (5.0, 0.1),
+])
+def test_score_google_company_rating(rating, expected):
+    assert score_google_company_rating(rating) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("count,expected", [
+    (0, 0.0),
+    (PAIN_THEMES_MID, 0.3),
+    (PAIN_THEMES_HIGH, 0.7),
+    (PAIN_THEMES_HIGH + 1, 1.0),
+    (5, 1.0),
+])
+def test_score_company_pain_themes(count, expected):
+    assert score_company_pain_themes(count) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("pct,expected", [
+    (None, 0.0),
+    (0.0, 0.1),
+    (COMPETITOR_RANK_BELOW_AVERAGE, 0.4),
+    (COMPETITOR_RANK_BELOW_MEDIAN, 0.7),
+    (COMPETITOR_RANK_BOTTOM_QUARTER, 1.0),
+    (0.9, 1.0),
+])
+def test_score_competitor_rank(pct, expected):
+    assert score_competitor_rank(pct) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("tier,expected", [
+    (None, 0.0),
+    ("$", 0.2),
+    ("$$", 0.5),
+    ("$$$", 0.75),
+    ("$$$$", 1.0),
+    ("?????", 0.0),
+])
+def test_score_building_price_tier(tier, expected):
+    assert score_building_price_tier(tier) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("count,expected", [
+    (0, 0.0),
+    (1, 0.4),
+    (2, 0.7),
+    (3, 1.0),
+    (10, 1.0),
+])
+def test_score_building_pain_themes(count, expected):
+    assert score_building_pain_themes(count) == pytest.approx(expected)
 
 
 # ---------------------------------------------------------------------------

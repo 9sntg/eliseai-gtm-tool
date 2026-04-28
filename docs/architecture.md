@@ -37,8 +37,8 @@ data/leads_input.csv
         │
         ▼
   [Scoring Layer]
-  scorer.py → 0–117 pts score + ScoreBreakdown
-  (Market: 38 pts, Company: 58 pts, Person: 21 pts, Building: bonus up to +12 pts)
+  scorer.py → 0–131 pts score + ScoreBreakdown
+  (Market: 38 pts, Company: 72 pts, Person: 21 pts, Building: bonus up to +20 pts)
         │
         ▼
   [Email Generation]
@@ -61,14 +61,14 @@ data/leads_input.csv
 ## Components
 
 ### `src/gtm/config.py`
-Centralized settings via `pydantic-settings`. Loads all API keys from `.env` (including `YELP_API_KEY`). Defines all scoring point values as named constants (`POINTS_RENTER_UNITS`, `POINTS_SENIORITY`, etc.) so no magic numbers appear in scoring logic. An assertion at module level confirms that the 16 baseline signals sum to exactly 117 pts. Building Fit bonus signals (`POINTS_BUILDING_RATING`, `POINTS_BUILDING_REVIEWS`) sit outside the 117-pt baseline.
+Centralized settings via `pydantic-settings`. Loads all API keys from `.env` (including `YELP_API_KEY`). Defines all scoring point values as named constants (`POINTS_RENTER_UNITS`, `POINTS_SENIORITY`, etc.) so no magic numbers appear in scoring logic. An assertion at module level confirms that the 19 baseline signals sum to exactly 131 pts. Building Fit bonus signals (`POINTS_BUILDING_RATING`, `POINTS_BUILDING_REVIEWS`, `POINTS_BUILDING_PRICE_TIER`, `POINTS_BUILDING_PAIN_THEMES`) sit outside the 131-pt baseline.
 
 ### `src/gtm/models/`
 Pydantic models for every data shape in the system (one module per concern, re-exported from `gtm.models`):
 - `RawLead` — raw input from CSV
 - `MarketData` — Census + DataUSA fields (all optional, default None)
-- `CompanyData` — Serper (3 buckets), LinkedIn-extracted employee count + founded year, Haiku-extracted portfolio size, job count from regex extraction, yelp alias, Yelp rating/review/market-avg/pain-themes/year-established, Google rating, social platform count, EDGAR public flag, BuiltWith tech stack (all optional)
-- `BuildingData` — Yelp building-level data: alias, rating, review count, pain themes, year established (all optional)
+- `CompanyData` — Serper (3 buckets), LinkedIn-extracted employee count + founded year, Haiku-extracted portfolio size, job count from regex extraction, yelp alias, Yelp rating/review/market-avg/pain-themes/year-established/competitor-rank-pct, Google rating, Serper pain themes, social platform count, EDGAR public flag, BuiltWith tech stack (all optional)
+- `BuildingData` — Yelp building-level data: name (resolved via Serper), address, alias, rating, review count, price tier, pain themes (all optional)
 - `PersonData` — PDL fields + `is_corporate_email` (derived locally)
 - `ScoreBreakdown` — one float per signal + `market_score`, `company_score`, `person_score`, `building_score` subtotals
 - `EnrichedLead` — full record: raw lead + all enrichment + building + score + insights + email draft + slug
@@ -103,16 +103,16 @@ All wrap API calls in `try/except`. All return an empty/default model on failure
 All 18 signal functions and their threshold constants. Each function takes one or two enrichment fields and returns a `float` in `[0.0, 1.0]`. None input always returns `0.0`. No I/O, no config reads — pure computation. Threshold constants are named at module level (no magic numbers in function bodies).
 
 ### `src/gtm/scoring/scorer.py`
-Orchestrates signal functions into a final score using an additive point model. Each signal contributes 0–N points when it fires, 0 when data is absent — no redistribution needed. Baseline max is 117 pts; two Building Fit bonus signals can push the score above 117. Computes category subtotals (normalised to 0–100 for display), maps the score to a tier, and generates 3–5 insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
+Orchestrates signal functions into a final score using an additive point model. Each signal contributes 0–N points when it fires, 0 when data is absent — no redistribution needed. Baseline max is 131 pts; four Building Fit bonus signals can push the score above 131. Computes category subtotals (normalised to 0–100 for display), maps the score to a tier, and generates 3–5 insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
 
-**Scoring signals (baseline 117 pts):**
+**Scoring signals (baseline 131 pts):**
 
 | Category | Points | Signals |
 |---|---|---|
 | Market Fit | 38 pts | Renter units (15), renter rate (8), median rent (5), population growth (5), economic momentum (5) |
-| Company Fit | 58 pts | Job postings (12), portfolio news (8), tech stack (8), employee count (8), company age (5), portfolio size (6), social media presence (5), Yelp company rating vs. market avg (6) |
+| Company Fit | 72 pts | Job postings (12), portfolio news (8), tech stack (8), employee count (8), company age (5), portfolio size (6), social media presence (5), Yelp company rating vs. market avg (6), Google company rating (4), company pain themes / Yelp+Serper (5), competitor rank on Yelp (5) |
 | Person Fit | 21 pts | Seniority (10), function/department (7), corporate email (4) |
-| Building Fit (bonus) | up to +12 pts | Building rating inverted (8), building review count (4) — score 0 when Yelp data absent |
+| Building Fit (bonus) | up to +20 pts | Building rating inverted (8), building review count (4), building price tier (4), building pain themes (4) — score 0 when Yelp data absent |
 
 ### `src/gtm/outreach/email_generator.py`
 Drafts a personalized 150–200 word outreach email via Claude Sonnet 4.6. Public entry point: `generate_email(lead) → str | None`.
@@ -140,7 +140,7 @@ Rendering helpers and sync pipeline runner for the Streamlit dashboard. Keeps `a
 Streamlit dashboard with 3 tabs:
 - **Add Lead** — form to append a new row to `leads_input.csv`
 - **Run Pipeline** — lists pending leads, runs enrichment on unprocessed ones, shows progress spinner
-- **View Results** — selectbox over processed leads; renders score, tier, Market/Company/Person/Building subtotals, 18-signal breakdown table, enrichment data (including Yelp company + building sections), and email draft in a 2-column layout
+- **View Results** — selectbox over processed leads; renders score, tier, Market/Company/Person/Building subtotals, 23-signal breakdown table, enrichment data (including Yelp company + building sections with Google rating, pain themes, competitor rank, price tier), and email draft in a 2-column layout
 
 ---
 
@@ -214,3 +214,4 @@ Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.
 | Phase 8 | Streamlit dashboard: `app.py` (3-tab UI), `src/gtm/dashboard/helpers.py` (render helpers, sync pipeline runner, CSV I/O) | ✅ Done |
 | Phase 9 | Additive point scoring model, Serper signal expansion (job_count regex, portfolio_size via Haiku, yelp_alias, social_platform_count), bonus signals (portfolio_size +6 pts, social_presence +5 pts), ICP documentation, docs + rollout plan | ✅ Done |
 | Phase 10 | Yelp Fusion enrichment (company: rating/reviews/market avg/pain themes; building: rating/reviews/pain themes), BuildingData model, Company Fit expanded to 58 pts (portfolio_size + social_presence moved into baseline; yelp_company_rating +6 pts), Building Fit bonus (+12 pts), baseline max 100→117 pts, Serper Google rating extraction, Yelp fallback for founded_year, dashboard and email updated for 4-category model | ✅ Done |
+| Phase 11 | Full signal utilisation: 5 new scoring signals (google_company_rating +4 pts, company_pain_themes +5 pts, competitor_rank +5 pts, building_price_tier +4 pts, building_pain_themes +4 pts), Serper pain theme extraction via Haiku, building name resolution via Serper → Yelp, address-aware slug for per-building idempotency, baseline max 117→131 pts, Building bonus 12→20 pts, dashboard 18→23 signals, email context updated | ✅ Done |

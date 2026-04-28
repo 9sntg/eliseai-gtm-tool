@@ -110,7 +110,7 @@ async def enrich_lead(
     cache: FileCache,
 ) -> EnrichedLead | None:
     """Enrich, score, and persist one lead. Returns None if output folder already exists."""
-    base_slug = make_slug(lead.company, lead.city, lead.state)
+    base_slug = make_slug(lead.company, lead.city, lead.state, lead.property_address or "")
     if (outputs_dir / base_slug).exists():
         logger.debug("skipping %s — output folder exists", base_slug)
         return None

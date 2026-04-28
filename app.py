@@ -12,6 +12,7 @@ from gtm.dashboard.helpers import (
     list_output_folders,
     load_lead_data,
     load_leads_from_csv,
+    render_building_section,
     render_category_metrics,
     render_company_section,
     render_email_section,
@@ -68,7 +69,7 @@ with tab_run:
     leads = load_leads_from_csv(LEADS_FILE)
     pending = [
         lead for lead in leads
-        if not (OUTPUTS_DIR / make_slug(lead.company, lead.city, lead.state)).exists()
+        if not (OUTPUTS_DIR / make_slug(lead.company, lead.city, lead.state, lead.property_address or "")).exists()
     ]
     done_count = len(leads) - len(pending)
 
@@ -129,6 +130,8 @@ with tab_view:
             with left:
                 render_market_section(enrichment["market"])
                 render_person_section(enrichment["person"])
+                if enrichment.get("building"):
+                    render_building_section(enrichment["building"])
             with right:
                 render_company_section(enrichment["company"])
                 render_email_section(email_text)

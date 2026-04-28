@@ -1,8 +1,9 @@
 """Yelp Fusion enrichment — company profile + comparables, and building fit.
 
-File is ~202 lines — marginally over the 200-line limit. enrich_company and
-enrich_building are closely coupled (share _fetch, headers, cache key helpers)
-and separating them would not reduce complexity. Accepted as-is.
+File is ~264 lines — over the 200-line limit. enrich_company and
+enrich_building are closely coupled (share _fetch, headers, cache key helpers,
+and building-name resolution via Serper) and separating them would not reduce
+complexity. Accepted as-is.
 """
 
 from __future__ import annotations
@@ -15,7 +16,11 @@ import httpx
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
 from gtm.config import settings
-from gtm.enrichment.yelp_helpers import extract_pain_themes, parse_market_avg_rating
+from gtm.enrichment.yelp_helpers import (
+    compute_competitor_rank,
+    extract_pain_themes,
+    parse_market_avg_rating,
+)
 from gtm.exceptions import ConfigurationError
 from gtm.models.building import BuildingData
 from gtm.models.company import CompanyData
@@ -25,6 +30,7 @@ from gtm.utils.cache import FileCache
 logger = logging.getLogger(__name__)
 
 YELP_BASE: str = "https://api.yelp.com/v3/businesses"
+SERPER_URL: str = "https://google.serper.dev/search"
 DELAY_MIN: float = 0.5
 DELAY_MAX: float = 1.5
 TIMEOUT_SECONDS: float = 15.0
@@ -130,7 +136,13 @@ async def enrich_company(lead: RawLead, client: httpx.AsyncClient, cache: FileCa
          "categories": "propertymgmt", "limit": COMPARABLES_LIMIT},
         headers, f"yelp:comparables:{lead.city.lower()}:{lead.state.lower()}", cache,
     )
-    market_avg = parse_market_avg_rating(comparables.get("businesses", []))
+    comp_businesses = comparables.get("businesses", [])
+    market_avg = parse_market_avg_rating(comp_businesses)
+    company_rating = profile.get("rating")
+    competitor_rank_pct = (
+        compute_competitor_rank(comp_businesses, alias, company_rating)
+        if company_rating is not None else None
+    )
 
     pain_themes = await extract_pain_themes(
         highlights_data.get("review_highlights", []),
@@ -146,15 +158,52 @@ async def enrich_company(lead: RawLead, client: httpx.AsyncClient, cache: FileCa
     except (ValueError, TypeError):
         year_established = None
 
-    logger.info("Yelp: company enriched for %s (rating=%.1f)", lead.company, profile.get("rating") or 0)
+    logger.info("Yelp: company enriched for %s (rating=%.1f)", lead.company, company_rating or 0)
     return CompanyData(
         yelp_alias=alias,
-        yelp_rating=profile.get("rating"),
+        yelp_rating=company_rating,
         yelp_review_count=profile.get("review_count"),
         yelp_market_avg_rating=market_avg,
         yelp_pain_themes=pain_themes,
         yelp_year_established=year_established,
+        competitor_rank_pct=competitor_rank_pct,
     )
+
+
+async def _resolve_building_name(
+    lead: RawLead, client: httpx.AsyncClient, cache: FileCache
+) -> str | None:
+    """Use Serper to resolve a street address to an apartment complex name."""
+    if not settings.serper_api_key or not lead.property_address:
+        return None
+    cache_key = f"serper:bldg_name:{lead.property_address.lower().replace(' ', '_')}:{lead.city.lower()}"
+    cached = cache.get(cache_key)
+    if cached:
+        logger.debug("cache hit: %s", cache_key)
+        return cached.get("name")
+    query = f"{lead.property_address} {lead.city} {lead.state} apartments"
+    logger.info("Serper: resolving building name for '%s'", lead.property_address)
+    try:
+        resp = await client.post(
+            SERPER_URL,
+            json={"q": query, "num": 3},
+            headers={"X-API-KEY": settings.serper_api_key, "Content-Type": "application/json"},
+            timeout=15.0,
+        )
+        if resp.status_code != 200:
+            logger.warning("Serper: HTTP %s resolving building name", resp.status_code)
+            return None
+        data = resp.json()
+        # Prefer knowledge graph title; fall back to first organic result title
+        kg_title = (data.get("knowledgeGraph") or {}).get("title")
+        organic = data.get("organic", [])
+        name = kg_title or (organic[0]["title"].split(" - ")[0].split(" | ")[0] if organic else None)
+        cache.set(cache_key, {"name": name})
+        logger.info("Serper: resolved building '%s' → '%s'", lead.property_address, name)
+        return name
+    except Exception as exc:
+        logger.warning("Serper: building name resolution failed: %s", exc)
+        return None
 
 
 async def enrich_building(lead: RawLead, client: httpx.AsyncClient, cache: FileCache) -> BuildingData:
@@ -163,20 +212,26 @@ async def enrich_building(lead: RawLead, client: httpx.AsyncClient, cache: FileC
         return BuildingData()
 
     headers = {"Authorization": f"Bearer {settings.yelp_api_key}"}
-    location = f"{lead.property_address}, {lead.city}, {lead.state}"
-    cache_slug = lead.property_address.lower().replace(" ", "_")[:40]
 
-    logger.info("Yelp: searching for building '%s'", location)
+    # Resolve street address → building name via Serper, then search Yelp by name
+    building_name = await _resolve_building_name(lead, client, cache)
+    search_term = building_name or lead.property_address
+    # Cache key uses the resolved search term so a name-based search isn't served
+    # a stale empty result from a previous address-based search.
+    term_slug = search_term.lower().replace(" ", "_")[:40]
+    await asyncio.sleep(random.uniform(DELAY_MIN, DELAY_MAX))
+
+    logger.info("Yelp: searching for building '%s' in %s, %s", search_term, lead.city, lead.state)
     search = await _fetch(
         client, YELP_BASE + "/search",
-        {"term": lead.property_address, "location": f"{lead.city}, {lead.state}",
+        {"term": search_term, "location": f"{lead.city}, {lead.state}",
          "categories": "apartments", "limit": 3},
-        headers, f"yelp:bldg_search:{cache_slug}:{lead.city.lower()}", cache,
+        headers, f"yelp:bldg_search:{term_slug}:{lead.city.lower()}", cache,
     )
     businesses = search.get("businesses", [])
     if not businesses:
-        logger.info("Yelp: no building match for %s", lead.property_address)
-        return BuildingData(address=lead.property_address)
+        logger.info("Yelp: no building match for '%s'", search_term)
+        return BuildingData(address=lead.property_address, name=building_name)
 
     alias = businesses[0]["alias"]
     await asyncio.sleep(random.uniform(DELAY_MIN, DELAY_MAX))
@@ -194,14 +249,17 @@ async def enrich_building(lead: RawLead, client: httpx.AsyncClient, cache: FileC
         context="building",
     )
 
+    price_tier = profile.get("price") or businesses[0].get("price")
     logger.info(
-        "Yelp: building enriched for %s (rating=%s)",
-        lead.property_address, profile.get("rating"),
+        "Yelp: building enriched for '%s' (rating=%s, price=%s)",
+        search_term, profile.get("rating"), price_tier,
     )
     return BuildingData(
         address=lead.property_address,
+        name=building_name,
         yelp_alias=alias,
         yelp_rating=profile.get("rating"),
         yelp_review_count=profile.get("review_count"),
+        price_tier=price_tier,
         pain_themes=pain_themes,
     )

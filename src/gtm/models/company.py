@@ -93,3 +93,11 @@ class CompanyData(BaseModel):
         default=None,
         description="Google rating from Serper knowledge graph (when available)",
     )
+    serper_pain_themes: list[str] = Field(
+        default_factory=list,
+        description="Resident/tenant pain themes extracted from Serper PM-query snippets via Haiku",
+    )
+    competitor_rank_pct: float | None = Field(
+        default=None,
+        description="Fraction of Yelp comparable PM companies that rate higher (0=best, 1=worst)",
+    )

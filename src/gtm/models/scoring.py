@@ -31,8 +31,14 @@ class ScoreBreakdown(BaseModel):
     social_presence: float = Field(default=0.0, description="Social media platform presence signal [0–1]")
     yelp_company_rating: float = Field(default=0.0, description="Company Yelp rating vs. local market avg [0–1]")
 
+    google_company_rating: float = Field(default=0.0, description="Company Google rating signal [0–1]; inverted, low = pain")
+    company_pain_themes: float = Field(default=0.0, description="Company pain theme density from Serper + Yelp snippets [0–1]")
+    competitor_rank: float = Field(default=0.0, description="Fraction of Yelp competitors rating higher [0–1]; high = bottom of market")
+
     building_rating: float = Field(default=0.0, description="Building Yelp rating signal [0–1]; bonus, 0 when absent")
     building_reviews: float = Field(default=0.0, description="Building review volume signal [0–1]; bonus, 0 when absent")
+    building_price_tier: float = Field(default=0.0, description="Building Yelp price tier signal [0–1]; bonus, 0 when absent")
+    building_pain_themes: float = Field(default=0.0, description="Building pain theme density [0–1]; bonus, 0 when absent")
 
     market_score: float = Field(default=0.0, description="Market Fit subtotal 0–100")
     company_score: float = Field(default=0.0, description="Company Fit subtotal 0–100")

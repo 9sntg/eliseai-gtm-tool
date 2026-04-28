@@ -4,13 +4,18 @@ import re
 from pathlib import Path
 
 
-def make_slug(company: str, city: str, state: str) -> str:
-    """Return lowercased, hyphenated slug: {company}-{city}-{state}."""
+def make_slug(company: str, city: str, state: str, address: str = "") -> str:
+    """Return lowercased, hyphenated slug.
+
+    With address: {company}-{address}-{city}-{state}
+    Without:      {company}-{city}-{state}
+    """
 
     def clean(s: str) -> str:
         return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
 
-    return "-".join(clean(p) for p in (company, city, state))
+    parts = [company, address, city, state] if address.strip() else [company, city, state]
+    return "-".join(clean(p) for p in parts)
 
 
 def unique_slug(base: str, outputs_dir: Path) -> str:

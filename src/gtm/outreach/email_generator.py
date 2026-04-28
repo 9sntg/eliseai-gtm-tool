@@ -84,7 +84,16 @@ def _build_context(lead: EnrichedLead) -> str:
             f"(market avg: {c.yelp_market_avg_rating}/5, {c.yelp_review_count or 0} reviews)"
         )
     if c.yelp_pain_themes:
-        lines.append(f"Resident pain themes (company): {', '.join(c.yelp_pain_themes)}")
+        lines.append(f"Resident pain themes (Yelp): {', '.join(c.yelp_pain_themes)}")
+    if c.google_rating is not None:
+        lines.append(f"Google rating: {c.google_rating}/5")
+    if c.serper_pain_themes:
+        lines.append(f"Resident pain themes (Google): {', '.join(c.serper_pain_themes)}")
+    if c.competitor_rank_pct is not None:
+        lines.append(
+            f"Competitor rank: {c.competitor_rank_pct:.0%} of local PM companies "
+            "rate higher on Yelp"
+        )
 
     # Building signals
     if b.yelp_rating is not None:
@@ -92,11 +101,13 @@ def _build_context(lead: EnrichedLead) -> str:
             f"Building Yelp rating: {b.yelp_rating}/5 "
             f"({b.yelp_review_count or 0} reviews) — {r.property_address}"
         )
+    if b.price_tier:
+        lines.append(f"Building price tier: {b.price_tier}")
     if b.pain_themes:
         lines.append(f"Building review themes: {', '.join(b.pain_themes)}")
 
     if lead.score is not None:
-        lines.append(f"Lead score: {lead.score:.0f}/117 ({lead.tier})")
+        lines.append(f"Lead score: {lead.score:.0f}/131 ({lead.tier})")
 
     return "\n".join(lines)
 

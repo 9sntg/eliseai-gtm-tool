@@ -5,10 +5,13 @@ import pytest
 from gtm.config import (
     BASELINE_MAX_SCORE,
     POINTS_COMPANY_AGE,
+    POINTS_COMPANY_PAIN_THEMES,
+    POINTS_COMPETITOR_RANK,
     POINTS_CORPORATE_EMAIL,
     POINTS_DEPARTMENT_FUNCTION,
     POINTS_ECONOMIC_MOMENTUM,
     POINTS_EMPLOYEE_COUNT,
+    POINTS_GOOGLE_COMPANY_RATING,
     POINTS_JOB_POSTINGS,
     POINTS_MEDIAN_RENT,
     POINTS_POPULATION_GROWTH,
@@ -24,17 +27,18 @@ from gtm.config import (
 )
 
 
-def test_baseline_points_sum_to_117() -> None:
+def test_baseline_points_sum_to_131() -> None:
     total = (
         POINTS_RENTER_UNITS + POINTS_RENTER_RATE + POINTS_MEDIAN_RENT
         + POINTS_POPULATION_GROWTH + POINTS_ECONOMIC_MOMENTUM
         + POINTS_JOB_POSTINGS + POINTS_PORTFOLIO_NEWS + POINTS_TECH_STACK
         + POINTS_EMPLOYEE_COUNT + POINTS_COMPANY_AGE
         + POINTS_PORTFOLIO_SIZE + POINTS_SOCIAL_PRESENCE + POINTS_YELP_COMPANY_RATING
+        + POINTS_GOOGLE_COMPANY_RATING + POINTS_COMPANY_PAIN_THEMES + POINTS_COMPETITOR_RANK
         + POINTS_SENIORITY + POINTS_DEPARTMENT_FUNCTION + POINTS_CORPORATE_EMAIL
     )
-    assert abs(total - 117.0) < 1e-9
-    assert abs(BASELINE_MAX_SCORE - 117.0) < 1e-9
+    assert abs(total - 131.0) < 1e-9
+    assert abs(BASELINE_MAX_SCORE - 131.0) < 1e-9
 
 
 def test_settings_loads_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -72,8 +76,9 @@ def test_company_points_sum() -> None:
         POINTS_JOB_POSTINGS + POINTS_PORTFOLIO_NEWS + POINTS_TECH_STACK
         + POINTS_EMPLOYEE_COUNT + POINTS_COMPANY_AGE
         + POINTS_PORTFOLIO_SIZE + POINTS_SOCIAL_PRESENCE + POINTS_YELP_COMPANY_RATING
+        + POINTS_GOOGLE_COMPANY_RATING + POINTS_COMPANY_PAIN_THEMES + POINTS_COMPETITOR_RANK
     )
-    assert abs(company - 58.0) < 1e-9
+    assert abs(company - 72.0) < 1e-9
 
 
 def test_person_points_sum() -> None:

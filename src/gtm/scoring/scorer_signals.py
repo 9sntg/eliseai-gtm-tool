@@ -4,7 +4,7 @@ Each function maps a single enrichment field to a 0.0–1.0 value.
 A None input always returns 0.0 — missing data scores zero; the enrichment
 module already logged the warning when the field was unavailable.
 
-File is ~283 lines — over the 200-line limit. All content is pure threshold
+File is ~369 lines — over the 200-line limit. All content is pure threshold
 constants + one-purpose signal functions. Splitting into e.g. market/company/
 person modules would add 3 import paths for no behavioural gain. Accepted as-is.
 """
@@ -198,6 +198,92 @@ def score_social_presence(platform_count: int) -> float:
         return 1.0
     if platform_count >= SOCIAL_PLATFORMS_MID:
         return 0.5
+    return 0.0
+
+
+# --- Google company rating signal (independent of Yelp) ---
+GOOGLE_RATING_VERY_LOW: float = 2.5
+GOOGLE_RATING_LOW: float = 3.0
+GOOGLE_RATING_MID: float = 3.5
+GOOGLE_RATING_HIGH: float = 4.0
+
+# --- Company pain theme density ---
+PAIN_THEMES_MID: int = 1
+PAIN_THEMES_HIGH: int = 2
+
+# --- Competitor rank ---
+COMPETITOR_RANK_BOTTOM_QUARTER: float = 0.75
+COMPETITOR_RANK_BELOW_MEDIAN: float = 0.50
+COMPETITOR_RANK_BELOW_AVERAGE: float = 0.25
+
+# --- Building price tier ---
+PRICE_TIER_MAP: dict[str, float] = {"$": 0.2, "$$": 0.5, "$$$": 0.75, "$$$$": 1.0}
+
+# --- Building pain theme density ---
+BUILDING_PAIN_THEMES_MID: int = 1
+BUILDING_PAIN_THEMES_HIGH: int = 2
+
+
+def score_google_company_rating(rating: float | None) -> float:
+    """Score company Google rating — inverted, low rating = resident pain = strong pitch."""
+    if rating is None:
+        return 0.0
+    if rating <= GOOGLE_RATING_VERY_LOW:
+        return 1.0
+    if rating <= GOOGLE_RATING_LOW:
+        return 0.8
+    if rating <= GOOGLE_RATING_MID:
+        return 0.6
+    if rating <= GOOGLE_RATING_HIGH:
+        return 0.3
+    return 0.1
+
+
+def score_company_pain_themes(theme_count: int) -> float:
+    """Score company pain theme density from Yelp + Serper snippets.
+
+    More documented themes = more systematic management failures = stronger pitch.
+    """
+    if theme_count >= PAIN_THEMES_HIGH + 1:
+        return 1.0
+    if theme_count >= PAIN_THEMES_HIGH:
+        return 0.7
+    if theme_count >= PAIN_THEMES_MID:
+        return 0.3
+    return 0.0
+
+
+def score_competitor_rank(pct_above: float | None) -> float:
+    """Score % of Yelp comparables rating higher than this company.
+
+    High pct_above = bottom of local market = most compelling pitch.
+    """
+    if pct_above is None:
+        return 0.0
+    if pct_above >= COMPETITOR_RANK_BOTTOM_QUARTER:
+        return 1.0
+    if pct_above >= COMPETITOR_RANK_BELOW_MEDIAN:
+        return 0.7
+    if pct_above >= COMPETITOR_RANK_BELOW_AVERAGE:
+        return 0.4
+    return 0.1
+
+
+def score_building_price_tier(tier: str | None) -> float:
+    """Score Yelp building price tier: higher tier = premium tenants with higher expectations."""
+    if tier is None:
+        return 0.0
+    return PRICE_TIER_MAP.get(tier, 0.0)
+
+
+def score_building_pain_themes(theme_count: int) -> float:
+    """Score building pain theme density — building-specific tenant complaints."""
+    if theme_count >= BUILDING_PAIN_THEMES_HIGH + 1:
+        return 1.0
+    if theme_count >= BUILDING_PAIN_THEMES_HIGH:
+        return 0.7
+    if theme_count >= BUILDING_PAIN_THEMES_MID:
+        return 0.4
     return 0.0
 
 

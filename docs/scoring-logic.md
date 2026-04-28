@@ -6,16 +6,16 @@ Threshold rationale for all signals. Constants live in `src/gtm/scoring/scorer_s
 
 ## Scoring Overview
 
-The pipeline uses an **additive point model**. Each of the 13 baseline signals contributes 0–N points when it fires and 0 when data is absent — absent signals do not affect other signals. Two bonus signals can push the final score above the 100-pt baseline.
+The pipeline uses an **additive point model**. Each of the 19 baseline signals contributes 0–N points when it fires and 0 when data is absent — absent signals do not affect other signals. Four bonus Building Fit signals can push the final score above the 131-pt baseline.
 
 | Category | Points | Rationale |
 |---|---|---|
 | Market Fit | 38 pts | Market size and rental demand determine how many units EliseAI could automate |
-| Company Fit | 58 pts | Company signals indicate likelihood to buy, budget, and proximity to decision |
+| Company Fit | 72 pts | Company signals indicate likelihood to buy, budget, and proximity to decision |
 | Person Fit | 21 pts | Contact quality determines email deliverability and whether the pitch reaches a buyer |
-| Building Fit (bonus) | up to +12 pts | Building-level Yelp signals; absence never penalises a lead |
+| Building Fit (bonus) | up to +20 pts | Building-level Yelp signals; absence never penalises a lead |
 
-**Tier thresholds (applied to final score):** 0–40 Low · 41–70 Medium · 71–117 High · > 117 still "High" (Building bonus can push past 117)
+**Tier thresholds (applied to final score):** 0–40 Low · 41–70 Medium · 71–131 High · > 131 still "High" (Building bonus can push past 131)
 
 ---
 
@@ -77,7 +77,7 @@ YoY income growth (same formula, applied to median household income). Rising inc
 
 ---
 
-## Company Fit Signals (58 pts baseline)
+## Company Fit Signals (72 pts baseline)
 
 ### Job Postings (12 pts)
 
@@ -211,9 +211,51 @@ Market avg is computed from 3–5 comparable businesses (same category + city) v
 
 ---
 
-## Building Fit Signals (bonus, up to +12 pts)
+### Google Company Rating (4 pts)
 
-Building Fit signals fire when Yelp building-level data is available and contribute 0 when absent. Their absence never penalises a lead — they sit outside the 117-pt baseline and are computed from the building's own Yelp page (separate from the company page).
+Google star rating from Serper's knowledge graph, scored **independently** of the Yelp company rating. The same inverted logic applies: a low Google rating signals resident dissatisfaction and strengthens the EliseAI pitch. This signal uses the Google rating only — it never falls back to Yelp data.
+
+| Rating | Signal | Rationale |
+|---|---|---|
+| None | 0.0 | No knowledge graph entry or rating missing |
+| ≤ 2.5 | 1.0 | Very poor — strong pain signal |
+| ≤ 3.0 | 0.8 | Poor — significant complaints |
+| ≤ 3.5 | 0.6 | Below average — moderate pain |
+| ≤ 4.0 | 0.3 | Average — mild signal |
+| > 4.0 | 0.1 | Good reviews — lower urgency |
+
+### Company Pain Themes (5 pts)
+
+Combined count of documented resident pain themes extracted from Yelp review highlights + Serper PM-query organic snippets by Claude Haiku. Two independent sources surface more documented pain: Yelp gives review-verified themes; Serper captures Google-sourced review excerpts from aggregator sites. The score reflects the total theme count across both sources.
+
+| Total themes | Signal | Rationale |
+|---|---|---|
+| 0 | 0.0 | No documented pain |
+| 1 | 0.3 | One theme — mild signal |
+| 2 | 0.7 | Two themes — meaningful pattern |
+| ≥ 3 | 1.0 | Three+ themes — systematic issues |
+
+Haiku prompt instructs: return only themes with direct evidence from snippets. Do not invent themes. Return `[]` if no negative resident experiences are present.
+
+### Competitor Rank on Yelp (5 pts)
+
+The fraction of Yelp comparable property management businesses in the same city that rate **higher** than this company. A company ranked at the bottom of its local market has the strongest pain signal — its tenants are already choosing competitors (or complaining publicly).
+
+| % above | Signal | Rationale |
+|---|---|---|
+| None | 0.0 | No comparables found |
+| ≥ 75% | 1.0 | Bottom quartile — worst in market |
+| ≥ 50% | 0.7 | Below median |
+| ≥ 25% | 0.4 | Below average |
+| < 25% | 0.1 | At or near top — lower urgency |
+
+---
+
+## Building Fit Signals (bonus, up to +20 pts)
+
+Building Fit signals fire when Yelp building-level data is available and contribute 0 when absent. Their absence never penalises a lead — they sit outside the 131-pt baseline and are computed from the building's own Yelp page (separate from the company page).
+
+Building name resolution: if the lead has a `property_address`, `yelp.py` uses a Serper query (`{address} {city} {state} apartments`) to resolve it to a proper apartment complex name, which is then used as the Yelp search term. This dramatically improves Yelp match rates versus searching by street address.
 
 ### Building Rating — Inverted (8 pts)
 
@@ -239,6 +281,29 @@ More reviews means stronger signal confidence. A 2-star rating from 3 reviews is
 | ≥ 20 | 0.75 |
 | ≥ 50 | 1.0 |
 
+### Building Price Tier (4 pts)
+
+Yelp's `price` field (`$` – `$$$$`) for the building. Higher-tier buildings have premium tenants who have higher expectations for responsiveness and communication — exactly where EliseAI creates the most visible impact.
+
+| Tier | Signal | Rationale |
+|---|---|---|
+| None | 0.0 | No Yelp data |
+| $ | 0.2 | Budget — lower tenant expectations |
+| $$ | 0.5 | Mid-range |
+| $$$ | 0.75 | Premium — high expectations |
+| $$$$ | 1.0 | Luxury — strongest automation ROI |
+
+### Building Pain Themes (4 pts)
+
+Resident pain themes extracted from the building's own Yelp review highlights + recent reviews by Claude Haiku. Scored independently of the building rating — a building can have a mediocre rating without documented themes, or vice versa.
+
+| Themes | Signal |
+|---|---|
+| 0 | 0.0 |
+| 1 | 0.4 |
+| 2 | 0.7 |
+| ≥ 3 | 1.0 |
+
 ---
 
 ## Signals kept as enrichment-only (not scored)
@@ -247,7 +312,6 @@ More reviews means stronger signal confidence. A 2-star rating from 3 reviews is
 |---|---|
 | `is_publicly_traded` (EDGAR) | Biased toward large-cap public REITs — most EliseAI targets are private. Present as insight bullet only. |
 | `yelp_alias` | Identifier used to look up Yelp profile, reviews, and highlights. The alias itself is not a scoring signal — only the rating and review count that come from that profile are scored. |
-| `google_rating` (Serper knowledgeGraph) | Extracted from Serper knowledge graph for email context. Not currently scored — Yelp rating is more reliable for PM companies than Google star ratings. |
 
 ---
 

@@ -17,7 +17,8 @@ from gtm.models.company import SerperOrganicItem, SerperSearchBucket
 logger = logging.getLogger(__name__)
 
 HAIKU_MODEL: str = "claude-haiku-4-5-20251001"
-HAIKU_MAX_TOKENS: int = 150  # enough for 3-field JSON response
+HAIKU_MAX_TOKENS: int = 150       # enough for 3-field JSON response
+HAIKU_PAIN_MAX_TOKENS: int = 150  # enough for a variable-length pain theme array
 
 
 def extract_job_count(snippets: list[str]) -> int | None:
@@ -87,6 +88,49 @@ def parse_serper_response(raw: dict, query: str) -> SerperSearchBucket:
         knowledge_graph_description=kg.get("description"),
         knowledge_graph_rating=extract_google_rating(kg),
     )
+
+
+async def extract_serper_pain_themes(snippets: list[str], company_name: str) -> list[str]:
+    """Extract tenant pain themes from Serper PM-query organic snippets via Haiku.
+
+    Snippets often contain review excerpts from Google, Yelp aggregators, and
+    apartments.com — this surfaces Google-sourced pain without a separate API.
+    Returns only themes with clear evidence. May return [].
+    """
+    if not settings.anthropic_api_key or not snippets:
+        return []
+
+    combined = "\n".join(f"- {s}" for s in snippets[:10] if s.strip())
+    if not combined:
+        return []
+
+    prompt = (
+        f"These are Google search result snippets about {company_name}, a property management company.\n\n"
+        f"{combined}\n\n"
+        "Some snippets may contain tenant review excerpts or star ratings. "
+        "List ONLY the resident pain themes you find direct evidence for — "
+        "leasing, communication, maintenance, or staff availability issues. "
+        "Do not invent themes. If snippets contain no negative resident experiences, return []. "
+        "Return ONLY a JSON array of short strings. "
+        'Example: ["slow to respond", "maintenance requests ignored"]. '
+        "Return [] if no clear pain is present."
+    )
+
+    client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
+    try:
+        message = await client.messages.create(
+            model=HAIKU_MODEL,
+            max_tokens=HAIKU_PAIN_MAX_TOKENS,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        text = message.content[0].text.strip()
+        match = re.search(r"\[.*\]", text, re.DOTALL)
+        if not match:
+            return []
+        return json.loads(match.group(0))
+    except Exception as exc:
+        logger.debug("Haiku Serper pain extraction failed for %s: %s", company_name, exc)
+        return []
 
 
 async def extract_company_profile(snippets: list[str], company_name: str) -> dict:

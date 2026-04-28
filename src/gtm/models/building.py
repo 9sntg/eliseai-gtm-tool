@@ -7,6 +7,7 @@ class BuildingData(BaseModel):
     """Signals for the specific property the lead manages."""
 
     address: str = Field(default="", description="Street address from RawLead")
+    name: str | None = Field(default=None, description="Resolved apartment/building name from Serper")
     yelp_alias: str | None = Field(default=None, description="Yelp business alias for the building")
     yelp_rating: float | None = Field(
         default=None,
@@ -19,6 +20,10 @@ class BuildingData(BaseModel):
     pain_themes: list[str] = Field(
         default_factory=list,
         description="Resident pain themes extracted from Yelp review highlights via Haiku",
+    )
+    price_tier: str | None = Field(
+        default=None,
+        description="Yelp price tier for the building: '$', '$$', '$$$', or '$$$$'",
     )
     google_rating: float | None = Field(
         default=None,
