@@ -2,8 +2,8 @@
 
 Scoring model: additive. Each signal contributes 0–N points when it fires,
 0 when data is absent. No redistribution — missing signals simply don't score.
-Baseline maximum (16 core signals at 1.0) = 131 pts.
-Building Fit bonus signals (up to +20 pts) can push the score above 131.
+Baseline maximum (15 core signals at 1.0) = 119 pts.
+Building Fit bonus signals (up to +20 pts) can push the score above 119.
 Thresholds and point values marked # calibrate are provisional — revisit after
 more lead runs.
 """
@@ -21,8 +21,7 @@ POINTS_MEDIAN_RENT: float = 5.0
 POINTS_POPULATION_GROWTH: float = 5.0
 POINTS_ECONOMIC_MOMENTUM: float = 5.0
 
-# --- Company Fit point values (baseline total = 72 pts) ---
-POINTS_JOB_POSTINGS: float = 12.0
+# --- Company Fit point values (baseline total = 60 pts) ---
 POINTS_PORTFOLIO_NEWS: float = 8.0
 POINTS_TECH_STACK: float = 8.0
 POINTS_EMPLOYEE_COUNT: float = 8.0
@@ -45,19 +44,19 @@ POINTS_BUILDING_REVIEWS: float = 4.0       # review volume = active, addressable
 POINTS_BUILDING_PRICE_TIER: float = 4.0    # higher tier = premium tenants, more at stake
 POINTS_BUILDING_PAIN_THEMES: float = 4.0   # count of building-level pain themes
 
-# Baseline max = 38 + 72 + 21 = 131 pts
+# Baseline max = 38 + 60 + 21 = 119 pts
 BASELINE_MAX_SCORE: float = (
     POINTS_RENTER_UNITS + POINTS_RENTER_RATE + POINTS_MEDIAN_RENT
     + POINTS_POPULATION_GROWTH + POINTS_ECONOMIC_MOMENTUM
-    + POINTS_JOB_POSTINGS + POINTS_PORTFOLIO_NEWS + POINTS_TECH_STACK
+    + POINTS_PORTFOLIO_NEWS + POINTS_TECH_STACK
     + POINTS_EMPLOYEE_COUNT + POINTS_COMPANY_AGE
     + POINTS_PORTFOLIO_SIZE + POINTS_SOCIAL_PRESENCE + POINTS_YELP_COMPANY_RATING
     + POINTS_GOOGLE_COMPANY_RATING + POINTS_COMPANY_PAIN_THEMES + POINTS_COMPETITOR_RANK
     + POINTS_SENIORITY + POINTS_DEPARTMENT_FUNCTION + POINTS_CORPORATE_EMAIL
 )
 
-assert abs(BASELINE_MAX_SCORE - 131.0) < 1e-6, (
-    f"Baseline point values must sum to 131, got {BASELINE_MAX_SCORE}"
+assert abs(BASELINE_MAX_SCORE - 119.0) < 1e-6, (
+    f"Baseline point values must sum to 119, got {BASELINE_MAX_SCORE}"
 )
 
 

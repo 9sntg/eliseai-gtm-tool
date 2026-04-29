@@ -29,10 +29,6 @@ class CompanyData(BaseModel):
         default_factory=SerperSearchBucket,
         description="Results for company + property management style query",
     )
-    serper_jobs: SerperSearchBucket = Field(
-        default_factory=SerperSearchBucket,
-        description="Results for leasing / jobs style query",
-    )
     serper_linkedin: SerperSearchBucket = Field(
         default_factory=SerperSearchBucket,
         description="Results for site:linkedin.com/company query",
@@ -48,10 +44,6 @@ class CompanyData(BaseModel):
     is_publicly_traded: bool = Field(
         default=False,
         description="True if SEC EDGAR shows the company files 10-K reports",
-    )
-    job_count: int | None = Field(
-        default=None,
-        description="Real open-role count extracted from Indeed/ZipRecruiter snippets",
     )
     portfolio_size: int | None = Field(
         default=None,

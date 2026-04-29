@@ -17,7 +17,6 @@ class ScoreBreakdown(BaseModel):
     population_growth: float = Field(default=0.0, description="YoY population growth signal [0–1]")
     economic_momentum: float = Field(default=0.0, description="Median income growth signal [0–1]")
 
-    job_postings: float = Field(default=0.0, description="Open leasing job postings signal [0–1]")
     portfolio_news: float = Field(default=0.0, description="Portfolio/company news signal [0–1]; absorbs BuiltWith weight when tech_stack is absent")
     tech_stack: float = Field(default=0.0, description="Property-management tech stack signal [0–1]; 0 when BuiltWith key absent")
     employee_count: float = Field(default=0.0, description="Employee headcount signal [0–1]")

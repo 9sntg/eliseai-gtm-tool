@@ -52,11 +52,9 @@ def _merge_company(
     """Combine Serper, BuiltWith, EDGAR, and Yelp fields into one CompanyData."""
     return CompanyData(
         serper_property_management=serper_data.serper_property_management,
-        serper_jobs=serper_data.serper_jobs,
         serper_linkedin=serper_data.serper_linkedin,
         linkedin_employee_count=serper_data.linkedin_employee_count,
         founded_year=serper_data.founded_year,
-        job_count=serper_data.job_count,
         portfolio_size=serper_data.portfolio_size,
         yelp_alias=yelp_data.yelp_alias or serper_data.yelp_alias,
         social_platform_count=serper_data.social_platform_count,

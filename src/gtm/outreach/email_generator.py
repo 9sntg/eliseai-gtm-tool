@@ -67,9 +67,6 @@ def _build_context(lead: EnrichedLead, breakdown: ScoreBreakdown | None) -> str:
         lines.append(f"Tech stack detected: {', '.join(c.tech_stack)}")
     else:
         lines.append("Tech stack: none detected")
-    job_count = c.job_count if c.job_count is not None else len(c.serper_jobs.organic)
-    if job_count:
-        lines.append(f"Open leasing/PM job postings: {job_count}")
     if c.serper_property_management.knowledge_graph_title:
         lines.append(
             f"Google presence: verified Knowledge Graph entry for "
@@ -110,7 +107,7 @@ def _build_context(lead: EnrichedLead, breakdown: ScoreBreakdown | None) -> str:
         lines.append("")
         lines.append("=== SCORING ANALYSIS ===")
         if lead.score is not None:
-            lines.append(f"Lead score: {lead.score:.1f}/131 ({lead.tier} priority)")
+            lines.append(f"Lead score: {lead.score:.1f}/119 ({lead.tier} priority)")
         lines.append(f"Market context score: {breakdown.market_score:.1f}%")
         lines.append(f"Company signals score: {breakdown.company_score:.1f}%")
         lines.append(f"Contact fit score: {breakdown.person_score:.1f}%")

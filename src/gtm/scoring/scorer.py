@@ -6,8 +6,8 @@ Public entry point::
     insights = generate_insights(enriched_lead, breakdown)
 
 Each signal contributes 0–N points when it fires, 0 when data is absent.
-Missing signals do not affect other signals. Baseline max = 131 pts.
-Building Fit bonus signals (up to +20 pts) can push the score above 131.
+Missing signals do not affect other signals. Baseline max = 119 pts.
+Building Fit bonus signals (up to +20 pts) can push the score above 119.
 
 File is ~252 lines — over the 200-line limit. All content belongs to a single
 responsibility: orchestrating signals into a score. Splitting would require
@@ -31,7 +31,6 @@ from gtm.config import (
     POINTS_ECONOMIC_MOMENTUM,
     POINTS_EMPLOYEE_COUNT,
     POINTS_GOOGLE_COMPANY_RATING,
-    POINTS_JOB_POSTINGS,
     POINTS_MEDIAN_RENT,
     POINTS_POPULATION_GROWTH,
     POINTS_PORTFOLIO_NEWS,
@@ -62,7 +61,6 @@ from gtm.scoring.scorer_signals import (
     score_economic_momentum,
     score_employee_count,
     score_google_company_rating,
-    score_job_postings,
     score_median_rent,
     score_population_growth,
     score_portfolio_news,
@@ -83,7 +81,7 @@ _MARKET_MAX: float = (
     + POINTS_POPULATION_GROWTH + POINTS_ECONOMIC_MOMENTUM
 )
 _COMPANY_MAX: float = (
-    POINTS_JOB_POSTINGS + POINTS_PORTFOLIO_NEWS + POINTS_TECH_STACK
+    POINTS_PORTFOLIO_NEWS + POINTS_TECH_STACK
     + POINTS_EMPLOYEE_COUNT + POINTS_COMPANY_AGE
     + POINTS_PORTFOLIO_SIZE + POINTS_SOCIAL_PRESENCE + POINTS_YELP_COMPANY_RATING
     + POINTS_GOOGLE_COMPANY_RATING + POINTS_COMPANY_PAIN_THEMES + POINTS_COMPETITOR_RANK
@@ -155,8 +153,6 @@ def score_lead(lead: EnrichedLead) -> tuple[float, ScoreTier, ScoreBreakdown]:
     sig_econ         = score_economic_momentum(m.median_income_growth_yoy)
 
     # Company signals — each fires independently, no redistribution
-    _job_count = c.job_count if c.job_count is not None else len(c.serper_jobs.organic)
-    sig_jobs         = score_job_postings(_job_count)
     sig_news         = score_portfolio_news(
         len(c.serper_property_management.organic),
         bool(c.serper_property_management.knowledge_graph_title),
@@ -190,8 +186,7 @@ def score_lead(lead: EnrichedLead) -> tuple[float, ScoreTier, ScoreBreakdown]:
         + sig_econ         * POINTS_ECONOMIC_MOMENTUM
     )
     company_raw = (
-        sig_jobs      * POINTS_JOB_POSTINGS
-        + sig_news    * POINTS_PORTFOLIO_NEWS
+        sig_news      * POINTS_PORTFOLIO_NEWS
         + sig_tech    * POINTS_TECH_STACK
         + sig_emp     * POINTS_EMPLOYEE_COUNT
         + sig_age     * POINTS_COMPANY_AGE
@@ -222,7 +217,6 @@ def score_lead(lead: EnrichedLead) -> tuple[float, ScoreTier, ScoreBreakdown]:
         median_rent=sig_median_rent,
         population_growth=sig_pop_growth,
         economic_momentum=sig_econ,
-        job_postings=sig_jobs,
         portfolio_news=sig_news,
         tech_stack=sig_tech,
         employee_count=sig_emp,
@@ -246,7 +240,7 @@ def score_lead(lead: EnrichedLead) -> tuple[float, ScoreTier, ScoreBreakdown]:
         building_score=round(building_raw / _BUILDING_MAX * 100, 2) if building_raw > 0 else 0.0,
     )
     logger.info(
-        "scored lead: %.1f/131 %s — %s, %s",
+        "scored lead: %.1f/119 %s — %s, %s",
         overall, tier, lead.raw.company, lead.raw.city,
     )
     return overall, tier, breakdown

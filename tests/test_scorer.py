@@ -8,6 +8,7 @@ import pytest
 
 import gtm.config as cfg
 from gtm.models import CompanyData, EnrichedLead, MarketData, PersonData, RawLead
+from gtm.models.building import BuildingData
 from gtm.models.company import SerperOrganicItem, SerperSearchBucket
 from gtm.scoring.scorer import compute_tier, generate_insights, score_lead
 from gtm.scoring.scorer_signals import (
@@ -48,7 +49,6 @@ from gtm.scoring.scorer_signals import (
     score_economic_momentum,
     score_employee_count,
     score_google_company_rating,
-    score_job_postings,
     score_median_rent,
     score_population_growth,
     score_portfolio_news,
@@ -82,17 +82,17 @@ def _inc_date(years_ago: float) -> str:
 # Point constant validation
 # ---------------------------------------------------------------------------
 
-def test_baseline_points_sum_to_131():
+def test_baseline_points_sum_to_119():
     total = (
         cfg.POINTS_RENTER_UNITS + cfg.POINTS_RENTER_RATE + cfg.POINTS_MEDIAN_RENT
         + cfg.POINTS_POPULATION_GROWTH + cfg.POINTS_ECONOMIC_MOMENTUM
-        + cfg.POINTS_JOB_POSTINGS + cfg.POINTS_PORTFOLIO_NEWS + cfg.POINTS_TECH_STACK
+        + cfg.POINTS_PORTFOLIO_NEWS + cfg.POINTS_TECH_STACK
         + cfg.POINTS_EMPLOYEE_COUNT + cfg.POINTS_COMPANY_AGE
         + cfg.POINTS_PORTFOLIO_SIZE + cfg.POINTS_SOCIAL_PRESENCE + cfg.POINTS_YELP_COMPANY_RATING
         + cfg.POINTS_GOOGLE_COMPANY_RATING + cfg.POINTS_COMPANY_PAIN_THEMES + cfg.POINTS_COMPETITOR_RANK
         + cfg.POINTS_SENIORITY + cfg.POINTS_DEPARTMENT_FUNCTION + cfg.POINTS_CORPORATE_EMAIL
     )
-    assert abs(total - 131.0) < 1e-6
+    assert abs(total - 119.0) < 1e-6
 
 
 # ---------------------------------------------------------------------------
@@ -165,19 +165,6 @@ def test_score_economic_momentum_delegates():
 # ---------------------------------------------------------------------------
 # Company signal boundaries
 # ---------------------------------------------------------------------------
-
-@pytest.mark.parametrize("count,expected", [
-    (0, 0.0),
-    (1, 0.3),
-    (2, 0.3),
-    (3, 0.6),
-    (4, 0.6),
-    (5, 1.0),
-    (10, 1.0),
-])
-def test_score_job_postings(count, expected):
-    assert score_job_postings(count) == pytest.approx(expected)
-
 
 @pytest.mark.parametrize("organic,has_kg,expected", [
     (0, False, 0.0),
@@ -375,7 +362,6 @@ def test_score_lead_full_enrichment_produces_high_score():
             serper_property_management=SerperSearchBucket(
                 query="q", organic=[org, org, org], knowledge_graph_title="BigPM"
             ),
-            serper_jobs=SerperSearchBucket(query="q", organic=[org, org, org, org, org]),
             tech_stack=["Yardi Voyager"],
             linkedin_employee_count=1_500,
             founded_year=date.today().year - 15,
@@ -518,7 +504,7 @@ def test_score_building_reviews(count, expected):
 
 
 def test_bonus_signals_push_score_above_100():
-    """Bonus signals can push the final score above the 100-pt baseline."""
+    """Building bonus signals push the final score above 100."""
     org = SerperOrganicItem(title="X", link="https://x.com", snippet="s", position=1)
     lead = _make_lead(
         market=MarketData(
@@ -530,7 +516,6 @@ def test_bonus_signals_push_score_above_100():
             serper_property_management=SerperSearchBucket(
                 query="q", organic=[org, org, org], knowledge_graph_title="BigPM"
             ),
-            serper_jobs=SerperSearchBucket(query="q", organic=[org, org, org, org, org]),
             tech_stack=["Yardi Voyager"],
             linkedin_employee_count=1_500,
             founded_year=date.today().year - 15,
@@ -542,6 +527,12 @@ def test_bonus_signals_push_score_above_100():
             seniority="vp",
             department="operations",
             is_corporate_email=True,
+        ),
+        building=BuildingData(
+            yelp_rating=2.5,
+            yelp_review_count=50,
+            price_tier="$$$",
+            pain_themes=["maintenance", "staff", "communication"],
         ),
     )
     overall, _, breakdown = score_lead(lead)

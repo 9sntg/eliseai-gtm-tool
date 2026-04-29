@@ -33,9 +33,6 @@ GROWTH_FLAT: float = 0.0
 GROWTH_HIGH: float = 0.02
 
 # Company signals
-JOB_POSTINGS_MID: int = 3
-JOB_POSTINGS_HIGH: int = 5
-
 EMPLOYEE_MIN: int = 20  # below this = solo/micro operator, EliseAI ROI marginal
 
 COMPANY_AGE_YOUNG: int = 5
@@ -125,17 +122,6 @@ def score_economic_momentum(growth: float | None) -> float:
 
 
 # --- Company signal functions ---
-
-def score_job_postings(organic_count: int) -> float:
-    """Score leasing job posting count (active hiring = growth mode = likely buyer)."""
-    if organic_count >= JOB_POSTINGS_HIGH:
-        return 1.0
-    if organic_count >= JOB_POSTINGS_MID:
-        return 0.6
-    if organic_count >= 1:
-        return 0.3
-    return 0.0
-
 
 def score_portfolio_news(organic_count: int, has_knowledge_graph: bool) -> float:
     """Score company web presence from Serper (knowledge graph + organic results)."""

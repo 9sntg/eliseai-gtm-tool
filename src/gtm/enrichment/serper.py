@@ -10,7 +10,6 @@ from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponen
 from gtm.config import settings
 from gtm.enrichment.serper_helpers import (
     extract_company_profile,
-    extract_job_count,
     extract_serper_pain_themes,
     extract_social_platforms,
     extract_yelp_alias,
@@ -56,15 +55,12 @@ async def enrich(lead: RawLead, client: httpx.AsyncClient, cache: FileCache) -> 
         return CompanyData()
 
     pm_query = f"{lead.company} property management"
-    jobs_query = f"{lead.company} leasing consultant jobs"
     linkedin_query = f"site:linkedin.com/company {lead.company}"
 
-    pm_bucket = await _query(client, cache, pm_query, f"pm:{lead.company.lower()}", req="1/3")
-    await asyncio.sleep(random.uniform(DELAY_MIN, DELAY_MAX))
-    jobs_bucket = await _query(client, cache, jobs_query, f"jobs:{lead.company.lower()}", req="2/3")
+    pm_bucket = await _query(client, cache, pm_query, f"pm:{lead.company.lower()}", req="1/2")
     await asyncio.sleep(random.uniform(DELAY_MIN, DELAY_MAX))
     linkedin_bucket = await _query(
-        client, cache, linkedin_query, f"linkedin:{lead.company.lower()}", req="3/3"
+        client, cache, linkedin_query, f"linkedin:{lead.company.lower()}", req="2/2"
     )
 
     # Combine LinkedIn + PM snippets for richer profile extraction; LinkedIn first (more structured)
@@ -76,19 +72,15 @@ async def enrich(lead: RawLead, client: httpx.AsyncClient, cache: FileCache) -> 
         extract_serper_pain_themes(pm_snippets, lead.company),
     )
 
-    jobs_snippets = [item.snippet for item in jobs_bucket.organic if item.snippet]
-    job_count = extract_job_count(jobs_snippets)
     yelp_alias = extract_yelp_alias(pm_bucket.organic)
     social_platform_count = extract_social_platforms(pm_bucket.organic)
     google_rating = pm_bucket.knowledge_graph_rating
 
     return CompanyData(
         serper_property_management=pm_bucket,
-        serper_jobs=jobs_bucket,
         serper_linkedin=linkedin_bucket,
         linkedin_employee_count=profile.get("employee_count"),
         founded_year=profile.get("founded_year"),
-        job_count=job_count,
         portfolio_size=profile.get("portfolio_size"),
         yelp_alias=yelp_alias,
         social_platform_count=social_platform_count,

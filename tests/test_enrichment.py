@@ -111,18 +111,17 @@ async def test_datausa_fetch_error_returns_empty(tmp_path, mocker, raw_lead):
 
 
 # ---------------------------------------------------------------------------
-# Serper (3 queries: PM, jobs, LinkedIn)
+# Serper (2 queries: PM, LinkedIn)
 # ---------------------------------------------------------------------------
 
 async def test_serper_happy_path(
     tmp_path, mocker, raw_lead,
-    serper_pm_response, serper_jobs_response, serper_linkedin_response,
+    serper_pm_response, serper_linkedin_response,
 ):
     cache = FileCache(tmp_path)
     mocker.patch("gtm.enrichment.serper.asyncio.sleep")
     mocker.patch("gtm.enrichment.serper._post", mocker.AsyncMock(side_effect=[
         _mock_resp(mocker, 200, serper_pm_response),
-        _mock_resp(mocker, 200, serper_jobs_response),
         _mock_resp(mocker, 200, serper_linkedin_response),
     ]))
     mocker.patch("gtm.enrichment.serper.settings.serper_api_key", "test-key")
@@ -135,12 +134,10 @@ async def test_serper_happy_path(
     assert isinstance(result, CompanyData)
     assert len(result.serper_property_management.organic) == 2
     assert result.serper_property_management.knowledge_graph_title == "Greystar"
-    assert len(result.serper_jobs.organic) == 2
     assert len(result.serper_linkedin.organic) == 1
     assert result.linkedin_employee_count == 10_001
     assert result.founded_year == 1993
     assert result.portfolio_size == 3_600
-    assert result.job_count == 15          # extracted from "15 Greystar leasing consultant jobs"
     assert result.yelp_alias == "greystar-austin"  # extracted from yelp.com/biz/greystar-austin
 
 

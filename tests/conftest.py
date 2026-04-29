@@ -69,20 +69,6 @@ def serper_pm_response():
 
 
 @pytest.fixture
-def serper_jobs_response():
-    return {
-        "organic": [
-            {"title": "Leasing Consultant - Greystar", "link": "https://jobs.greystar.com",
-             "snippet": "Now hiring leasing consultants in Austin TX", "position": 1},
-            {"title": "Greystar Leasing Jobs - Indeed", "link": "https://indeed.com/greystar",
-             "snippet": "15 Greystar leasing consultant jobs available on Indeed.com",
-             "position": 2},
-        ],
-        "knowledgeGraph": None,
-    }
-
-
-@pytest.fixture
 def serper_linkedin_response():
     return {
         "organic": [

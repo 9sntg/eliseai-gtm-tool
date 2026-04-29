@@ -164,9 +164,6 @@ def render_company_section(company: dict, contact: dict) -> None:
         rows.append(("Portfolio", f"~{company['portfolio_size']:,} units", "Estimated units and communities managed."))
     if company.get("tech_stack"):
         rows.append(("Tech stack", _tags(company["tech_stack"], *TAG_TECH), "Software tools detected via BuiltWith."))
-    job_count = company.get("job_count") or len((company.get("serper_jobs") or {}).get("organic", []))
-    if job_count:
-        rows.append(("Open roles", str(job_count), "Active job postings indicate the company is growing."))
     if company.get("is_publicly_traded"):
         rows.append(("Publicly traded", "Yes", "Listed on SEC EDGAR."))
     kg = (company.get("serper_property_management") or {}).get("knowledge_graph_title")

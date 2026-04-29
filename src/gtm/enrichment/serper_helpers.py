@@ -21,15 +21,6 @@ HAIKU_MAX_TOKENS: int = 150       # enough for 3-field JSON response
 HAIKU_PAIN_MAX_TOKENS: int = 150  # enough for a variable-length pain theme array
 
 
-def extract_job_count(snippets: list[str]) -> int | None:
-    """Extract the largest real job count from Indeed/ZipRecruiter snippets via regex."""
-    counts = []
-    for snippet in snippets:
-        match = re.search(r"(\d[\d,]*)\s+(?:\w+\s+){0,3}jobs?", snippet, re.IGNORECASE)
-        if match:
-            counts.append(int(match.group(1).replace(",", "")))
-    return max(counts) if counts else None
-
 
 def extract_yelp_alias(organic_items: list[SerperOrganicItem]) -> str | None:
     """Extract Yelp business alias from Serper organic result links."""

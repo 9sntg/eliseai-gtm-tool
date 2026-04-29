@@ -78,7 +78,7 @@ exactly one blank line — no more, no less. The spacing must be identical
 between every section: after the greeting, between paragraphs, and before
 the sign-off.
 
-1. A greeting line: "Hi [first name]," on its own line, followed by one blank line.
+1. A greeting line: "Hi [first name]," on its own line, followed by two blank lines.
 2. An opening paragraph: a specific observation about this company, their
    market, their tenure, or a genuine opportunity signal from the data.
 3. One or two body paragraphs connecting EliseAI to their situation, optionally
@@ -97,8 +97,26 @@ the greeting line.
 Body: connect EliseAI's value to their specific situation using only what the lead
 data shows. Be conversational. Do not list product names or feature bullets.
 
-Close: end with one low-friction call to action such as "Would a 15-minute call
-make sense this week?" Then sign off on a new line with exactly:
+If resident complaint themes are present in the data (maintenance issues, slow
+responses, communication gaps, etc.), you must use them. Weave the specific themes
+into the body as the kind of operational friction EliseAI removes for operators in
+this space. Do not treat pain themes as optional context — they are the sharpest
+pitch angle available when present. Frame them as industry patterns, not as a
+critique of this company.
+
+If job posting data is present, never state a specific number as fact — job board
+counts are unreliable. Instead reference the signal qualitatively: "your team is
+actively hiring across leasing and operations" or "there is clearly a growth push
+underway." Treat the count as a directional signal, not a precise figure.
+
+Close: end with one low-friction call to action. Every email must use a different
+closing. Never repeat a closing used in a previous email in the same batch. Draw
+from a range of tones — direct, conversational, curious, low-pressure. Some
+examples (do not copy these verbatim, let the phrasing emerge from the email's
+tone): "Would a 15-minute call make sense this week?", "Worth a quick conversation
+to see if the timing is right?", "If any of this resonates, I would love to find
+15 minutes.", "Open to a quick call if the timing works on your end." Then sign
+off on a new line with exactly:
 
 Best,
 EliseAI

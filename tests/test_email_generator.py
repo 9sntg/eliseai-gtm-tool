@@ -3,7 +3,7 @@
 import json
 
 from gtm.models import EnrichedLead, RawLead
-from gtm.models.company import CompanyData, SerperOrganicItem, SerperSearchBucket
+from gtm.models.company import CompanyData
 from gtm.models.market import MarketData
 from gtm.models.person import PersonData
 from gtm.outreach.email_generator import _build_context, generate_outreach
@@ -176,10 +176,6 @@ def test_build_context_includes_present_fields():
             tech_stack=["Yardi Voyager"],
             linkedin_employee_count=501,
             founded_year=2002,
-            serper_jobs=SerperSearchBucket(
-                query="q",
-                organic=[SerperOrganicItem(title="Leasing Agent", link="https://x.com", snippet="s")],
-            ),
         ),
         person=PersonData(job_title="VP of Operations"),
         score=74.0,

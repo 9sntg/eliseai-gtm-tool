@@ -74,8 +74,11 @@ async def _fetch(
         return cached
     try:
         resp = await _get(client, url, params, headers)
-        if resp.status_code in (401, 403):
-            raise ConfigurationError(f"Yelp API key invalid (HTTP {resp.status_code})")
+        if resp.status_code == 401:
+            raise ConfigurationError(f"Yelp API key invalid (HTTP 401)")
+        if resp.status_code == 403:
+            logger.warning("Yelp: 403 for %s — business restricted, skipping", url)
+            return {}
         if resp.status_code == 404:
             logger.info("Yelp: 404 for %s", url)
             return {}
