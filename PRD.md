@@ -62,9 +62,15 @@ Detects whether the company is publicly traded by searching for 10-K filings. Us
 
 Detects property management software running on the company's website. A company on Yardi, RealPage, or Entrata is on legacy software and is a direct displacement opportunity. When the key is absent or no data is returned, the signal scores zero.
 
-**Yelp Fusion v3** (`YELP_API_KEY`, free tier; 500 req/day)
+**Yelp Fusion v3 — Company** (`YELP_API_KEY`, free tier; 500 req/day)
 
-Two distinct calls per lead. `enrich_company` finds the company's Yelp page, fetches its rating, review count, and review highlights, and computes a market average rating from comparable property management businesses in the same city. `enrich_building` resolves the `property_address` to an apartment complex name via Serper, then fetches the building's Yelp page for rating, review count, price tier, and resident pain themes. See [`docs/api-notes.md`](docs/api-notes.md) for full endpoint details.
+`enrich_company` finds the company's Yelp page, fetches its rating, review count, and review highlights, and computes a market average rating from comparable property management businesses in the same city. See [`docs/api-notes.md`](docs/api-notes.md) for full endpoint details.
+
+### Building Level
+
+**Yelp Fusion v3 — Building** (`YELP_API_KEY`, same key as above)
+
+`enrich_building` resolves the `property_address` to an apartment complex name via a Serper query, then fetches the building's own Yelp page for rating, review count, price tier, and resident pain themes. The building page is distinct from the company page — it reflects tenant experience at a specific property rather than the company's overall reputation.
 
 ### Person Level
 
