@@ -1,23 +1,16 @@
 {
-  "lead_score": 76.5,
-  "tier": "High",
+  "lead_score": 64.5,
+  "tier": "Medium",
   "key_observations": [
     "Arbor Properties has ten open leasing and property management job postings, which is a strong signal that the team is stretched thin. Lead with how EliseAI reduces the burden on understaffed leasing teams and can act as a force multiplier so they do not need to hire their way out of the communication gap.",
     "Resident reviews at the 2200 Pleasant Valley Dr building cite maintenance issues and property neglect as recurring themes. Frame this carefully as an industry-wide challenge around communication speed during maintenance workflows, and show how EliseAI automates intake and follow-up so residents feel acknowledged even when staff capacity is limited.",
     "Austin is a high-demand rental market with nearly 190,000 renter-occupied units and income growth of nearly 10% year over year, meaning the opportunity cost of missed or slow lead responses is significant. Emphasize the after-hours lead capture angle since 41% of inquiries arrive when staff are unavailable, and a growing market like Austin rewards operators who respond fastest."
   ],
   "market_fit": 69.74,
-  "company_fit": 48.61,
+  "company_fit": 28.61,
   "person_fit": 19.05,
   "building_fit": 55.0,
   "signals": [
-    {
-      "name": "Job Postings",
-      "category": "Company",
-      "points": 12.0,
-      "max_points": 12.0,
-      "reason": "Multiple active job postings found. Company is hiring and actively growing."
-    },
     {
       "name": "Renter-Occupied Units",
       "category": "Market",

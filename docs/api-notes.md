@@ -2,7 +2,6 @@
 
 Per-source quirks, endpoints, response shapes, and rate-limit notes for enrichment. Use this when implementing parsers in [`src/gtm/enrichment/`](../src/gtm/enrichment/).
 
----
 
 ## Census Geocoder (prerequisite for Census + DataUSA)
 
@@ -19,7 +18,6 @@ Per-source quirks, endpoints, response shapes, and rate-limit notes for enrichme
 
 **Notes:** Requires `benchmark` and `vintage` query params (e.g. `Public_AR_Current`, `Current_Current`). Parse the **Place** layer for `state` and `place` FIPS codes used by ACS.
 
----
 
 ## U.S. Census Data API (ACS 5-year, place)
 
@@ -35,7 +33,6 @@ Per-source quirks, endpoints, response shapes, and rate-limit notes for enrichme
 
 **Notes:** Variable codes are ACS table-specific (e.g. housing tenure, median gross rent, population). See `census.py` docstring for the exact variable list used.
 
----
 
 ## Census ACS Multi-Year (replaces defunct DataUSA API)
 
@@ -52,7 +49,6 @@ Per-source quirks, endpoints, response shapes, and rate-limit notes for enrichme
 
 **Notes:** `datausa.py` fetches two consecutive years (2022 and 2021) concurrently via `asyncio.gather()`, then computes `(cur - prior) / prior` for population and income year-over-year growth.
 
----
 
 ## Serper (Google Search)
 
@@ -80,7 +76,6 @@ Post-fetch extractions from Serper results (all in [`src/gtm/enrichment/serper_h
 
 Building name resolution (in `yelp.py._resolve_building_name`): if `lead.property_address` is present, a Serper POST query (`{address} {city} {state} apartments`) resolves the street address to the apartment complex name using the knowledge graph title or first organic result title. The resolved name is then used as the Yelp search term, which dramatically improves match rates compared to searching by raw address.
 
----
 
 ## SEC EDGAR EFTS (public company detection)
 
@@ -96,7 +91,6 @@ Building name resolution (in `yelp.py._resolve_building_name`): if `lead.propert
 
 **Notes:** We check if any hit's `entity_name` contains the company name (case-insensitive). A match means the company files 10-K reports and is publicly traded. Property management companies are almost always private, so a positive result surfaces as an insight bullet only and is not scored. User-Agent format: `"EliseAI GTM Tool {contact_email}"`.
 
----
 
 ## BuiltWith (Domain API)
 
@@ -112,7 +106,6 @@ Building name resolution (in `yelp.py._resolve_building_name`): if `lead.propert
 
 **Notes:** The free tier does not expose named PM stack product names; detecting Yardi/RealPage/Entrata requires a paid plan. When the key is absent or the API returns no named technologies, the signal scores zero in the additive model. No redistribution is needed.
 
----
 
 ## People Data Labs (Person Enrichment)
 
@@ -128,7 +121,6 @@ Building name resolution (in `yelp.py._resolve_building_name`): if `lead.propert
 
 **Notes:** Map seniority and department from PDL fields to the scorer's expected values. The `likelihood` field is match confidence (1–10). When PDL returns a job title but no seniority classification, Claude Haiku infers the level from the title text.
 
----
 
 ## Anthropic (Claude) — email generation + extraction
 
@@ -143,7 +135,6 @@ Building name resolution (in `yelp.py._resolve_building_name`): if `lead.propert
 
 **Notes:** The email system prompt uses `cache_control: ephemeral`. One cache hit covers all leads in a batch, reducing input token costs by approximately 80% for leads 2 through N. Haiku extraction schema: `{"employee_count": int|null, "founded_year": int|null, "portfolio_size": int|null}`. Haiku sometimes wraps output in markdown code fences; `serper_helpers.py` strips them with `re.search(r"\{.*\}", text, re.DOTALL)` before `json.loads`. Pain theme prompts instruct: return only themes with direct evidence, return `[]` if none are present. Haiku is approximately 50x cheaper than Sonnet per token, which makes it appropriate for all extraction tasks.
 
----
 
 ## Yelp Fusion v3 (company + building enrichment)
 
@@ -183,7 +174,6 @@ Building name resolution (in `yelp.py._resolve_building_name`): if `lead.propert
 - Market average rating is computed from the comparables search, excluding the target company's own alias. Used in `score_yelp_company_rating` to produce a relative performance signal.
 - All Yelp calls are cached via `FileCache`. Cache keys use the format `yelp:co_search:{slug}:{city}`, `yelp:co_profile:{alias}`, etc.
 
----
 
 ## Quick reference: environment variables
 

@@ -1,5 +1,5 @@
 {
-  "lead_score": 56.5,
+  "lead_score": 49.3,
   "tier": "Medium",
   "key_observations": [
     "Sunbelt Residential has three open leasing and property management roles right now, which is a strong signal that the team is stretched. Lead with how EliseAI extends capacity without requiring new hires, and frame it as a way to do more with the team they already have.",
@@ -7,7 +7,7 @@
     "Houston's income growth of nearly 8% year over year against a renter base of over 376,000 units signals a market with real leasing upside. Emphasize that EliseAI helps operators capture more of that demand by engaging the 41% of inquiries that arrive after hours when staff are unavailable."
   ],
   "market_fit": 75.0,
-  "company_fit": 18.33,
+  "company_fit": 6.33,
   "person_fit": 19.05,
   "building_fit": 54.0,
   "signals": [
@@ -17,13 +17,6 @@
       "points": 15.0,
       "max_points": 15.0,
       "reason": "Large rental market with high unit count. Top threshold met for full points."
-    },
-    {
-      "name": "Job Postings",
-      "category": "Company",
-      "points": 7.2,
-      "max_points": 12.0,
-      "reason": "Some job postings found, indicating moderate growth activity."
     },
     {
       "name": "Portfolio / Web Presence",

@@ -2,20 +2,18 @@
 
 Threshold rationale for all signals. Constants live in `src/gtm/scoring/scorer_signals.py`.
 
----
 
 ## Scoring Overview
 
-The pipeline uses an **additive point model**. Each of the 22 baseline signals contributes 0 to N points when it fires, and 0 when data is absent. Absent signals do not affect other signals. Four bonus Building Fit signals can push the final score above the 119-pt baseline.
+The pipeline uses an **additive point model**. Each of the 26 signals contributes 0 to N points when it fires, and 0 when data is absent. Absent signals do not affect other signals.
 
 | Category | Points | Rationale |
 |---|---|---|
 | Market Fit | 38 pts | Market size and rental demand determine how many units EliseAI could automate |
 | Company Fit | 60 pts | Company signals indicate likelihood to buy, budget, and proximity to decision |
 | Person Fit | 21 pts | Contact quality determines email deliverability and whether the pitch reaches a buyer |
-| Building Fit (bonus) | up to +20 pts | Building-level Yelp signals; absence never penalises a lead |
-| **Baseline max** | **119 pts** | |
-| **With building bonus** | **up to ~139 pts** | |
+| Building Fit | up to 20 pts | Building-level Yelp signals; scores 0 when data is unavailable |
+| **Baseline max** | **119 pts** | Three core categories only |
 
 **Tier thresholds (applied to final score):**
 
@@ -25,11 +23,8 @@ The pipeline uses an **additive point model**. Each of the 22 baseline signals c
 | **Medium** | 41 – 70 | Qualified target — enough signal to warrant outreach, not yet a priority |
 | **High** | 71+ | Strong fit — multiple signals align; prioritise for immediate SDR outreach |
 
-Scores above 119 are possible when Building Fit bonus signals fire on top of a near-perfect baseline.
 
----
-
-## Market Fit Signals (38 pts baseline)
+## Market Fit Signals (38 pts)
 
 ### Renter-Occupied Units (15 pts)
 
@@ -85,9 +80,8 @@ Growing cities develop new housing, creating more leases and more automation dem
 
 YoY income growth (same formula, applied to median household income). Rising incomes signal an improving local economy and higher PM software budgets. Uses identical thresholds to population growth.
 
----
 
-## Company Fit Signals (60 pts baseline)
+## Company Fit Signals (60 pts)
 
 ### Portfolio / Company News (8 pts)
 
@@ -131,9 +125,8 @@ Older companies have accumulated legacy processes and tech debt, making them mor
 | < 5 years | 0.2 | Early stage — may lack budget or process maturity |
 | None | 0.0 | LinkedIn snippet had no founding year data |
 
----
 
-## Person Fit Signals (21 pts baseline)
+## Person Fit Signals (21 pts)
 
 ### Seniority (10 pts)
 
@@ -208,7 +201,6 @@ How the company's Yelp rating compares to the average rating of comparable prope
 
 Market avg is computed from 3–5 comparable businesses (same category + city) via `/v3/businesses/search`.
 
----
 
 ### Google Company Rating (4 pts)
 
@@ -248,11 +240,10 @@ The fraction of Yelp comparable property management businesses in the same city 
 | ≥ 25% | 0.4 | Below average |
 | < 25% | 0.1 | At or near top — lower urgency |
 
----
 
-## Building Fit Signals (bonus, up to +20 pts)
+## Building Fit Signals (up to 20 pts)
 
-Building Fit signals fire when Yelp building-level data is available and contribute 0 when absent. Their absence never penalizes a lead. They sit outside the 119-pt baseline and are computed from the building's own Yelp page, which is separate from the company page.
+Building Fit signals score 0 when Yelp building-level data is unavailable, consistent with all other signals in the additive model. They are computed from the building's own Yelp page, which is separate from the company page.
 
 Building name resolution: if the lead has a `property_address`, `yelp.py` uses a Serper query (`{address} {city} {state} apartments`) to resolve it to a proper apartment complex name, which is then used as the Yelp search term. This dramatically improves Yelp match rates versus searching by street address.
 
@@ -303,7 +294,6 @@ Resident pain themes extracted from the building's own Yelp review highlights + 
 | 2 | 0.7 |
 | ≥ 3 | 1.0 |
 
----
 
 ## Signals kept as enrichment-only (not scored)
 
@@ -312,7 +302,6 @@ Resident pain themes extracted from the building's own Yelp review highlights + 
 | `is_publicly_traded` (EDGAR) | Biased toward large-cap public REITs. Most EliseAI targets are private. Present as an insight bullet only. |
 | `yelp_alias` | Identifier used to look up Yelp profile, reviews, and highlights. The alias itself is not a scoring signal. Only the rating and review count from that profile are scored. |
 
----
 
 ## Calibration Notes
 

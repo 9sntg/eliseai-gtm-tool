@@ -4,7 +4,6 @@ Run this command at the end of every implementation phase before committing. It 
 
 Usage: `/phase-close <N>` where N is the phase number being closed (e.g. `/phase-close 4`).
 
----
 
 ## Step 1 — Docs completeness
 
@@ -30,7 +29,6 @@ cat CLAUDE.local.md
 
 Report each file as ✅ current or ⚠️ needs update. Update any flagged file before continuing.
 
----
 
 ## Step 2 — Phase log verification
 
@@ -42,7 +40,6 @@ grep -A 2 "Phase $N" docs/architecture.md
 
 If the row still shows `—` or the description is out of date, update it now.
 
----
 
 ## Step 3 — Full test suite
 
@@ -54,7 +51,6 @@ Run the complete test suite. Do not proceed if any test fails.
 
 Report: total passed, total failed, any warnings. If there are failures, stop here and fix them. Do not bypass this gate.
 
----
 
 ## Step 4 — Line count audit
 
@@ -66,7 +62,6 @@ find src/ -name "*.py" | xargs wc -l | sort -rn | head -20
 
 For each file over 200 lines: either split it now or explicitly justify why it's acceptable (e.g. a model file with many optional fields). Document the justification in a comment at the top of the file if keeping it as-is.
 
----
 
 ## Step 5 — Ruff lint gate
 
@@ -83,7 +78,6 @@ If ruff is not installed in the venv:
 
 Do not use `--fix` automatically — review each suggestion and apply it intentionally.
 
----
 
 ## Step 6 — Orphaned stubs check
 
@@ -98,7 +92,6 @@ For each hit:
 - If it is leftover from this phase: implement or remove it now.
 - Bare `pass` in `__init__.py` files or empty exception bodies is acceptable — note these as false positives.
 
----
 
 ## Step 7 — CLAUDE.local.md deferred decisions review
 
@@ -115,7 +108,6 @@ For each open item, state one of:
 
 Do not silently skip this step. Even "all items still deferred, no action needed" is a valid outcome.
 
----
 
 ## Step 8 — Commit and push
 
@@ -147,7 +139,6 @@ git push
 
 Confirm the push succeeded and report the final commit hash.
 
----
 
 ## Phase Close Summary
 

@@ -1,13 +1,13 @@
 {
-  "lead_score": 76.6,
-  "tier": "High",
+  "lead_score": 69.4,
+  "tier": "Medium",
   "key_observations": [
     "Walnut Capital has three open leasing and property management job postings right now, which signals the team is stretched and likely feeling the weight of manual communication and follow-up. Lead with staffing relief and the idea that EliseAI lets existing staff do more without adding headcount.",
     "The company Yelp rating sits at 2.0 against a market average of 3.21, with resident complaints centered on maintenance responsiveness and recurring facility issues. Frame your pitch around how automating maintenance intake and resident communication reduces the lag that tends to generate these kinds of complaints across the industry, without positioning it as a critique of Walnut Capital specifically.",
     "No existing tech stack was detected, which means Jane is likely managing communication and leasing workflows manually or through very basic tools. Position EliseAI as a straightforward upgrade rather than a replacement for something she is already invested in, and emphasize the speed to value."
   ],
   "market_fit": 55.26,
-  "company_fit": 47.5,
+  "company_fit": 35.5,
   "person_fit": 76.19,
   "building_fit": 27.0,
   "signals": [
@@ -17,13 +17,6 @@
       "points": 7.5,
       "max_points": 15.0,
       "reason": "Moderate rental market by unit count. Partial score based on size tier."
-    },
-    {
-      "name": "Job Postings",
-      "category": "Company",
-      "points": 7.2,
-      "max_points": 12.0,
-      "reason": "Some job postings found, indicating moderate growth activity."
     },
     {
       "name": "Department / Function",

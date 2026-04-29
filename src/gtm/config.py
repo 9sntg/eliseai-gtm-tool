@@ -2,8 +2,8 @@
 
 Scoring model: additive. Each signal contributes 0–N points when it fires,
 0 when data is absent. No redistribution — missing signals simply don't score.
-Baseline maximum (15 core signals at 1.0) = 119 pts.
-Building Fit bonus signals (up to +20 pts) can push the score above 119.
+Core baseline (Market + Company + Person) = 119 pts. Building Fit adds up to
+20 pts when Yelp building data is available. Total max = 139 pts.
 Thresholds and point values marked # calibrate are provisional — revisit after
 more lead runs.
 """
@@ -38,7 +38,7 @@ POINTS_SENIORITY: float = 10.0
 POINTS_DEPARTMENT_FUNCTION: float = 7.0
 POINTS_CORPORATE_EMAIL: float = 4.0
 
-# --- Building Fit point values (bonus; fire when building data available) ---
+# --- Building Fit point values (score 0 when Yelp building data unavailable) ---
 POINTS_BUILDING_RATING: float = 8.0        # inverted: low rating = strong pain signal
 POINTS_BUILDING_REVIEWS: float = 4.0       # review volume = active, addressable building
 POINTS_BUILDING_PRICE_TIER: float = 4.0    # higher tier = premium tenants, more at stake
@@ -57,6 +57,13 @@ BASELINE_MAX_SCORE: float = (
 
 assert abs(BASELINE_MAX_SCORE - 119.0) < 1e-6, (
     f"Baseline point values must sum to 119, got {BASELINE_MAX_SCORE}"
+)
+
+# Total max including Building Fit = 119 + 20 = 139 pts
+TOTAL_MAX_SCORE: float = (
+    BASELINE_MAX_SCORE
+    + POINTS_BUILDING_RATING + POINTS_BUILDING_REVIEWS
+    + POINTS_BUILDING_PRICE_TIER + POINTS_BUILDING_PAIN_THEMES
 )
 
 

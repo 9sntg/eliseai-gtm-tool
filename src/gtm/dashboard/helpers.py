@@ -17,7 +17,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from gtm.config import settings
+from gtm.config import settings, TOTAL_MAX_SCORE
 from gtm.models.lead import RawLead
 from gtm.pipeline.runner import run_pipeline
 
@@ -202,7 +202,7 @@ def render_sidebar(outputs_dir: Path) -> None:
         st.markdown(tier_parts, unsafe_allow_html=True)
 
         if scores:
-            st.markdown(f"**Avg score:** {sum(scores)/len(scores):.1f} / 119")
+            st.markdown(f"**Avg score:** {sum(scores)/len(scores):.1f} / {int(TOTAL_MAX_SCORE)}")
 
         mtimes = [p.stat().st_mtime for p in folders]
         if mtimes:
@@ -261,13 +261,13 @@ def render_overview_table(outputs_dir: Path) -> None:
     table_rows = []
     for r in rows:
         tier_color = _TIER_TEXT_COLOR.get(r["tier"], "#9CA3AF")
-        pct = round(r["score"] / 119 * 100)
+        pct = round(r["score"] / TOTAL_MAX_SCORE * 100)
         bar = (
             f'<div style="display:flex;align-items:center;gap:8px">'
             f'<div style="background:#E5E7EB;border-radius:4px;height:8px;width:80px;flex-shrink:0">'
             f'<div style="width:{pct}%;background:{tier_color};border-radius:4px;height:8px"></div>'
             f'</div>'
-            f'<span style="font-size:0.875rem;color:#1F2937">{r["score"]} / 119</span>'
+            f'<span style="font-size:0.875rem;color:#1F2937">{r["score"]} / {int(TOTAL_MAX_SCORE)}</span>'
             f'</div>'
         )
         table_rows.append([
@@ -293,7 +293,7 @@ def render_score_header(score: float, tier: str) -> None:
     """Render score metric and tier as matching side-by-side metric widgets."""
     bg, fg = TIER_STYLE.get(tier, ("#F3F4F6", "#374151"))
     c1, c2 = st.columns(2)
-    c1.metric("Lead Score", f"{score:.1f} / 119")
+    c1.metric("Lead Score", f"{score:.1f} / {int(TOTAL_MAX_SCORE)}")
     c2.markdown(
         f'<div style="padding-top:2px">'
         f'<p style="font-size:0.8rem;color:#6B7280;font-weight:600;margin:0 0 6px 0">Priority</p>'

@@ -1,5 +1,5 @@
 {
-  "lead_score": 65.65,
+  "lead_score": 62.05,
   "tier": "Medium",
   "key_observations": [
     "Cortland has two open leasing and property management roles right now, which signals the team is either growing or backfilling, and either way staffing capacity is a live concern. Lead with how EliseAI extends what an existing team can handle without adding headcount.",
@@ -7,7 +7,7 @@
     "Ashley is a director of operations, meaning she owns process and efficiency across the portfolio rather than just a single site. Anchor the conversation on operational consistency at scale and reference the Equity Residential payroll savings figure as a proof point that resonates at the director level."
   ],
   "market_fit": 66.45,
-  "company_fit": 23.75,
+  "company_fit": 17.75,
   "person_fit": 55.71,
   "building_fit": 58.0,
   "signals": [
@@ -66,13 +66,6 @@
       "points": 4.0,
       "max_points": 4.0,
       "reason": "Email uses a verified company domain. Contact legitimacy confirmed."
-    },
-    {
-      "name": "Job Postings",
-      "category": "Company",
-      "points": 3.6,
-      "max_points": 12.0,
-      "reason": "Some job postings found, indicating moderate growth activity."
     },
     {
       "name": "Population Growth YoY",

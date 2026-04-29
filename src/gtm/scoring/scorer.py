@@ -43,6 +43,7 @@ from gtm.config import (
     POINTS_YELP_COMPANY_RATING,
     TIER_LOW_MAX_SCORE,
     TIER_MEDIUM_MAX_SCORE,
+    TOTAL_MAX_SCORE,
 )
 from gtm.models.enriched import EnrichedLead, ScoreTier
 from gtm.models.scoring import ScoreBreakdown
@@ -240,7 +241,7 @@ def score_lead(lead: EnrichedLead) -> tuple[float, ScoreTier, ScoreBreakdown]:
         building_score=round(building_raw / _BUILDING_MAX * 100, 2) if building_raw > 0 else 0.0,
     )
     logger.info(
-        "scored lead: %.1f/119 %s — %s, %s",
-        overall, tier, lead.raw.company, lead.raw.city,
+        "scored lead: %.1f/%.0f %s — %s, %s",
+        overall, TOTAL_MAX_SCORE, tier, lead.raw.company, lead.raw.city,
     )
     return overall, tier, breakdown

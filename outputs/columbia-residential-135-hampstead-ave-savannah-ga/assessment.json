@@ -1,5 +1,5 @@
 {
-  "lead_score": 55.85,
+  "lead_score": 43.85,
   "tier": "Medium",
   "key_observations": [
     "Columbia Residential has 19 open leasing and property management postings, which signals active portfolio growth and likely stretched staff capacity. Lead with how EliseAI protects performance during hiring surges by keeping communication consistent even when teams are understaffed or onboarding.",
@@ -7,17 +7,10 @@
     "Savannah is seeing strong income growth at nearly 10% year over year even as population is slightly contracting, which means the renter pool is becoming more competitive and resident retention matters more. This is a strong angle for positioning EliseAI's renewal outreach and resident communication tools as a way to protect occupancy without adding headcount."
   ],
   "market_fit": 40.13,
-  "company_fit": 39.72,
+  "company_fit": 19.72,
   "person_fit": 57.14,
   "building_fit": 0.0,
   "signals": [
-    {
-      "name": "Job Postings",
-      "category": "Company",
-      "points": 12.0,
-      "max_points": 12.0,
-      "reason": "Multiple active job postings found. Company is hiring and actively growing."
-    },
     {
       "name": "Department / Function",
       "category": "Person",

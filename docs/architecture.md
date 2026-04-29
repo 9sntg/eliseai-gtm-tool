@@ -2,7 +2,6 @@
 
 > This document is a living record. It is updated at the end of each implementation phase to reflect what was built, why, and any decisions made.
 
----
 
 ## System Overview
 
@@ -10,7 +9,6 @@ The EliseAI GTM Lead Enrichment Tool is a data pipeline with a lightweight web f
 
 The pipeline is designed to run incrementally: it only processes leads that don't already have an output folder, so re-running is always safe and idempotent.
 
----
 
 ## High-Level Data Flow
 
@@ -38,7 +36,7 @@ data/leads_input.csv
         ▼
   [Scoring Layer]
   scorer.py → 0–119 pts score + ScoreBreakdown
-  (Market: 38 pts, Company: 60 pts, Person: 21 pts, Building: bonus up to +20 pts)
+  (Market: 38 pts, Company: 60 pts, Person: 21 pts, Building: up to 20 pts)
         │
         ▼
   [Email Generation]
@@ -56,12 +54,11 @@ data/leads_input.csv
   app.py — Add leads, run pipeline, browse results
 ```
 
----
 
 ## Components
 
 ### `src/gtm/config.py`
-Centralized settings via `pydantic-settings`. Loads all API keys from `.env` (including `YELP_API_KEY`). Defines all scoring point values as named constants (`POINTS_RENTER_UNITS`, `POINTS_SENIORITY`, etc.) so no magic numbers appear in scoring logic. An assertion at module level confirms that the 22 baseline signals sum to exactly 119 pts. Building Fit bonus signals (`POINTS_BUILDING_RATING`, `POINTS_BUILDING_REVIEWS`, `POINTS_BUILDING_PRICE_TIER`, `POINTS_BUILDING_PAIN_THEMES`) sit outside the 119-pt baseline.
+Centralized settings via `pydantic-settings`. Loads all API keys from `.env` (including `YELP_API_KEY`). Defines all scoring point values as named constants (`POINTS_RENTER_UNITS`, `POINTS_SENIORITY`, etc.) so no magic numbers appear in scoring logic. An assertion at module level confirms that the 22 core signals sum to exactly 119 pts. The four Building Fit signals (`POINTS_BUILDING_RATING`, `POINTS_BUILDING_REVIEWS`, `POINTS_BUILDING_PRICE_TIER`, `POINTS_BUILDING_PAIN_THEMES`) add up to 20 pts on top of that.
 
 ### `src/gtm/models/`
 Pydantic models for every data shape in the system (one module per concern, re-exported from `gtm.models`):
@@ -103,16 +100,16 @@ All wrap API calls in `try/except`. All return an empty or default model on fail
 All 22 signal functions and their threshold constants. Each function takes one or two enrichment fields and returns a `float` in `[0.0, 1.0]`. A None input always returns `0.0`. There is no I/O or config reads; this is pure computation. Threshold constants are named at module level so no magic numbers appear in function bodies.
 
 ### `src/gtm/scoring/scorer.py`
-Orchestrates signal functions into a final score using an additive point model. Each signal contributes 0 to N points when it fires, and 0 when data is absent. No redistribution is needed. Baseline max is 119 pts. Four Building Fit bonus signals can push the score above 119. Computes category subtotals (normalised to 0–100 for display), maps the score to a tier, and generates SDR insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
+Orchestrates signal functions into a final score using an additive point model. Each signal contributes 0 to N points when it fires, and 0 when data is absent. No redistribution is needed. Baseline max is 119 pts across three categories; Building Fit adds up to 20 pts when Yelp building data is available. Computes category subtotals (normalised to 0–100 for display), maps the score to a tier, and generates SDR insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
 
-**Scoring signals (baseline 119 pts):**
+**Scoring signals:**
 
 | Category | Points | Signals |
 |---|---|---|
 | Market Fit | 38 pts | Renter units (15), renter rate (8), median rent (5), population growth (5), economic momentum (5) |
 | Company Fit | 60 pts | Portfolio news (8), tech stack (8), employee count (8), company age (5), portfolio size (6), social media presence (5), Yelp company rating vs. market avg (6), Google company rating (4), company pain themes / Yelp+Serper (5), competitor rank on Yelp (5) |
 | Person Fit | 21 pts | Seniority (10), function/department (7), corporate email (4) |
-| Building Fit (bonus) | up to +20 pts | Building rating inverted (8), building review count (4), building price tier (4), building pain themes (4). Scores 0 when Yelp building data is absent. |
+| Building Fit | up to 20 pts | Building rating inverted (8), building review count (4), building price tier (4), building pain themes (4). Scores 0 when Yelp building data is absent. |
 
 ### `src/gtm/outreach/email_generator.py`
 Drafts a personalized 150–200 word outreach email and three SDR insight bullets via Claude Sonnet 4.6. Public entry point: `generate_outreach(lead, breakdown) → (str | None, list[str])`.
@@ -146,7 +143,6 @@ Streamlit dashboard with 3 tabs:
 - **Run Pipeline** — lists pending leads, runs enrichment on unprocessed ones, shows progress spinner
 - **View Results** — selectbox over processed leads; renders score, tier, Market/Company/Person/Building subtotals, 23-signal breakdown table, enrichment data (including Yelp company + building sections with Google rating, pain themes, competitor rank, price tier), and email draft in a 2-column layout
 
----
 
 ## Output Structure
 
@@ -162,7 +158,6 @@ outputs/
 
 The pipeline checks for slug folder existence before processing any lead. This is the idempotency mechanism: safe to re-run at any time.
 
----
 
 ## Key Architectural Decisions
 
@@ -186,7 +181,6 @@ All leads in a batch share the same system prompt (EliseAI context, tone, constr
 ### Why Census Geocoder as a prerequisite step?
 The Census ACS API requires FIPS place codes. The Geocoder API converts free-text city names to FIPS codes. It is a free, keyless API with generous rate limits. The result is cached per city so repeat cities (common in a real lead list) only pay the geocoding cost once.
 
----
 
 ## Technology Choices
 
@@ -203,7 +197,6 @@ The Census ACS API requires FIPS place codes. The Geocoder API converts free-tex
 
 Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.md`](./api-notes.md).
 
----
 
 ## Phase Log
 

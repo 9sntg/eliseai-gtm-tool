@@ -1,8 +1,7 @@
 # EliseAI GTM Lead Enrichment Tool
 
-Automates the top-of-funnel SDR workflow for property management leads. Takes a raw lead list, enriches each lead with market, company, building, and person intelligence, scores it using an additive point model (119-pt baseline, up to +20 building bonus), and drafts a personalized outreach email. Reps act immediately instead of spending 20+ minutes researching each lead.
+Automates the top-of-funnel SDR workflow for property management leads. Takes a raw lead list, enriches each lead with market, company, building, and person intelligence, scores it using an additive point model (119-pt baseline across three categories, up to 20 additional pts from Building Fit), and drafts a personalized outreach email. Reps act immediately instead of spending 20+ minutes researching each lead.
 
----
 
 ## What It Does
 
@@ -13,7 +12,7 @@ Automates the top-of-funnel SDR workflow for property management leads. Takes a 
    - **Person:** seniority, department, decision-maker signals (People Data Labs)
 
 2. **Scores** each lead using an additive point model with 22 signals across four categories:
-   - Market Fit (38 pts) · Company Fit (60 pts) · Person Fit (21 pts) · Building Fit bonus (up to +20 pts)
+   - Market Fit (38 pts) · Company Fit (60 pts) · Person Fit (21 pts) · Building Fit (up to 20 pts)
 
 3. **Drafts** a personalized outreach email using Claude Sonnet, grounded only in enriched data
 
@@ -21,7 +20,6 @@ Automates the top-of-funnel SDR workflow for property management leads. Takes a 
 
 5. **Dashboard:** a Streamlit UI to add leads, run the pipeline, and browse results
 
----
 
 ## Quick Start
 
@@ -58,7 +56,6 @@ uv run python main.py
 uv run streamlit run app.py
 ```
 
----
 
 ## API Keys
 
@@ -75,11 +72,10 @@ Add these to your `.env` file. The tool degrades gracefully when optional keys a
 
 > **Note on BuiltWith:** The free tier does not expose named technology detections. Detecting Yardi/RealPage/Entrata requires a paid plan. When absent, the tech stack signal scores 0. Other signals are unaffected (additive model).
 
-> **Note on Yelp:** When absent, all Yelp-based signals score 0 (company rating vs. market average, competitor rank, pain themes, and all four Building Fit bonus signals). The pipeline still runs fully on the remaining signals.
+> **Note on Yelp:** When absent, all Yelp-based signals score 0 (company rating vs. market average, competitor rank, pain themes, and all four Building Fit signals). The pipeline still runs fully on the remaining signals.
 
 > **Note on SEC EDGAR:** Used for public company detection (free, no key required). Surfaces as an insight bullet only and is not scored, since most PM companies are private.
 
----
 
 ## Usage
 
@@ -112,7 +108,6 @@ The dashboard has three tabs:
 | Run Pipeline | Lists unprocessed leads. The run button enriches and scores all pending leads. |
 | View Results | Browse all processed leads with score breakdown and email draft. |
 
----
 
 ## Input Format
 
@@ -123,7 +118,6 @@ name,email,company,property_address,city,state
 Sarah Mitchell,sarah.mitchell@greystar.com,Greystar Real Estate Partners,2700 Post Oak Blvd,Austin,TX
 ```
 
----
 
 ## Output Format
 
@@ -149,11 +143,10 @@ The slug includes the property address so the same company can have multiple lea
 | 41–70 | Medium | Worth outreach, not urgent. |
 | 0–40 | Low | Nurture only. |
 
----
 
 ## Scoring Model
 
-Additive point model: each signal contributes 0 to N points when it fires, and 0 when data is absent. Missing signals do not affect other signals. Baseline max is 119 pts across three categories. Four Building Fit bonus signals can push the total above 119 when Yelp building data is available.
+Additive point model: each signal contributes 0 to N points when it fires, and 0 when data is absent. Missing signals do not affect other signals. Baseline max is 119 pts across three categories. Building Fit adds up to 20 pts when Yelp building data is available.
 
 **Market Fit (38 pts):** Is this market worth targeting?
 - Renter-occupied units (15 pts), renter rate (8 pts), median rent (5 pts), population growth (5 pts), economic momentum (5 pts)
@@ -164,12 +157,11 @@ Additive point model: each signal contributes 0 to N points when it fires, and 0
 **Person Fit (21 pts):** Is this contact a decision maker?
 - Seniority (10 pts), department and function (7 pts), corporate email domain (4 pts)
 
-**Building Fit bonus (up to +20 pts):** Fires when Yelp building data is available. Absence never penalizes a lead.
+**Building Fit (up to 20 pts):** Scores 0 when Yelp building data is unavailable, consistent with all other signals in the additive model.
 - Building rating inverted (8 pts), review count (4 pts), price tier (4 pts), pain themes (4 pts)
 
 Full threshold documentation: [`docs/scoring-logic.md`](docs/scoring-logic.md)
 
----
 
 ## Development
 
@@ -207,13 +199,11 @@ eliseai-gtm-tool/
 └── tests/                   # Fully mocked unit + integration tests
 ```
 
----
 
 ## Architecture
 
 See [`docs/architecture.md`](docs/architecture.md) for the full system design including data flow, component responsibilities, and key architectural decisions.
 
----
 
 ## Rollout Plan
 

@@ -1,5 +1,5 @@
 {
-  "lead_score": 57.0,
+  "lead_score": 45.0,
   "tier": "Medium",
   "key_observations": [
     "Parklane has 64 open leasing and property management job postings, which signals serious staffing strain. Lead with the angle that EliseAI reduces dependence on headcount by automating the repetitive communication layer, so the rep should frame this as a way to do more with the team they already have rather than waiting for hiring to catch up.",
@@ -7,17 +7,10 @@
     "Boise is showing strong income growth at 11.7% year over year alongside steady population gains, which means demand is healthy but competition for quality residents is real. The rep should emphasize that 24/7 lead engagement and faster follow-up directly improve lease conversion in a market where prospects have options and response time matters."
   ],
   "market_fit": 65.79,
-  "company_fit": 38.89,
+  "company_fit": 18.89,
   "person_fit": 19.05,
   "building_fit": 0.0,
   "signals": [
-    {
-      "name": "Job Postings",
-      "category": "Company",
-      "points": 12.0,
-      "max_points": 12.0,
-      "reason": "Multiple active job postings found. Company is hiring and actively growing."
-    },
     {
       "name": "Renter Rate",
       "category": "Market",
