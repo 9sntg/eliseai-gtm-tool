@@ -1,0 +1,260 @@
+{
+  "contact": {
+    "name": "Cindy Cleveland",
+    "email": "cindy@execprop.com",
+    "company": "Executive Properties Inc.",
+    "property_address": "733 W Market St",
+    "city": "Akron",
+    "state": "OH",
+    "job_title": null,
+    "seniority": null,
+    "department": null,
+    "years_experience": null,
+    "pdl_likelihood": 6,
+    "is_corporate_email": true
+  },
+  "market": {
+    "renter_occupied_units": 42005,
+    "total_housing_units": 93215,
+    "renter_rate": 0.4506,
+    "median_gross_rent": 887,
+    "total_population": 190273,
+    "population_growth_yoy": -0.0063,
+    "median_household_income": 46596,
+    "median_income_growth_yoy": 0.106,
+    "real_estate_employment": null,
+    "median_property_value": null
+  },
+  "company": {
+    "serper_property_management": {
+      "query": "Executive Properties Inc. property management",
+      "organic": [
+        {
+          "title": "Executive Properties Inc.: Apartments For Rent In Akron, Highland ...",
+          "link": "https://www.execprop.com/",
+          "snippet": "We manage five apartment buildings in Akron, Tallmadge, Cuyahoga Falls, Highland Square, and West Akron with a total of over 600 apartments, plus commercial ...",
+          "position": 1
+        },
+        {
+          "title": "Home | Executive Property Management Group | New York",
+          "link": "https://www.executivepmg.com/",
+          "snippet": "Executive Property Management Group is committed to providing superior residential property rentals in Westchester County, NY.",
+          "position": 2
+        },
+        {
+          "title": "Contact - Executive Property Management",
+          "link": "https://www.executivepropertymgmt.com/contact",
+          "snippet": "Executive Property Management \u00b7 New Client Form \u00b7 CONTACT. Open Menu Close Menu. Executive Property Management \u00b7 New Client Form \u00b7 CONTACT. Open Menu Close Menu.",
+          "position": 3
+        },
+        {
+          "title": "Resident Resources For Apartment Rentals - Executive Properties Inc.",
+          "link": "https://www.execprop.com/residents",
+          "snippet": "View and pay your bills from anywhere (any computer with an internet connection); Set up an automatic payment; Sign up for automatic reminder emails; Review ...",
+          "position": 4
+        },
+        {
+          "title": "EXECUTIVE PROPERTIES - Updated April 2026 - Apartments - Yelp",
+          "link": "https://www.yelp.com/biz/executive-properties-akron",
+          "snippet": "More info about Executive Properties \u00b7 Map \u00b7 733 W Market St. Ste 102. Akron, OH 44303. Directions \u00b7 (330) 376-9546. Call Now.",
+          "position": 5
+        },
+        {
+          "title": "Executive Properties, Inc. | Home",
+          "link": "https://execpropertiesinc.com/",
+          "snippet": "Executive Properties, Inc. offers numerous centrally located spaces along the Gulf Coast. It's all about location, so each and every space has its own specific ...",
+          "position": 6
+        },
+        {
+          "title": "Executive Property Management | Kern County",
+          "link": "https://www.executivepropertymgt.com/",
+          "snippet": "We provide Full Circle Service with over 40 years of experience in managing, selling, and purchasing investment properties here in Kern County. Our team is well ...",
+          "position": 7
+        },
+        {
+          "title": "Owners - Executive Group Property Management, Inc. AMO",
+          "link": "https://www.executivegroupweb.com/owner",
+          "snippet": "Turn to the experienced property management team of Executive Group Property Management for help managing your rental property investments without stress.",
+          "position": 8
+        },
+        {
+          "title": "Executive Properties Inc | Akron, Ohio - SimplifyEm",
+          "link": "https://www.simplifyem.com/property-management-companies/company/executive-properties-inc-akron-ohio?srsltid=AfmBOorJ5FJzQSbhuR2ZFp8dZRh_aS-wqrpi957VPlIRs_gOPpxkRAsQ",
+          "snippet": "Executive Properties offers extensive experience in the management of rental properties, commercial properties, and condominium associations.",
+          "position": 9
+        },
+        {
+          "title": "Executive Real Estate",
+          "link": "https://www.buyexecutive.com/",
+          "snippet": "Executive Real Estate is a full-service Real Estate Brokerage. Our sales professionals are well-trained to handle all types of Real Estate needs.",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "serper_jobs": {
+      "query": "Executive Properties Inc. leasing consultant jobs",
+      "organic": [
+        {
+          "title": "Leasing Agent Jobs, Employment in Colorado - Indeed",
+          "link": "https://www.indeed.com/q-leasing-agent-l-colorado-jobs.html",
+          "snippet": "754 Leasing Agent jobs available in Colorado on Indeed.com. Apply to Leasing Consultant, Leasing Agent, Real Estate Agent and more!",
+          "position": 1
+        },
+        {
+          "title": "Real Estate Personnel, Inc. hiring Leasing Agent in Fort Collins, CO",
+          "link": "https://www.linkedin.com/jobs/view/leasing-agent-at-real-estate-personnel-inc-4405815635",
+          "snippet": "We're looking for a Leasing Consultant who brings energy, personality, and a great attitude to a active apartment community. You'll be giving tours, ...",
+          "position": 2
+        },
+        {
+          "title": "Leasing Agent Jobs in Denver, CO (NOW HIRING) - ZipRecruiter",
+          "link": "https://www.ziprecruiter.com/Jobs/Leasing-Agent/-in-Denver,CO",
+          "snippet": "Browse 689 DENVER, CO LEASING AGENT jobs ($16-$26/hr) from companies hiring now. New openings posted daily\u2014find postings near you & 1-click ...",
+          "position": 3
+        },
+        {
+          "title": "Leasing Consultant jobs in Colorado Springs, Co - Indeed",
+          "link": "https://www.indeed.com/q-leasing-consultant-l-colorado-springs,-co-jobs.html",
+          "snippet": "74 Leasing Consultant jobs available in Colorado Springs, CO on Indeed.com. Apply to Leasing Specialist, Leasing Consultant, Community Manager and more!",
+          "position": 4
+        },
+        {
+          "title": "Real Estate Executive Jobs in Lafayette Hill, PA - ZipRecruiter",
+          "link": "https://www.ziprecruiter.com/Jobs/Real-Estate-Executive/-in-Lafayette-Hill,PA",
+          "snippet": "Browse 60 LAFAYETTE HILL, PA REAL ESTATE EXECUTIVE jobs ($41k-$267k) from companies now hiring with openings. Find postings near you & 1-click ...",
+          "position": 5
+        },
+        {
+          "title": "Leasing Consultant, Multifamily (Multi-Site)",
+          "link": "https://careers.cushmanwakefield.com/en/jobs/r299989/leasing-consultant-multifamily-multi-site/",
+          "snippet": "$25.00 per hour, eligible for benefits and additional earnings. Multi-Site position requires flexibility to commute to more than one property each week for ...",
+          "position": 6
+        },
+        {
+          "title": "Executive Property Management Real Estate Jobs, Employment ...",
+          "link": "https://www.indeed.com/q-executive-property-management-real-estate-jobs.html",
+          "snippet": "20700 Executive Property Management Real Estate jobs available on Indeed.com. Apply to Commercial Property Manager, Real Estate Manager, Regional Property ...",
+          "position": 7
+        },
+        {
+          "title": "498 Leasing Agent jobs in Denver - LinkedIn",
+          "link": "https://www.linkedin.com/jobs/leasing-agent-jobs-denver-co",
+          "snippet": "498 Leasing Agent Jobs in Denver \u00b7 Leasing Manager - Downtown Denver \u00b7 Leasing Consultant \u00b7 Leasing Manager - The Marks \u00b7 Leasing Consultant | MAA River North.",
+          "position": 8
+        },
+        {
+          "title": "649 leasing agent Jobs in Denver, CO, April 2026 | Glassdoor",
+          "link": "https://www.glassdoor.com/Job/denver-leasing-agent-jobs-SRCH_IL.0,6_IC1148170_KO7,20.htm",
+          "snippet": "Search Leasing agent jobs in Denver, CO with company ratings & salaries. 649 open jobs for Leasing agent in Denver.",
+          "position": 9
+        },
+        {
+          "title": "Executive Leasing Agent Jobs in District of Columbia - ZipRecruiter",
+          "link": "https://www.ziprecruiter.com/Jobs/Executive-Leasing-Agent/--in-District-of-Columbia",
+          "snippet": "Browse 5+ EXECUTIVE LEASING AGENT jobs ($18-$97/hr) from companies hiring now. New openings posted daily\u2014find job postings near you & 1-click apply!",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "serper_linkedin": {
+      "query": "site:linkedin.com/company Executive Properties Inc.",
+      "organic": [
+        {
+          "title": "Executive Properties Inc. - LinkedIn",
+          "link": "https://www.linkedin.com/company/executivepropertiesinc",
+          "snippet": "As a privately held real estate company, we take pride in providing our qualified investors the guidance to participate in high-quality multifamily and ...",
+          "position": 1
+        },
+        {
+          "title": "Executive Properties Inc. | LinkedIn",
+          "link": "https://it.linkedin.com/company/executivepropertiesinc?trk=public_profile_experience-item_profile-section-card_subtitle-click",
+          "snippet": "Executive Properties, Inc. provides a thorough and complete analysis to support your purchase or sale of investments as well as management of your current ...",
+          "position": 2
+        },
+        {
+          "title": "Executive Property Maintenance Inc | LinkedIn",
+          "link": "https://www.linkedin.com/company/executivepropertymaintenanceinc",
+          "snippet": "Since 2004, Executive Property Maintenance has established itself as Southeast Michigan's premier landscape company. We have gained a well earned reputation for ...",
+          "position": 3
+        },
+        {
+          "title": "Executive Property Management | LinkedIn",
+          "link": "https://www.linkedin.com/company/executive-property-management-nc",
+          "snippet": "Executive Properties in Goldsboro, NC is a full-service property management firm dedicated to helping both tenants and homeowners be successful in the ...",
+          "position": 4
+        },
+        {
+          "title": "Executive Real Estate Group | LinkedIn",
+          "link": "https://www.linkedin.com/company/executive-real-estate-group",
+          "snippet": "Led by J.E. Aranda, our firm specializes in ground-up & reposition development, 1031 exchanges, site selection, land sales, property management, and debt & ...",
+          "position": 5
+        },
+        {
+          "title": "Executive Realty Group, Inc - LinkedIn",
+          "link": "https://www.linkedin.com/company/executive-realty-group-inc",
+          "snippet": "Executive Realty Group, Inc | 74 followers on LinkedIn. Based in Germantown Tennessee and, licensed in multiple states, with offices in Collierville, ...",
+          "position": 6
+        },
+        {
+          "title": "Executive Affiliates Inc - LinkedIn",
+          "link": "https://www.linkedin.com/company/executive-affiliates-inc",
+          "snippet": "Executive Affiliates, Inc. is a national real estate investment and management company created in the late 1960's.",
+          "position": 7
+        },
+        {
+          "title": "RE/MAX Executive Realty - LinkedIn",
+          "link": "https://www.linkedin.com/company/remax-executive-realty",
+          "snippet": "RE/MAX Executive Realty has 6 offices spread throughout the Metrowest Massachusetts area including Hopkinton, Holliston, Franklin, Grafton, Medfield and ...",
+          "position": 8
+        },
+        {
+          "title": "Real Estate Executive Search, Inc. | LinkedIn",
+          "link": "https://www.linkedin.com/company/real-estate-executive-search-inc-",
+          "snippet": "Real Estate Executive Search works to locate and hire the top talent for positions in the commercial real estate industry.",
+          "position": 9
+        },
+        {
+          "title": "Commercial Property Executive | LinkedIn",
+          "link": "https://www.linkedin.com/company/commercial-property-executive",
+          "snippet": "Commercial Property Executive is the leading integrated news resource for executives and companies that own, invest in, develop, lease and/or manage commercial ...",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "linkedin_employee_count": null,
+    "founded_year": 2004,
+    "is_publicly_traded": false,
+    "job_count": 74,
+    "portfolio_size": null,
+    "yelp_alias": "buckeye-real-estate-investments-and-services-hilliard",
+    "social_platform_count": 0,
+    "tech_stack": [],
+    "yelp_rating": null,
+    "yelp_review_count": null,
+    "yelp_market_avg_rating": 3.75,
+    "yelp_pain_themes": [],
+    "yelp_year_established": null,
+    "google_rating": null,
+    "serper_pain_themes": [],
+    "competitor_rank_pct": null
+  },
+  "building": {
+    "address": "733 W Market St",
+    "name": "The Highland Square",
+    "yelp_alias": "the-highland-square-apartments-akron",
+    "yelp_rating": 4.0,
+    "yelp_review_count": 1,
+    "pain_themes": [],
+    "price_tier": null,
+    "google_rating": null
+  }
+}

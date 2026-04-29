@@ -1,0 +1,244 @@
+{
+  "contact": {
+    "name": "Dan Hills",
+    "email": "dan@parklaneco.com",
+    "company": "Parklane Management",
+    "property_address": "310 Redwood Ct",
+    "city": "Boise",
+    "state": "ID",
+    "job_title": null,
+    "seniority": null,
+    "department": null,
+    "years_experience": null,
+    "pdl_likelihood": null,
+    "is_corporate_email": true
+  },
+  "market": {
+    "renter_occupied_units": 61534,
+    "total_housing_units": 102878,
+    "renter_rate": 0.5981,
+    "median_gross_rent": 1223,
+    "total_population": 234192,
+    "population_growth_yoy": 0.0115,
+    "median_household_income": 76402,
+    "median_income_growth_yoy": 0.1174,
+    "real_estate_employment": null,
+    "median_property_value": null
+  },
+  "company": {
+    "serper_property_management": {
+      "query": "Parklane Management property management",
+      "organic": [
+        {
+          "title": "Parklane Management Company | apartments in Boise | Boise, ID ...",
+          "link": "https://www.parklaneco.com/",
+          "snippet": "We are the boutique property management experts serving Boise and the surrounding area. Our dedicated team caters to a diverse portfolio of residential and ...",
+          "position": 1
+        },
+        {
+          "title": "Parklane Real Estate Services",
+          "link": "https://parklaneres.com/",
+          "snippet": "Our purpose is to provide high-quality management services to help our clients achieve their plans and goals, swiftly and with exceptional value. \u00b7 Real Estate ...",
+          "position": 2
+        },
+        {
+          "title": "PARKLANE MANAGEMENT COMPANY - Updated April 2026 - Yelp",
+          "link": "https://www.yelp.com/biz/parklane-management-company-boise-2",
+          "snippet": "More info about Parklane Management Company \u00b7 817 W Franklin St. Ste 100. Boise, ID 83702. Directions \u00b7 (208) 345-3221. Call Now \u00b7 Visit Website. https:// ...",
+          "position": 3
+        },
+        {
+          "title": "Parklane Management Company - LinkedIn",
+          "link": "https://www.linkedin.com/company/parklane-management-company",
+          "snippet": "We specialize in managing retail, office, mixed-use and multifamily commercial real estate assets, and we take pride in enhancing the value and performance of ...",
+          "position": 4
+        },
+        {
+          "title": "Parklane Management Company | Boise ID - Facebook",
+          "link": "https://www.facebook.com/PMCBoise/",
+          "snippet": "Parklane Management Company owns and manages apartment, office and retail buildings in Boise, Idaho. We are committed to providing good service, respect, and ...",
+          "position": 5
+        },
+        {
+          "title": "Parklane Management Company, LLC | BBB Business Profile",
+          "link": "https://www.bbb.org/us/id/boise/profile/property-management/parklane-management-company-llc-1296-5004976",
+          "snippet": "This business is NOT BBB Accredited. Find BBB Accredited Businesses in Property Management. Visit Website (208) 345-3221 Write a Review \u00b7 Main \u00b7 Reviews ...",
+          "position": 6
+        },
+        {
+          "title": "Parklane Leasing - Property Management in Boise, ID - Zillow",
+          "link": "https://www.zillow.com/profile/parklaneleasing",
+          "snippet": "View ratings and reviews for Parklane Leasing, Property Management in Boise, ID. View Parklane's contact information to get an estimate or contact them ...",
+          "position": 7
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "serper_jobs": {
+      "query": "Parklane Management leasing consultant jobs",
+      "organic": [
+        {
+          "title": "Parklane Management Company | apartments in Boise | Boise, ID ...",
+          "link": "https://www.parklaneco.com/",
+          "snippet": "Parklane - Your Trusted Boise Property Management Partner. At Parklane, we are the boutique property management experts serving Boise and the surrounding area.",
+          "position": 1
+        },
+        {
+          "title": "Leasing Consultant jobs in Parker, CO - Indeed",
+          "link": "https://www.indeed.com/q-leasing-consultant-l-parker,-co-jobs.html",
+          "snippet": "458 Leasing Consultant jobs available in Parker, CO on Indeed.com. Apply to Leasing Consultant, Leasing Agent, Customer Service Representative and more!",
+          "position": 2
+        },
+        {
+          "title": "Leasing Consultant Jobs, Employment in Colorado | Indeed",
+          "link": "https://www.indeed.com/q-leasing-consultant-l-colorado-jobs.html",
+          "snippet": "666 Leasing Consultant jobs available in Colorado on Indeed.com. Apply to Leasing Consultant, Leasing Agent, Customer Service Representative and more!",
+          "position": 3
+        },
+        {
+          "title": "Leasing Agent Jobs in Boise, ID (NOW HIRING) - ZipRecruiter",
+          "link": "https://www.ziprecruiter.com/Jobs/Leasing-Agent/-in-Boise,ID",
+          "snippet": "Browse 60+ BOISE, ID LEASING AGENT jobs ($15-$28/hr) from companies hiring now. New openings posted daily\u2014find postings near you & 1-click ...",
+          "position": 4
+        },
+        {
+          "title": "85 Leasing Agent jobs in Boise, Idaho, United States (6 new)",
+          "link": "https://www.linkedin.com/jobs/leasing-agent-jobs-boise-id",
+          "snippet": "Today's top 85 Leasing Agent jobs in Boise, Idaho, United States. Leverage your professional network, and get hired. New Leasing Agent jobs added daily.",
+          "position": 5
+        },
+        {
+          "title": "Leasing Consultant Jobs, Employment in Commerce City, CO | Indeed",
+          "link": "https://www.indeed.com/q-leasing-consultant-l-commerce-city,-co-jobs.html",
+          "snippet": "441 Leasing Consultant jobs available in Commerce City, CO on Indeed.com. Apply to Leasing Consultant, Property Manager, Leasing Specialist and more!",
+          "position": 6
+        },
+        {
+          "title": "64 leasing agent Jobs in Boise, ID, April 2026 | Glassdoor",
+          "link": "https://www.glassdoor.com/Job/boise-leasing-agent-jobs-SRCH_IL.0,5_IC1127927_KO6,19.htm",
+          "snippet": "Search Leasing agent jobs in Boise, ID with company ratings & salaries. 64 open jobs for Leasing agent in Boise.",
+          "position": 7
+        },
+        {
+          "title": "Leasing Manager Jobs in Boise, ID (NOW HIRING) - ZipRecruiter",
+          "link": "https://www.ziprecruiter.com/Jobs/Leasing-Manager/-in-Boise,ID",
+          "snippet": "Browse 60+ BOISE, ID LEASING MANAGER jobs ($44k-$118k) from companies hiring now. New openings posted daily\u2014find postings near you & 1-click ...",
+          "position": 8
+        },
+        {
+          "title": "Leasing Consultant Jobs, Employment - Indeed",
+          "link": "https://www.indeed.com/q-leasing-consultant-jobs.html",
+          "snippet": "10954 Leasing Consultant jobs available on Indeed.com. Apply to Leasing Agent, Leasing Consultant, Real Estate Agent and more!",
+          "position": 9
+        },
+        {
+          "title": "Leasing Agent jobs in New Orleans, Louisiana, United States",
+          "link": "https://www.linkedin.com/jobs/leasing-agent-jobs-new-orleans-la",
+          "snippet": "68 Leasing Agent Jobs in New Orleans, Louisiana, United States (5 new) \u00b7 Leasing Agent \u00b7 Leasing Agent (47932) \u00b7 Leasing Agent \u00b7 Leasing Consultant \u00b7 Assistant ...",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "serper_linkedin": {
+      "query": "site:linkedin.com/company Parklane Management",
+      "organic": [
+        {
+          "title": "Parklane Management Company - LinkedIn",
+          "link": "https://www.linkedin.com/company/parklane-management-company",
+          "snippet": "We specialize in managing retail, office, mixed-use and multifamily commercial real estate assets, and we take pride in enhancing the value and performance of ...",
+          "position": 1
+        },
+        {
+          "title": "Park Lane Projects | LinkedIn",
+          "link": "https://pr.linkedin.com/company/park-lane-projects",
+          "snippet": "Park Lane Projects is a specialist construction consultancy. We deliver complex construction projects for and on behalf of corporates, developers, ...",
+          "position": 2
+        },
+        {
+          "title": "Leasing Non-residential Real Estate -. | LinkedIn",
+          "link": "https://www.linkedin.com/company/parklane-management-company-llc",
+          "snippet": "Industry: Leasing Non-residential Real Estate ; Company size: 1 employee ; Headquarters: Boise, ID ; Type: Privately Held ; Founded: 1973.",
+          "position": 3
+        },
+        {
+          "title": "Park Lane | LinkedIn",
+          "link": "https://www.linkedin.com/company/park-lane",
+          "snippet": "Park Lane is an investment bank founded to provide sports finance advisory services to a variety of clients in the sports industry.",
+          "position": 4
+        },
+        {
+          "title": "Old Park Lane Management | LinkedIn",
+          "link": "https://uk.linkedin.com/company/old-park-lane-management",
+          "snippet": "Old Park Lane Management (OPLM) is an investment and development company, mainly focused in Central London. Since its establishment in 1995, the portfolio ...",
+          "position": 5
+        },
+        {
+          "title": "Park Lane New York | LinkedIn",
+          "link": "https://www.linkedin.com/company/park-lane-hotel-new-york",
+          "snippet": "Managed by Highgate \u2013 a leading hospitality investment and management company and long-standing partner for Preferred that has partnered 17 of its other ...",
+          "position": 6
+        },
+        {
+          "title": "Park Lane Management Consultants Limited | LinkedIn",
+          "link": "https://uk.linkedin.com/company/park-lane-management-consultants-limited",
+          "snippet": "Website: http://www.plmc.co.uk. External link for Park Lane Management Consultants Limited. Industry: Business Consulting and Services ...",
+          "position": 7
+        },
+        {
+          "title": "Parklane | LinkedIn",
+          "link": "https://ca.linkedin.com/company/parklane-mechanical-acoustics",
+          "snippet": "Parklane designs, manufactures and installs custom noise-mitigation systems for institutional, commercial and industrial clients across North America.",
+          "position": 8
+        },
+        {
+          "title": "Park Lane Properties | LinkedIn",
+          "link": "https://www.linkedin.com/company/parklaneproperties",
+          "snippet": "Real estate company in the quad cities specializing in real estate investments, home flips, and residential leasing. \u00b7 Report this company \u00b7 Close menu.",
+          "position": 9
+        },
+        {
+          "title": "Park Lane Construction, LLC. - LinkedIn",
+          "link": "https://www.linkedin.com/company/parklaneconstructionllc.",
+          "snippet": "Park Lane Construction, LLC is a general contracting company specializing in the construction and development of light commercial and multi-family properties.",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "linkedin_employee_count": null,
+    "founded_year": null,
+    "is_publicly_traded": false,
+    "job_count": 64,
+    "portfolio_size": null,
+    "yelp_alias": "parklane-management-company-boise-2",
+    "social_platform_count": 1,
+    "tech_stack": [],
+    "yelp_rating": 1.3,
+    "yelp_review_count": 33,
+    "yelp_market_avg_rating": 3.64,
+    "yelp_pain_themes": [
+      "maintenance issues - unclean unit at move-in"
+    ],
+    "yelp_year_established": null,
+    "google_rating": null,
+    "serper_pain_themes": [],
+    "competitor_rank_pct": null
+  },
+  "building": {
+    "address": "310 Redwood Ct",
+    "name": "Parklane Apartments",
+    "yelp_alias": "parklane-apartments-boise",
+    "yelp_rating": null,
+    "yelp_review_count": null,
+    "pain_themes": [],
+    "price_tier": null,
+    "google_rating": null
+  }
+}

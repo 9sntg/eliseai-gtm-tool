@@ -1,0 +1,195 @@
+{
+  "contact": {
+    "name": "Amanda Hope",
+    "email": "amanda@redstoneresidential.com",
+    "company": "Redstone Residential",
+    "property_address": "1322 N Freedom Blvd",
+    "city": "Provo",
+    "state": "UT",
+    "job_title": "manager team member relations & policy",
+    "seniority": "manager",
+    "department": "operations",
+    "years_experience": null,
+    "pdl_likelihood": 6,
+    "is_corporate_email": true
+  },
+  "market": {
+    "renter_occupied_units": 12957,
+    "total_housing_units": 35079,
+    "renter_rate": 0.3694,
+    "median_gross_rent": 1089,
+    "total_population": 114400,
+    "population_growth_yoy": 0.0076,
+    "median_household_income": 57943,
+    "median_income_growth_yoy": 0.0816,
+    "real_estate_employment": null,
+    "median_property_value": null
+  },
+  "company": {
+    "serper_property_management": {
+      "query": "Redstone Residential property management",
+      "organic": [
+        {
+          "title": "Redstone \u2013 Property Management | Investments | Development",
+          "link": "https://redstoneresidential.com/",
+          "snippet": "We bring together institutional-grade infrastructure and entrepreneurial execution to drive performance at every level. Our teams are hands-on, data-driven, and ...",
+          "position": 1
+        },
+        {
+          "title": "Contact - Redstone Residential",
+          "link": "https://redstoneresidential.com/contact/",
+          "snippet": "2483 North Canyon Rd. Provo, UT 84604. Phone: 801-948-8000. Email: info@redstoneresidential.com. Mon-Fri: ...",
+          "position": 2
+        },
+        {
+          "title": "Redstone Residential Property Management Company",
+          "link": "https://www.apartments.com/pmc/redstone-residential/x1wpjxp/",
+          "snippet": "Redstone Residential is a property management company serving several markets accross the USA.",
+          "position": 3
+        },
+        {
+          "title": "Leadership - Redstone Residential",
+          "link": "https://redstoneresidential.com/leadership/",
+          "snippet": "Andrew Merrick serves as a Regional Property Manager at Redstone Residential. With over 12 years of leadership in property and operations management, Andrew has ...",
+          "position": 4
+        },
+        {
+          "title": "Redstone Property Management: Home",
+          "link": "https://rpm-mi.com/home/",
+          "snippet": "We specialize in association management focusing on excellent service for condominiums. This site is intended to be a tool for our Associations.",
+          "position": 5
+        },
+        {
+          "title": "Redstone Residential, Inc. - LinkedIn",
+          "link": "https://www.linkedin.com/company/redstone-residential",
+          "snippet": "Redstone Residential is a national multifamily and student housing investor and operator headquartered in Provo, Utah. Our firm currently operates in excess ...",
+          "position": 6
+        },
+        {
+          "title": "Careers - Redstone Residential",
+          "link": "https://redstoneresidential.com/careers/",
+          "snippet": "Established in 2009 Redstone is a fully integrated specialist in the student housing sector. Initially starting as a third-party manager for institutional ...",
+          "position": 7
+        },
+        {
+          "title": "REDSTONE RESIDENTIAL - Updated April 2026 - Yelp",
+          "link": "https://www.yelp.com/biz/redstone-residential-provo",
+          "snippet": "Redstone's model is to poorly manage properties and then fine student tenants for dirt and damages that existed at the time the tenants moved in.",
+          "position": 8
+        },
+        {
+          "title": "RedStone Property Management",
+          "link": "https://www.redstonepm.com/",
+          "snippet": "Redstone Property Management offers expert rental property management in Burlington, providing services that ensure peace of mind and profitability.",
+          "position": 9
+        },
+        {
+          "title": "Redstone Residential, Inc. (@redstoneresidential) - Instagram",
+          "link": "https://www.instagram.com/redstoneresidential/",
+          "snippet": "Investment, operation, and development of conventional multifamily and student housing properties - nationwide.",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "serper_linkedin": {
+      "query": "site:linkedin.com/company Redstone Residential",
+      "organic": [
+        {
+          "title": "Redstone Residential, Inc. - LinkedIn",
+          "link": "https://www.linkedin.com/company/redstone-residential",
+          "snippet": "Redstone Residential is a national multifamily and student housing investor and operator headquartered in Provo, Utah. Our firm currently operates in excess ...",
+          "position": 1
+        },
+        {
+          "title": "Redstone Group Management, Inc. | LinkedIn",
+          "link": "https://www.linkedin.com/company/redstone-group-management-inc",
+          "snippet": "Redstone is a fully vertically integrated real estate company that has been in business for 28 years and has solely focused on developing housing for ...",
+          "position": 2
+        },
+        {
+          "title": "Redstone Properties - LinkedIn",
+          "link": "https://www.linkedin.com/company/redstone-properties",
+          "snippet": "Redstone Properties, Inc. is a land development company based in Williamstown, MA. Our principals have over 30 years of experience in the land business.",
+          "position": 3
+        },
+        {
+          "title": "Redstone Realty | LinkedIn",
+          "link": "https://www.linkedin.com/company/redstone-realty",
+          "snippet": "Redstone Realty is dedicated to helping people just like you sell and buy real estate for over twenty years.",
+          "position": 4
+        },
+        {
+          "title": "Redstone Properties | LinkedIn",
+          "link": "https://tw.linkedin.com/company/redstone-properties",
+          "snippet": "Redstone Properties, Inc. is a land development company based in Williamstown, MA. Our principals have over 30 years of experience in the land business and ...",
+          "position": 5
+        },
+        {
+          "title": "Redstone Properties | LinkedIn",
+          "link": "https://at.linkedin.com/company/redstone-properties",
+          "snippet": "Redstone Properties, Inc. is a land development company based in Williamstown, MA. Our principals have over 30 years of experience in the land business and ...",
+          "position": 6
+        },
+        {
+          "title": "Redstone Properties | LinkedIn",
+          "link": "https://jp.linkedin.com/company/redstone-properties",
+          "snippet": "Redstone Properties, Inc. is a land development company based in Williamstown, MA. Our principals have over 30 years of experience in the land business and ...",
+          "position": 7
+        },
+        {
+          "title": "RedStone Property Management - LinkedIn",
+          "link": "https://www.linkedin.com/company/redstonepm",
+          "snippet": "RedStone Property Management. Real Estate. Burlington, North Carolina 57 followers. Full service property management company serving owners in the Triad.",
+          "position": 8
+        },
+        {
+          "title": "Redstone Realty | LinkedIn",
+          "link": "https://de.linkedin.com/company/redstone-realty",
+          "snippet": "Redstone Realty is dedicated to helping people just like you sell and buy real estate for over twenty years. They believe the customer deserves an ...",
+          "position": 9
+        },
+        {
+          "title": "The Michaels Organization - LinkedIn",
+          "link": "https://www.linkedin.com/company/the-michaels-organization",
+          "snippet": "The Michaels Organization is a national leader in residential real estate, with full service capabilities in development, property management, construction, ...",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "linkedin_employee_count": null,
+    "founded_year": null,
+    "is_publicly_traded": false,
+    "portfolio_size": null,
+    "yelp_alias": "redstone-residential-provo",
+    "social_platform_count": 1,
+    "tech_stack": [],
+    "yelp_rating": 1.2,
+    "yelp_review_count": 44,
+    "yelp_market_avg_rating": 3.4,
+    "yelp_pain_themes": [
+      "unclear check-in process",
+      "billing errors",
+      "maintenance work order issues"
+    ],
+    "yelp_year_established": null,
+    "google_rating": null,
+    "serper_pain_themes": [],
+    "competitor_rank_pct": null
+  },
+  "building": {
+    "address": "1322 N Freedom Blvd",
+    "name": "1322 N Freedom Blvd, Provo, UT 84604",
+    "yelp_alias": null,
+    "yelp_rating": null,
+    "yelp_review_count": null,
+    "pain_themes": [],
+    "price_tier": null,
+    "google_rating": null
+  }
+}

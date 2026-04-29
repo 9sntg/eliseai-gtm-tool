@@ -1,0 +1,176 @@
+{
+  "lead_score": 65.65,
+  "tier": "Medium",
+  "key_observations": [
+    "Cortland has two open leasing and property management roles right now, which signals the team is either growing or backfilling, and either way staffing capacity is a live concern. Lead with how EliseAI extends what an existing team can handle without adding headcount.",
+    "Review themes at the Tucson property point to friction at the front desk, which is a common pressure point when staff are handling too much routine communication manually. Frame EliseAI as the layer that absorbs repetitive resident interactions so the people on site can show up better in the moments that matter.",
+    "Ashley is a director of operations, meaning she owns process and efficiency across the portfolio rather than just a single site. Anchor the conversation on operational consistency at scale and reference the Equity Residential payroll savings figure as a proof point that resonates at the director level."
+  ],
+  "market_fit": 66.45,
+  "company_fit": 23.75,
+  "person_fit": 55.71,
+  "building_fit": 58.0,
+  "signals": [
+    {
+      "name": "Renter-Occupied Units",
+      "category": "Market",
+      "points": 11.2,
+      "max_points": 15.0,
+      "reason": "Large rental market with high unit count. Top threshold met for full points."
+    },
+    {
+      "name": "Building Yelp Rating",
+      "category": "Building",
+      "points": 8.0,
+      "max_points": 8.0,
+      "reason": "Building Yelp rating is low. Residents are unhappy, creating a strong pitch angle."
+    },
+    {
+      "name": "Contact Seniority",
+      "category": "Person",
+      "points": 7.0,
+      "max_points": 10.0,
+      "reason": "Contact has seniority that influences purchasing decisions."
+    },
+    {
+      "name": "Renter Rate",
+      "category": "Market",
+      "points": 6.0,
+      "max_points": 8.0,
+      "reason": "High share of housing is renter-occupied. Strong property management market."
+    },
+    {
+      "name": "Portfolio / Web Presence",
+      "category": "Company",
+      "points": 6.0,
+      "max_points": 8.0,
+      "reason": "Strong web presence with a verified Google Knowledge Graph entry. Established brand."
+    },
+    {
+      "name": "Economic Momentum",
+      "category": "Market",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Strong year-over-year income growth. Healthy economic trajectory for the city."
+    },
+    {
+      "name": "Company Age",
+      "category": "Company",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Established company with significant operating history. Likely carries legacy tech debt."
+    },
+    {
+      "name": "Corporate Email",
+      "category": "Person",
+      "points": 4.0,
+      "max_points": 4.0,
+      "reason": "Email uses a verified company domain. Contact legitimacy confirmed."
+    },
+    {
+      "name": "Job Postings",
+      "category": "Company",
+      "points": 3.6,
+      "max_points": 12.0,
+      "reason": "Some job postings found, indicating moderate growth activity."
+    },
+    {
+      "name": "Population Growth YoY",
+      "category": "Market",
+      "points": 2.5,
+      "max_points": 5.0,
+      "reason": "Stable population growth. Steady market conditions."
+    },
+    {
+      "name": "Social Media Presence",
+      "category": "Company",
+      "points": 2.5,
+      "max_points": 5.0,
+      "reason": "Some social media presence detected."
+    },
+    {
+      "name": "Building Review Volume",
+      "category": "Building",
+      "points": 2.0,
+      "max_points": 4.0,
+      "reason": "Moderate review volume present for this building."
+    },
+    {
+      "name": "Building Pain Themes",
+      "category": "Building",
+      "points": 1.6,
+      "max_points": 4.0,
+      "reason": "Some complaint themes found for this specific building."
+    },
+    {
+      "name": "Department / Function",
+      "category": "Person",
+      "points": 0.7,
+      "max_points": 7.0,
+      "reason": "No department data available or contact is outside the property management function."
+    },
+    {
+      "name": "Median Gross Rent",
+      "category": "Market",
+      "points": 0.5,
+      "max_points": 5.0,
+      "reason": "Below-average median rent or no Census data returned for this city."
+    },
+    {
+      "name": "Tech Stack",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "No tech stack data. BuiltWith key not configured or no tools detected."
+    },
+    {
+      "name": "Employee Count",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "Company is below the minimum headcount threshold or LinkedIn data is unavailable."
+    },
+    {
+      "name": "Portfolio Size",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 6.0,
+      "reason": "No portfolio size data could be extracted."
+    },
+    {
+      "name": "Yelp Rating vs. Market",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 6.0,
+      "reason": "No Yelp data available or rating is at or above the market average."
+    },
+    {
+      "name": "Google Rating",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No Google rating data available or rating is above the scoring threshold."
+    },
+    {
+      "name": "Resident Pain Themes",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 5.0,
+      "reason": "No complaint themes were extracted from reviews."
+    },
+    {
+      "name": "Competitor Rank (Yelp)",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 5.0,
+      "reason": "No competitor data available or company ranks well relative to competitors."
+    },
+    {
+      "name": "Building Price Tier",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No price tier data from Yelp or the building is at the budget tier."
+    }
+  ]
+}

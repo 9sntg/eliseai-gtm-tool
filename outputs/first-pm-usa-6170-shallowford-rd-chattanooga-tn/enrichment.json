@@ -1,0 +1,196 @@
+{
+  "contact": {
+    "name": "Tonya Baker",
+    "email": "tonya.baker@firstpmusa.com",
+    "company": "First PM USA",
+    "property_address": "6170 Shallowford Rd",
+    "city": "Chattanooga",
+    "state": "TN",
+    "job_title": "office and account manager",
+    "seniority": "manager",
+    "department": "support",
+    "years_experience": null,
+    "pdl_likelihood": 8,
+    "is_corporate_email": true
+  },
+  "market": {
+    "renter_occupied_units": 41137,
+    "total_housing_units": 86238,
+    "renter_rate": 0.477,
+    "median_gross_rent": 1066,
+    "total_population": 181288,
+    "population_growth_yoy": 0.0052,
+    "median_household_income": 57703,
+    "median_income_growth_yoy": 0.1441,
+    "real_estate_employment": null,
+    "median_property_value": null
+  },
+  "company": {
+    "serper_property_management": {
+      "query": "First PM USA property management",
+      "organic": [
+        {
+          "title": "First Property Management | Chattanooga property management ...",
+          "link": "https://firstpmusa.com/",
+          "snippet": "Our portfolio of available rental properties in the Tennessee, Georgia, and Alabama areas features single family homes, apartment communities, and multi-family ...",
+          "position": 1
+        },
+        {
+          "title": "Contact Us - First Property Management",
+          "link": "https://firstpmusa.com/contact-us/",
+          "snippet": "For immediate assistance, please call 423-475-7368 to speak with a representative. Our team is available Monday-Friday during regular business hours.",
+          "position": 2
+        },
+        {
+          "title": "FIRST PROPERTY MANAGEMENT - Updated April 2026 - 11 Reviews",
+          "link": "https://www.yelp.com/biz/first-property-management-chattanooga",
+          "snippet": "More info about First Property Management ; 6170 Shallowford Rd. Ste 102. Chattanooga, TN 37421. Directions ; (423) 475-7368. Call Now ; Visit Website. http://www.",
+          "position": 3
+        },
+        {
+          "title": "First Property Management in Chattanooga, TN \u2013 Reviews, Hours ...",
+          "link": "https://local.yahoo.com/info-191882394-first-property-management-chattanooga/",
+          "snippet": "First Property Management provides full-service property management in Chattanooga and the surrounding area, helping property owners handle everything from ...",
+          "position": 4
+        },
+        {
+          "title": "First Property Managmemt : r/iastate - Reddit",
+          "link": "https://www.reddit.com/r/iastate/comments/1ckwc4t/first_property_managmemt/",
+          "snippet": "I've been with FPM for 1.5 years and no issues. They just went massively up in my books - I'm switching to another unit thru FPM come summer and ...",
+          "position": 5
+        },
+        {
+          "title": "First Property Management - LinkedIn",
+          "link": "https://www.linkedin.com/company/chattanoogapropertymanagement",
+          "snippet": "We are a full-service property and asset management company with a dual purpose. That purpose is to put the needs of our clients and tenants first.",
+          "position": 6
+        },
+        {
+          "title": "First Property Management, LLC | Chattanooga TN - Facebook",
+          "link": "https://www.facebook.com/firstpropertymanagement/",
+          "snippet": "First Property Management, LLC, Chattanooga. 1006 likes \u00b7 8 were here. We are a Chattanooga property management company specializing in residential and...",
+          "position": 7
+        },
+        {
+          "title": "Resident FAQ's \u2013 First Property Management | Chattanooga ...",
+          "link": "https://firstpmusa.com/resident-faqs/",
+          "snippet": "There are 2 ways to apply for one of our beautiful properties. Apply online (fastest and easiest). Apply in-person at our office.",
+          "position": 8
+        },
+        {
+          "title": "First Property Management - Chattanooga - MapQuest",
+          "link": "https://www.mapquest.com/us/tennessee/first-property-management-436687507",
+          "snippet": "First Property Management, based in Chattanooga, TN, offers comprehensive property management and real estate services across Tennessee, North Georgia, ...",
+          "position": 9
+        },
+        {
+          "title": "First Property Management - Chattanooga, TN - Nextdoor",
+          "link": "https://nextdoor.com/pages/first-property-management-chattanooga-tn-1/",
+          "snippet": "(423) 475-7368 \u00b7 firstpmusa.com \u00b7 Info@firstpmusa.com.",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "serper_linkedin": {
+      "query": "site:linkedin.com/company First PM USA",
+      "organic": [
+        {
+          "title": "PM-International USA | LinkedIn",
+          "link": "https://www.linkedin.com/company/pm-international-usa",
+          "snippet": "For over 25 years, we've been dedicated to developing, manufacturing, and distributing premium-quality products designed to help people live healthier, fitter, ...",
+          "position": 1
+        },
+        {
+          "title": "Commerce City | LinkedIn",
+          "link": "https://fr.linkedin.com/company/city-of-commerce-city?trk=ppro_cprof",
+          "snippet": "Join us on April 28 at Eagle Pointe Recreation Center to chat with city staff, explore different projects/initiatives, and share your ideas. 5:30\u20137:30 p.m..",
+          "position": 2
+        },
+        {
+          "title": "U.S. Department of Housing and Urban Development | LinkedIn",
+          "link": "https://www.linkedin.com/company/hud",
+          "snippet": "The mission of the U.S. Department of Housing and Urban Development is to foster strong communities by supporting access to quality, affordable housing, ...",
+          "position": 3
+        },
+        {
+          "title": "U.S. Geological Survey (USGS) | LinkedIn",
+          "link": "https://www.linkedin.com/company/usgs",
+          "snippet": "Part of the U.S. Department of the Interior, the USGS began in 1879 to study the nation's lands and resources. Today, we monitor, analyze, ...",
+          "position": 4
+        },
+        {
+          "title": "PM Group | LinkedIn",
+          "link": "https://ie.linkedin.com/company/pm-group_165501",
+          "snippet": "At PM Group, our vision is to enable a world where science and technology transform lives. Powered by exceptional people, digital technology and innovation, ...",
+          "position": 5
+        },
+        {
+          "title": "First America - LinkedIn",
+          "link": "https://www.linkedin.com/company/firstamericarecycles",
+          "snippet": "Headquartered in Morris, Ill., First America serves its customers across the United States from a network of strategically located facilities.",
+          "position": 6
+        },
+        {
+          "title": "Wells Fargo | LinkedIn",
+          "link": "https://www.linkedin.com/company/wellsfargo",
+          "snippet": "Wells Fargo & Company (NYSE: WFC) is a diversified, community-based financial services company with approximately $1.9 trillion in assets.",
+          "position": 7
+        },
+        {
+          "title": "First Point Group - LinkedIn",
+          "link": "https://www.linkedin.com/company/first-point-group",
+          "snippet": "We are a leading, global recruitment company within Telecommunications, Technology, Data Centre and Energy.",
+          "position": 8
+        },
+        {
+          "title": "U.S. Department of Homeland Security - LinkedIn",
+          "link": "https://www.linkedin.com/company/us-department-of-homeland-security",
+          "snippet": "Our duties are wide-ranging, and our goal is clear - keeping America safe. Mission 1: Counter Terrorism and Homeland Security Threats Mission 2: Secure U.S. ...",
+          "position": 9
+        },
+        {
+          "title": "OneDigital - LinkedIn",
+          "link": "https://fr.linkedin.com/company/weareonedigital?trk=ppro_cprof",
+          "snippet": "OneDigital's team of fierce advocates helps businesses and individuals achieve their aspirations of health, success and financial security.",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "linkedin_employee_count": null,
+    "founded_year": null,
+    "is_publicly_traded": false,
+    "portfolio_size": null,
+    "yelp_alias": "first-property-management-chattanooga",
+    "social_platform_count": 1,
+    "tech_stack": [],
+    "yelp_rating": 1.4,
+    "yelp_review_count": 11,
+    "yelp_market_avg_rating": 2.47,
+    "yelp_pain_themes": [
+      "unresponsive management",
+      "rude staff",
+      "lack of tenant support",
+      "unresponsive to complaints"
+    ],
+    "yelp_year_established": 2015,
+    "google_rating": null,
+    "serper_pain_themes": [],
+    "competitor_rank_pct": null
+  },
+  "building": {
+    "address": "6170 Shallowford Rd",
+    "name": "First Property Management",
+    "yelp_alias": "apartment-coverage-rome",
+    "yelp_rating": null,
+    "yelp_review_count": null,
+    "pain_themes": [],
+    "price_tier": null,
+    "google_rating": null
+  }
+}

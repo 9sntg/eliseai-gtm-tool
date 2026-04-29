@@ -1,0 +1,242 @@
+{
+  "contact": {
+    "name": "Erik Hoekstra",
+    "email": "ehoekstra@redstonevt.com",
+    "company": "Redstone VT",
+    "property_address": "244 Bayberry Cir ",
+    "city": "Burlington",
+    "state": "VT",
+    "job_title": null,
+    "seniority": null,
+    "department": null,
+    "years_experience": null,
+    "pdl_likelihood": 6,
+    "is_corporate_email": true
+  },
+  "market": {
+    "renter_occupied_units": 6967,
+    "total_housing_units": 18203,
+    "renter_rate": 0.3827,
+    "median_gross_rent": 1540,
+    "total_population": 44646,
+    "population_growth_yoy": -0.0013,
+    "median_household_income": 64931,
+    "median_income_growth_yoy": 0.0944,
+    "real_estate_employment": null,
+    "median_property_value": null
+  },
+  "company": {
+    "serper_property_management": {
+      "query": "Redstone VT property management",
+      "organic": [
+        {
+          "title": "Redstone VT - Property Management in Burlington and Northern ...",
+          "link": "https://www.redstonevt.com/",
+          "snippet": "For over 25 years, Redstone has developed, brokered and managed properties in Northern Vermont that inspire pride and interaction.",
+          "position": 1
+        },
+        {
+          "title": "REDSTONE PROPERTY MANAGEMENT - Updated April 2026 - Yelp",
+          "link": "https://www.yelp.com/biz/redstone-property-management-burlington",
+          "snippet": "More info about Redstone Property Management \u00b7 210 College St. Ste 201. Burlington, VT 05401. Directions \u00b7 (802) 658-7400. Call Now ...",
+          "position": 2
+        },
+        {
+          "title": "Redstone | Burlington VT - Facebook",
+          "link": "https://www.facebook.com/RedstoneVT/",
+          "snippet": "Redstone, Burlington. 557 likes \u00b7 1 talking about this \u00b7 15 were here. More than just spaces to live and work, we believe in the potential of homes,...",
+          "position": 3
+        },
+        {
+          "title": "Redstone VT Property Management - YouTube",
+          "link": "https://www.youtube.com/@redstonevtpropertymanageme9208",
+          "snippet": "Redstone VT Property Management \u00b7 Burlington \u00b7 South Burlington \u00b7 Colchester \u00b7 Shelburne \u00b7 Winooski \u00b7 Redstone Student Housing \u00b7 Commercial Spaces. 2 \u00b7 Chace ...",
+          "position": 4
+        },
+        {
+          "title": "Redstone Lofts | Apartments in Burlington, VT",
+          "link": "https://www.myredstonelofts.com/",
+          "snippet": "Please reach out to our team at housing@redstonevt.com or 802.540.1751 for assistance with your leasing needs! Find your Happy Place today!",
+          "position": 5
+        },
+        {
+          "title": "Have you ever lived at a Redstone managed property? How was it?",
+          "link": "https://www.reddit.com/r/burlington/comments/grt0t0/have_you_ever_lived_at_a_redstone_managed/",
+          "snippet": "They're one of the largest property management companies in the city, with both commercial and residential holdings. I get the feeling they ...",
+          "position": 6
+        },
+        {
+          "title": "Redstone Property Management, 210 College St, Ste ... - MapQuest",
+          "link": "https://www.mapquest.com/us/vermont/redstone-property-management-277247615",
+          "snippet": "Redstone Property Management offers modern living at Redstone Lofts in Burlington, VT, with a variety of available units to choose from.",
+          "position": 7
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "serper_jobs": {
+      "query": "Redstone VT leasing consultant jobs",
+      "organic": [
+        {
+          "title": "Redstone Residential, Inc. hiring Leasing Specialist - Part-Time in ...",
+          "link": "https://www.linkedin.com/jobs/view/leasing-specialist-part-time-at-redstone-residential-inc-4405843715",
+          "snippet": "The Part-Time Leasing Agent supports the community by providing excellent customer service at the front desk, assisting current residents, and ...",
+          "position": 1
+        },
+        {
+          "title": "Redstone Residential Leasing Specialist Jobs | Indeed.com",
+          "link": "https://www.indeed.com/cmp/Redstone-Residential/jobs/q-Leasing-Specialist",
+          "snippet": "Redstone Residential Leasing Specialist Jobs \u00b7 Leasing Specialist - Part-Time. Provo, UT. $14.50 - $19.00 an hour \u00b7 Leasing Specialist - Part-Time. Cincinnati, OH.",
+          "position": 2
+        },
+        {
+          "title": "Job Application for Leasing Manager at Redstone Residential",
+          "link": "http://job-boards.greenhouse.io/redstoneresidential/jobs/4203931009",
+          "snippet": "Back to jobs. Leasing Manager. Winooski, Vermont. Apply. Redstone Residential is a national student and multi-family housing operator, managing more than 38,000 ...",
+          "position": 3
+        },
+        {
+          "title": "Redstone Residential Jobs, Employment | Indeed",
+          "link": "https://www.indeed.com/q-redstone-residential-jobs.html",
+          "snippet": "Leasing Specialist - Part-Time ... CLASSIFICATION: Part-time, Non-Exempt. COMPENSATION: $15.00 - $17.00 per hour, with the ability to earn performance bonuses.",
+          "position": 4
+        },
+        {
+          "title": "Redstone VT - Property Management in Burlington and Northern ...",
+          "link": "https://www.redstonevt.com/",
+          "snippet": "We are always looking for talented individuals to join the Redstone team. We are progressive 21st century company with a collaborative and ...",
+          "position": 5
+        },
+        {
+          "title": "Redstone Residential Property management Jobs | Glassdoor",
+          "link": "https://www.glassdoor.com/Jobs/Redstone-Residential-Property-management-Jobs-EI_IE1021909.0,20_KO21,40.htm",
+          "snippet": "Leasing Specialist - Full - Time. Provo, UT. $16.00 Per Hour (Employer provided). Easy Apply. 30d+. Leasing Specialist - Part-Time. Winooski, VT. $14.50 Per ...",
+          "position": 6
+        },
+        {
+          "title": "Careers - Redstone Residential",
+          "link": "https://redstoneresidential.com/careers/",
+          "snippet": "Discover excellence and opportunity at Redstone, where we are redefining property management. Join our team as we empower our people and elevate communities.",
+          "position": 7
+        },
+        {
+          "title": "Leasing Specialist - Full-Time @ Redstone Residential - Teal",
+          "link": "https://www.tealhq.com/job/leasing-specialist_7ea1ad619fff670568e0cecae55d43bdbecad",
+          "snippet": "We are seeking a sophisticated, self-motivated Leasing Specialist to serve as the face of our community. This is a unique opportunity for a \" ...",
+          "position": 8
+        },
+        {
+          "title": "Jobs at Redstone Residential - Greenhouse",
+          "link": "http://job-boards.greenhouse.io/redstoneresidential",
+          "snippet": "64 jobs ... Leasing. Job. Community Assistant. Salt Lake City, Utah \u00b7 Community Assistant. Starkville, Mississippi \u00b7 Leasing Manager. Winooski, Vermont \u00b7 Leasing ...",
+          "position": 9
+        },
+        {
+          "title": "Redstone jobs in South Burlington, Vt - Indeed",
+          "link": "https://www.indeed.com/q-redstone-l-south-burlington,-vt-jobs.html",
+          "snippet": "Redstone jobs available in South Burlington, VT on Indeed.com. Apply to Leasing Manager and more!",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "serper_linkedin": {
+      "query": "site:linkedin.com/company Redstone VT",
+      "organic": [
+        {
+          "title": "Redstone | LinkedIn",
+          "link": "https://www.linkedin.com/company/redstone-commercial-group",
+          "snippet": "We are modern place makers. For over 25 years, Redstone has developed, brokered and managed properties that inspire pride and interaction.",
+          "position": 1
+        },
+        {
+          "title": "Redstone | LinkedIn",
+          "link": "https://ae.linkedin.com/company/redstone-commercial-group",
+          "snippet": "We are modern place makers. For over 25 years, Redstone has developed, brokered and managed properties that inspire pride and interaction.",
+          "position": 2
+        },
+        {
+          "title": "Redstone Realty | LinkedIn",
+          "link": "https://www.linkedin.com/company/redstone-realty",
+          "snippet": "Redstone Realty is dedicated to helping people just like you sell and buy real estate for over twenty years.",
+          "position": 3
+        },
+        {
+          "title": "Redstone Properties - LinkedIn",
+          "link": "https://www.linkedin.com/company/redstone-properties",
+          "snippet": "Redstone Properties, Inc. is a land development company based in Williamstown, MA. Our principals have over 30 years of experience in the land business.",
+          "position": 4
+        },
+        {
+          "title": "Redstone Villa Inc | LinkedIn",
+          "link": "https://www.linkedin.com/company/redstone-villa-inc",
+          "snippet": "Redstone Villa Nursing Home is a 30-bed skilled nursing center in St. Albans, VT. Website: http://www.reveraredstone.com/. External link for Redstone Villa Inc.",
+          "position": 5
+        },
+        {
+          "title": "The Redstone Group DMV - Real Estate - LinkedIn",
+          "link": "https://www.linkedin.com/company/the-redstone-group-dmv",
+          "snippet": "Our Buyer services are completely FREE to our clients with No Obligation and No Pressure! We also have creative and competitive seller compensation that saves ...",
+          "position": 6
+        },
+        {
+          "title": "Redstone Realty | LinkedIn",
+          "link": "https://de.linkedin.com/company/redstone-realty",
+          "snippet": "Redstone Realty is dedicated to helping people just like you sell and buy real estate for over twenty years. They believe the customer deserves an ...",
+          "position": 7
+        },
+        {
+          "title": "Redstone Realty | LinkedIn",
+          "link": "https://no.linkedin.com/company/redstone-realty",
+          "snippet": "Redstone Realty is dedicated to helping people just like you sell and buy real estate for over twenty years. They believe the customer deserves an ...",
+          "position": 8
+        },
+        {
+          "title": "Redstone Properties | LinkedIn",
+          "link": "https://jp.linkedin.com/company/redstone-properties",
+          "snippet": "Redstone Properties, Inc. is a land development company based in Williamstown, MA. Our principals have over 30 years of experience in the land business and ...",
+          "position": 9
+        },
+        {
+          "title": "Redstone Realty | LinkedIn",
+          "link": "https://id.linkedin.com/company/redstone-realty",
+          "snippet": "Redstone Realty is dedicated to helping people just like you sell and buy real estate for over twenty years. They believe the customer deserves an ...",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "linkedin_employee_count": null,
+    "founded_year": null,
+    "is_publicly_traded": false,
+    "job_count": 64,
+    "portfolio_size": null,
+    "yelp_alias": "redstone-property-management-burlington",
+    "social_platform_count": 2,
+    "tech_stack": [],
+    "yelp_rating": null,
+    "yelp_review_count": null,
+    "yelp_market_avg_rating": null,
+    "yelp_pain_themes": [],
+    "yelp_year_established": null,
+    "google_rating": null,
+    "serper_pain_themes": [],
+    "competitor_rank_pct": null
+  },
+  "building": {
+    "address": "244 Bayberry Cir ",
+    "name": "244 Bayberry Cir, Burlington, VT 05401",
+    "yelp_alias": null,
+    "yelp_rating": null,
+    "yelp_review_count": null,
+    "pain_themes": [],
+    "price_tier": null,
+    "google_rating": null
+  }
+}

@@ -1,0 +1,194 @@
+{
+  "contact": {
+    "name": "Candice Lira",
+    "email": "clira@grouponecc.com",
+    "company": "Group One Real Estate",
+    "property_address": "5302 Everhart Rd",
+    "city": "Corpus Christi",
+    "state": "TX",
+    "job_title": null,
+    "seniority": null,
+    "department": null,
+    "years_experience": null,
+    "pdl_likelihood": null,
+    "is_corporate_email": true
+  },
+  "market": {
+    "renter_occupied_units": 67302,
+    "total_housing_units": 134044,
+    "renter_rate": 0.5021,
+    "median_gross_rent": 1178,
+    "total_population": 317804,
+    "population_growth_yoy": -0.0011,
+    "median_household_income": 64449,
+    "median_income_growth_yoy": 0.0743,
+    "real_estate_employment": null,
+    "median_property_value": null
+  },
+  "company": {
+    "serper_property_management": {
+      "query": "Group One Real Estate property management",
+      "organic": [
+        {
+          "title": "Home | Group One Real Estate | Corpus Christi, TX",
+          "link": "https://grouponecc.com/",
+          "snippet": "Group One Real Estate has been providing efficient and professional real estate services since 1971 ... Property management; REO asset management; Rental locator ...",
+          "position": 1
+        },
+        {
+          "title": "Group One: Corpus Christi's Top Property Management Team",
+          "link": "https://www.grouponerents.com/",
+          "snippet": "For better than 40 years, Group One has been providing exceptional real-estate and property-management services to Corpus Christi, Texas, and the Coastal Bend.",
+          "position": 2
+        },
+        {
+          "title": "Property Management | Group One Real Estate | Corpus Christi, TX",
+          "link": "https://grouponecc.com/property-management/",
+          "snippet": "Group One Real Estate has one of the largest property management divisions in Corpus Christi, and we handle everything from townhomes to single-family ...",
+          "position": 3
+        },
+        {
+          "title": "Group One Real Estate | Corpus Christi TX - Facebook",
+          "link": "https://www.facebook.com/GroupOneRealEstateCC/",
+          "snippet": "Group One Real Estate has been providing efficient and professional real estate services since 1971. ... \u201cIt seems the owners would have to know if their property ...",
+          "position": 4
+        },
+        {
+          "title": "Group One Real Estate - LeadingRE.com",
+          "link": "http://www.leadingre.com/members/group-one-real-estate",
+          "snippet": "Since 1971 Group One Real Estate's theme has been \u201cexcellence in real estate services\u201d. Specializing in Relocation since 1975 and affiliated with RELO since ...",
+          "position": 5
+        },
+        {
+          "title": "GROUP ONE REAL ESTATE - Property Management - Yelp",
+          "link": "https://www.yelp.com/biz/group-one-real-estate-corpus-christi-2",
+          "snippet": "GROUP ONE REAL ESTATE, 5302 Everhart Rd, Corpus Christi, TX 78411, 3 Photos, (361) 991-9111, Mon - 8:30 am - 5:00 pm, Tue - 8:30 am - 5:00 pm, Wed - 8:30 am ...",
+          "position": 6
+        },
+        {
+          "title": "REALTY ONE GROUP ATLANTA - ONE TERMINUS | OFFICIAL ...",
+          "link": "https://www.realtyonegroupterminus.com/",
+          "snippet": "This Realty ONE Group Atlanta terminal serves as the main hub and northern post for our REALTORS\u00ae specializing in the following locations.",
+          "position": 7
+        },
+        {
+          "title": "Group One Real Estate - Corpus Christi - HAR.com",
+          "link": "https://www.har.com/group-one-real-estate/broker_GPOE01",
+          "snippet": "Group One Real Estate provides professional real estate services for both commercial and residential properties. Read more!",
+          "position": 8
+        },
+        {
+          "title": "The Integral Group",
+          "link": "https://integral-online.com/",
+          "snippet": "One of the leading, privately held real estate development and investment firms in the United States. Learn About Us.",
+          "position": 9
+        },
+        {
+          "title": "Realty ONE Group Edge | WOODSTOCK Real Estate",
+          "link": "https://edge.myrealtyonegroup.com/",
+          "snippet": "Realty ONE Group Edge - Woodstock. 790 Market St Woodstock GA 30188 Contact: (678) 909-7709.",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "serper_linkedin": {
+      "query": "site:linkedin.com/company Group One Real Estate",
+      "organic": [
+        {
+          "title": "Group One Sotheby's International Realty - LinkedIn",
+          "link": "https://www.linkedin.com/company/grouponerealestate",
+          "snippet": "Group One Sotheby's International Realty's purpose is to create a compelling, fulfilling real estate experience every time we serve a client.",
+          "position": 1
+        },
+        {
+          "title": "Group One Real Estate | LinkedIn",
+          "link": "https://www.linkedin.com/company/group-one-real-estate_2",
+          "snippet": "Group One was established in 1971 and has been one of Corpus Christi's largest independent real estate firms for over 30 years.",
+          "position": 2
+        },
+        {
+          "title": "Group One Real Estate | LinkedIn",
+          "link": "https://www.linkedin.com/company/laural-packaging-group-south",
+          "snippet": "About us. Realtors helping people find their dream homes and assisting people in selling their homes for a top dollar! Website: Peterwesnerrealtor.com.",
+          "position": 3
+        },
+        {
+          "title": "Group One Sotheby's International Realty - LinkedIn",
+          "link": "https://www.linkedin.com/company/idaho-river-realty",
+          "snippet": "Specialties: List and sell Residential real estate, We are great at valuing your property, We stay at it unil the deal funds., and Win-Win or no deal ...",
+          "position": 4
+        },
+        {
+          "title": "Group One Real Estate | LinkedIn",
+          "link": "https://de.linkedin.com/company/group-one-real-estate_2",
+          "snippet": "Group One was established in 1971 and has been one of Corpus Christi's largest independent real estate firms for over 30 years.",
+          "position": 5
+        },
+        {
+          "title": "Group One Realty, LLC - LinkedIn",
+          "link": "https://www.linkedin.com/company/group-one-realty-llc",
+          "snippet": "Your one-stop boutique brokerage firm that assists you with all of your real estate needs. Website: http://www.grouponerealty.com.",
+          "position": 6
+        },
+        {
+          "title": "Keller Williams Group One, Inc. - LinkedIn",
+          "link": "https://www.linkedin.com/company/kw-reno",
+          "snippet": "Whether you buy or sell with a Keller Williams agent, you are connecting with a network of 170,000 real estate consultants located in over 800 offices worldwide ...",
+          "position": 7
+        },
+        {
+          "title": "Group One Realtors | LinkedIn",
+          "link": "https://www.linkedin.com/company/group-one-realtors",
+          "snippet": "Website: http://www.grouponerealtors.com/. External link for Group One Realtors ; Industry: Real Estate ; Company size: 11-50 employees ; Headquarters: Springfield ...",
+          "position": 8
+        },
+        {
+          "title": "Group One Real Estate | LinkedIn",
+          "link": "https://ae.linkedin.com/company/laural-packaging-group-south",
+          "snippet": "\u0646\u0628\u0630\u0629 \u0639\u0646\u0627 ; \u0627\u0644\u0645\u0648\u0642\u0639 \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a: Peterwesnerrealtor.com. \u0631\u0627\u0628\u0637 \u062e\u0627\u0631\u062c\u064a \u0644\u0640 Group One Real Estate ; \u0627\u0644\u0645\u062c\u0627\u0644 \u0627\u0644\u0645\u0647\u0646\u064a: \u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a ; \u062d\u062c\u0645 \u0627\u0644\u0634\u0631\u0643\u0629: \u0661\u0661- \u0665\u0660 \u0645\u0648\u0638\u0641 ; \u0627\u0644\u0645\u0642\u0631 \u0627\u0644\u0631\u0626\u064a\u0633\u064a ...",
+          "position": 9
+        },
+        {
+          "title": "Coldwell Banker Group One Realty-official | LinkedIn",
+          "link": "https://www.linkedin.com/company/coldwell-banker-group-one-realty-official",
+          "snippet": "Group One Realty was founded by owner Darryl Beasley in 1996 and quickly grew to become the #1 real estate firm in Northeast Louisiana over the past ten years.",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "linkedin_employee_count": null,
+    "founded_year": 1971,
+    "is_publicly_traded": false,
+    "portfolio_size": null,
+    "yelp_alias": "group-one-real-estate-corpus-christi-2",
+    "social_platform_count": 1,
+    "tech_stack": [],
+    "yelp_rating": 2.5,
+    "yelp_review_count": 8,
+    "yelp_market_avg_rating": 3.13,
+    "yelp_pain_themes": [
+      "security deposit not returned",
+      "property repairs not completed"
+    ],
+    "yelp_year_established": 1971,
+    "google_rating": null,
+    "serper_pain_themes": [],
+    "competitor_rank_pct": null
+  },
+  "building": {
+    "address": "5302 Everhart Rd",
+    "name": "South Shore Coastal Living: Apartments & Townhomes in Corpus ...",
+    "yelp_alias": "the-alexa-luxury-apartments-corpus-christi",
+    "yelp_rating": 5.0,
+    "yelp_review_count": 3,
+    "pain_themes": [],
+    "price_tier": null,
+    "google_rating": null
+  }
+}

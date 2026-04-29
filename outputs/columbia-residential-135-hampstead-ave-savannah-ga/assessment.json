@@ -1,0 +1,176 @@
+{
+  "lead_score": 55.85,
+  "tier": "Medium",
+  "key_observations": [
+    "Columbia Residential has 19 open leasing and property management postings, which signals active portfolio growth and likely stretched staff capacity. Lead with how EliseAI protects performance during hiring surges by keeping communication consistent even when teams are understaffed or onboarding.",
+    "Carmen Chubb is the president, so this is a top-level decision maker who will think in terms of operational efficiency and business outcomes rather than day-to-day workflow. Frame the conversation around scale, cost of growth, and what automation enables at the portfolio level rather than feature specifics.",
+    "Savannah is seeing strong income growth at nearly 10% year over year even as population is slightly contracting, which means the renter pool is becoming more competitive and resident retention matters more. This is a strong angle for positioning EliseAI's renewal outreach and resident communication tools as a way to protect occupancy without adding headcount."
+  ],
+  "market_fit": 40.13,
+  "company_fit": 39.72,
+  "person_fit": 57.14,
+  "building_fit": 0.0,
+  "signals": [
+    {
+      "name": "Job Postings",
+      "category": "Company",
+      "points": 12.0,
+      "max_points": 12.0,
+      "reason": "Multiple active job postings found. Company is hiring and actively growing."
+    },
+    {
+      "name": "Department / Function",
+      "category": "Person",
+      "points": 7.0,
+      "max_points": 7.0,
+      "reason": "Contact works directly in property management. Direct decision-maker for this product."
+    },
+    {
+      "name": "Portfolio / Web Presence",
+      "category": "Company",
+      "points": 6.0,
+      "max_points": 8.0,
+      "reason": "Strong web presence with a verified Google Knowledge Graph entry. Established brand."
+    },
+    {
+      "name": "Economic Momentum",
+      "category": "Market",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Strong year-over-year income growth. Healthy economic trajectory for the city."
+    },
+    {
+      "name": "Company Age",
+      "category": "Company",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Established company with significant operating history. Likely carries legacy tech debt."
+    },
+    {
+      "name": "Social Media Presence",
+      "category": "Company",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Active on multiple social platforms. Engaged digital presence."
+    },
+    {
+      "name": "Renter Rate",
+      "category": "Market",
+      "points": 4.0,
+      "max_points": 8.0,
+      "reason": "Moderate renter rate in this city. Some PM opportunity present."
+    },
+    {
+      "name": "Corporate Email",
+      "category": "Person",
+      "points": 4.0,
+      "max_points": 4.0,
+      "reason": "Email uses a verified company domain. Contact legitimacy confirmed."
+    },
+    {
+      "name": "Renter-Occupied Units",
+      "category": "Market",
+      "points": 3.8,
+      "max_points": 15.0,
+      "reason": "Moderate rental market by unit count. Partial score based on size tier."
+    },
+    {
+      "name": "Median Gross Rent",
+      "category": "Market",
+      "points": 2.0,
+      "max_points": 5.0,
+      "reason": "Median rent falls in the mid range, representing an average US rental market."
+    },
+    {
+      "name": "Contact Seniority",
+      "category": "Person",
+      "points": 1.0,
+      "max_points": 10.0,
+      "reason": "No seniority data from PDL or contact is below the decision-maker threshold."
+    },
+    {
+      "name": "Yelp Rating vs. Market",
+      "category": "Company",
+      "points": 0.6,
+      "max_points": 6.0,
+      "reason": "No Yelp data available or rating is at or above the market average."
+    },
+    {
+      "name": "Population Growth YoY",
+      "category": "Market",
+      "points": 0.5,
+      "max_points": 5.0,
+      "reason": "Flat or declining population. Market may face lower future demand."
+    },
+    {
+      "name": "Tech Stack",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "No tech stack data. BuiltWith key not configured or no tools detected."
+    },
+    {
+      "name": "Employee Count",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "Company is below the minimum headcount threshold or LinkedIn data is unavailable."
+    },
+    {
+      "name": "Portfolio Size",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 6.0,
+      "reason": "No portfolio size data could be extracted."
+    },
+    {
+      "name": "Google Rating",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No Google rating data available or rating is above the scoring threshold."
+    },
+    {
+      "name": "Resident Pain Themes",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 5.0,
+      "reason": "No complaint themes were extracted from reviews."
+    },
+    {
+      "name": "Competitor Rank (Yelp)",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 5.0,
+      "reason": "No competitor data available or company ranks well relative to competitors."
+    },
+    {
+      "name": "Building Yelp Rating",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "No building Yelp data available or the building is well-rated."
+    },
+    {
+      "name": "Building Review Volume",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "Low review count or no building Yelp data is available."
+    },
+    {
+      "name": "Building Price Tier",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No price tier data from Yelp or the building is at the budget tier."
+    },
+    {
+      "name": "Building Pain Themes",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No building-level complaint themes were extracted from reviews."
+    }
+  ]
+}

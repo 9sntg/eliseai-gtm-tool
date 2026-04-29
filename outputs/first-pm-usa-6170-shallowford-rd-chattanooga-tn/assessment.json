@@ -1,0 +1,169 @@
+{
+  "lead_score": 53.45,
+  "tier": "Medium",
+  "key_observations": [
+    "Resident reviews consistently flag unresponsive management, rude staff interactions, and a lack of follow-through on complaints. Lead with EliseAI's ability to ensure every resident gets an immediate, consistent response automatically, framing it as removing the communication burden from staff rather than critiquing the team.",
+    "First PM USA has no detected tech stack, which means there is likely no incumbent AI or automation vendor to displace. This is a greenfield conversation, so position EliseAI as a foundational upgrade rather than a replacement pitch.",
+    "Tonya's role spans office and account management, meaning she likely feels the operational friction of resident communication directly. Speak to how automation frees her team from repetitive inbound volume so they can focus on higher-value resident relationships."
+  ],
+  "market_fit": 50.66,
+  "company_fit": 40.83,
+  "person_fit": 46.19,
+  "building_fit": 0.0,
+  "signals": [
+    {
+      "name": "Renter Rate",
+      "category": "Market",
+      "points": 6.0,
+      "max_points": 8.0,
+      "reason": "High share of housing is renter-occupied. Strong property management market."
+    },
+    {
+      "name": "Portfolio / Web Presence",
+      "category": "Company",
+      "points": 6.0,
+      "max_points": 8.0,
+      "reason": "Strong web presence with a verified Google Knowledge Graph entry. Established brand."
+    },
+    {
+      "name": "Yelp Rating vs. Market",
+      "category": "Company",
+      "points": 6.0,
+      "max_points": 6.0,
+      "reason": "Yelp rating is notably below the local market average. Strong resident pain signal."
+    },
+    {
+      "name": "Economic Momentum",
+      "category": "Market",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Strong year-over-year income growth. Healthy economic trajectory for the city."
+    },
+    {
+      "name": "Company Age",
+      "category": "Company",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Established company with significant operating history. Likely carries legacy tech debt."
+    },
+    {
+      "name": "Resident Pain Themes",
+      "category": "Company",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Multiple resident complaint themes identified from reviews. Clear pain points for pitch."
+    },
+    {
+      "name": "Contact Seniority",
+      "category": "Person",
+      "points": 5.0,
+      "max_points": 10.0,
+      "reason": "Contact has seniority that influences purchasing decisions."
+    },
+    {
+      "name": "Corporate Email",
+      "category": "Person",
+      "points": 4.0,
+      "max_points": 4.0,
+      "reason": "Email uses a verified company domain. Contact legitimacy confirmed."
+    },
+    {
+      "name": "Renter-Occupied Units",
+      "category": "Market",
+      "points": 3.8,
+      "max_points": 15.0,
+      "reason": "Moderate rental market by unit count. Partial score based on size tier."
+    },
+    {
+      "name": "Population Growth YoY",
+      "category": "Market",
+      "points": 2.5,
+      "max_points": 5.0,
+      "reason": "Stable population growth. Steady market conditions."
+    },
+    {
+      "name": "Social Media Presence",
+      "category": "Company",
+      "points": 2.5,
+      "max_points": 5.0,
+      "reason": "Some social media presence detected."
+    },
+    {
+      "name": "Median Gross Rent",
+      "category": "Market",
+      "points": 2.0,
+      "max_points": 5.0,
+      "reason": "Median rent falls in the mid range, representing an average US rental market."
+    },
+    {
+      "name": "Department / Function",
+      "category": "Person",
+      "points": 0.7,
+      "max_points": 7.0,
+      "reason": "No department data available or contact is outside the property management function."
+    },
+    {
+      "name": "Tech Stack",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "No tech stack data. BuiltWith key not configured or no tools detected."
+    },
+    {
+      "name": "Employee Count",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "Company is below the minimum headcount threshold or LinkedIn data is unavailable."
+    },
+    {
+      "name": "Portfolio Size",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 6.0,
+      "reason": "No portfolio size data could be extracted."
+    },
+    {
+      "name": "Google Rating",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No Google rating data available or rating is above the scoring threshold."
+    },
+    {
+      "name": "Competitor Rank (Yelp)",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 5.0,
+      "reason": "No competitor data available or company ranks well relative to competitors."
+    },
+    {
+      "name": "Building Yelp Rating",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "No building Yelp data available or the building is well-rated."
+    },
+    {
+      "name": "Building Review Volume",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "Low review count or no building Yelp data is available."
+    },
+    {
+      "name": "Building Price Tier",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No price tier data from Yelp or the building is at the budget tier."
+    },
+    {
+      "name": "Building Pain Themes",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No building-level complaint themes were extracted from reviews."
+    }
+  ]
+}
