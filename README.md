@@ -1,5 +1,7 @@
 # EliseAI GTM Lead Enrichment Tool
 
+**[Watch the walkthrough video](https://drive.google.com/file/d/1sMN1Xc7RaRpP52H1Qr_nM0XPfTpMdq-k/view?usp=share_link)**
+
 Automates the top-of-funnel SDR workflow for property management leads. Takes a raw lead list, enriches each lead with market, company, building, and person intelligence, scores it using an additive point model (139 pts max across four categories), and drafts a personalized outreach email. Reps act immediately instead of spending 20+ minutes researching each lead.
 
 

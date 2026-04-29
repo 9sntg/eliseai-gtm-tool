@@ -32,7 +32,7 @@ The rollout follows five phases over 8 weeks. Phases 2 and 3 run in parallel: wh
 
 Run the tool against at least 100 historical leads that already have known outcomes: leads that converted, leads that went cold, and leads that were disqualified. Scoring at this scale matters because patterns that look reasonable on 20 leads can break down quickly when the input is more varied. The goal is to surface enrichment failures, edge cases, and output formatting issues at a volume that actually stresses the pipeline.
 
-Fix all critical failures before moving to Phase 1. Any lead where more than 3 of 8 APIs return no data is treated as a pipeline failure, not a bad lead, and must be debugged and resolved before the pilot begins. Output format is finalized in this phase so SDRs receive a consistent, clean file from day one of the pilot.
+Fix all critical failures before moving to Phase 1. Any lead where more than 3 of 6 data sources return no data is treated as a pipeline failure, not a bad lead, and must be debugged and resolved before the pilot begins. Output format is finalized in this phase so SDRs receive a consistent, clean file from day one of the pilot.
 
 **Stakeholders involved:**
 - GTM Engineer: building, running, and debugging the pipeline
@@ -167,7 +167,7 @@ The scoring model shipped in Phase 0 is a version 1 hypothesis built on assumpti
 | Time saved per lead (research and email draft) | 15 or more minutes per lead |
 | SDR adoption rate at end of Phase 3 | 80% or more of SDRs using tool daily |
 | Score accuracy (high scores converting at higher rate) | Measurable lift vs. unscored baseline |
-| Enrichment success rate (at least 5 of 8 APIs returning data) | 90% or more of leads |
+| Enrichment success rate (at least 4 of 6 data sources returning data) | 90% or more of leads |
 | SDR satisfaction with draft outreach emails | Positive feedback from majority of pilot cohort |
 | Pipeline uptime on production infrastructure | 99% or more |
 | Scoring model iteration cadence | At least one weight revision per month based on conversion data |
