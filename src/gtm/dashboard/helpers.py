@@ -379,8 +379,14 @@ def render_insights(insights: list[str]) -> None:
 
 
 def render_outreach_section(email_text: str) -> None:
-    """Render the email draft in a copyable text area."""
+    """Render the email draft at full height with no scroll."""
     if email_text.strip():
-        st.text_area("", value=email_text, height=300, label_visibility="collapsed")
+        st.markdown(
+            f'<div style="white-space:pre-wrap;font-family:inherit;font-size:0.9rem;'
+            f'line-height:1.7;padding:1.25rem 1.5rem;background:#F9FAFB;'
+            f'border:1px solid #E5E7EB;border-radius:8px">'
+            f'{email_text.strip()}</div>',
+            unsafe_allow_html=True,
+        )
     else:
         st.info("No email draft. Configure ANTHROPIC_API_KEY to enable.")

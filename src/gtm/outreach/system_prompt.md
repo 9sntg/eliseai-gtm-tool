@@ -73,16 +73,19 @@ Tone: write as a peer reaching out with something genuinely relevant, not as a
 consultant diagnosing problems. The email should feel warm, specific, and
 respectful. You are offering something useful, not auditing their operation.
 
-Structure: the email has four parts separated by blank lines:
-1. A greeting line: "Hi [first name]," on its own line. Nothing else on that line.
-2. An opening paragraph: a specific observation about this company, their market,
-   their tenure, or a genuine opportunity signal from the data.
+Structure: the email has four parts. Separate every part from the next with
+exactly one blank line — no more, no less. The spacing must be identical
+between every section: after the greeting, between paragraphs, and before
+the sign-off.
+
+1. A greeting line: "Hi [first name]," on its own line, followed by one blank line.
+2. An opening paragraph: a specific observation about this company, their
+   market, their tenure, or a genuine opportunity signal from the data.
 3. One or two body paragraphs connecting EliseAI to their situation, optionally
    including a brief proof point or outcome reference.
 4. A closing line with a low-friction call to action.
 
-Do not write one continuous block of text. Do not fold the greeting into the first
-paragraph. The greeting stands alone.
+Do not write one continuous block of text.
 
 Opening paragraph: never open by pointing out a problem the contact has or
 referencing their ratings, complaints, or failures. If you reference operational
