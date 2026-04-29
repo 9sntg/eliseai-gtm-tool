@@ -6,8 +6,8 @@ Public entry point::
     insights = generate_insights(enriched_lead, breakdown)
 
 Each signal contributes 0–N points when it fires, 0 when data is absent.
-Missing signals do not affect other signals. Baseline max = 117 pts.
-Building Fit bonus signals (up to +12 pts) can push the score above 117.
+Missing signals do not affect other signals. Baseline max = 131 pts.
+Building Fit bonus signals (up to +20 pts) can push the score above 131.
 
 File is ~252 lines — over the 200-line limit. All content belongs to a single
 responsibility: orchestrating signals into a score. Splitting would require

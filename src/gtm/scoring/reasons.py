@@ -215,6 +215,6 @@ def signal_reason(key: str, val: float) -> str:
         return f"Signal scored at {val * 100:.0f}% of maximum." if val > 0 else "Signal did not fire."
     if val >= 0.75:
         return tiers[0]
-    if val >= 0.1:
+    if val > 0.1:
         return tiers[1]
     return tiers[2]

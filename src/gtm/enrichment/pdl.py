@@ -4,6 +4,7 @@ import asyncio
 import logging
 import random
 
+import anthropic
 import httpx
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
@@ -21,6 +22,9 @@ DELAY_MAX: float = 3.0
 TIMEOUT_SECONDS: float = 15.0
 MAX_RETRIES: int = 3
 PDL_BASE_URL: str = "https://api.peopledatalabs.com/v5/person/enrich"
+HAIKU_MODEL: str = "claude-haiku-4-5-20251001"
+HAIKU_MAX_TOKENS: int = 20
+_VALID_SENIORITY = {"c_suite", "owner", "partner", "vp", "director", "manager", "senior"}
 
 
 def _is_retryable(exc: BaseException) -> bool:
@@ -75,6 +79,10 @@ async def enrich(lead: RawLead, client: httpx.AsyncClient, cache: FileCache) -> 
             logger.warning("PDL: no match for %s, seniority signal = 0", safe_email)
             return PersonData(is_corporate_email=corporate)
         result = _parse(resp.json(), corporate)
+        if result.seniority is None and result.job_title:
+            result = result.model_copy(
+                update={"seniority": await _infer_seniority(result.job_title)}
+            )
         cache.set(cache_key, result.model_dump())
         logger.info("PDL: enrichment done (likelihood=%s)", result.pdl_likelihood)
         return result
@@ -100,3 +108,34 @@ def _parse(data: dict, corporate: bool) -> PersonData:
         pdl_likelihood=data.get("likelihood"),
         is_corporate_email=corporate,
     )
+
+
+async def _infer_seniority(job_title: str) -> str | None:
+    """Classify a job title into a PDL seniority level via Claude Haiku.
+
+    Returns one of: c_suite, owner, partner, vp, director, manager, senior.
+    Returns None on any failure or if the API key is not configured.
+    """
+    if not settings.anthropic_api_key:
+        return None
+    prompt = (
+        "Classify the following job title into exactly one of these seniority levels: "
+        "c_suite, owner, partner, vp, director, manager, senior. "
+        "Reply with only the label, nothing else.\n\n"
+        f"Job title: {job_title}"
+    )
+    haiku = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
+    try:
+        msg = await haiku.messages.create(
+            model=HAIKU_MODEL,
+            max_tokens=HAIKU_MAX_TOKENS,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        label = msg.content[0].text.strip().lower()
+        if label in _VALID_SENIORITY:
+            logger.debug("Haiku seniority inference: '%s' → %s", job_title, label)
+            return label
+        logger.debug("Haiku returned unknown seniority label '%s' for '%s'", label, job_title)
+    except Exception as exc:
+        logger.debug("Haiku seniority inference failed for '%s': %s", job_title, exc)
+    return None

@@ -109,7 +109,8 @@ def _build_context(lead: EnrichedLead, breakdown: ScoreBreakdown | None) -> str:
     if breakdown:
         lines.append("")
         lines.append("=== SCORING ANALYSIS ===")
-        lines.append(f"Lead score: {lead.score:.1f}/131 ({lead.tier} priority)")
+        if lead.score is not None:
+            lines.append(f"Lead score: {lead.score:.1f}/131 ({lead.tier} priority)")
         lines.append(f"Market context score: {breakdown.market_score:.1f}%")
         lines.append(f"Company signals score: {breakdown.company_score:.1f}%")
         lines.append(f"Contact fit score: {breakdown.person_score:.1f}%")
@@ -150,6 +151,12 @@ def generate_outreach(
             messages=[{"role": "user", "content": context}],
         )
         raw = message.content[0].text.strip()
+        # strip markdown code fences if Claude wrapped the JSON
+        if raw.startswith("```"):
+            raw = raw.split("```", 2)[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+            raw = raw.strip()
         parsed = json.loads(raw)
         email = parsed.get("email", "").strip() or None
         insights = [s for s in parsed.get("insights", []) if isinstance(s, str)]

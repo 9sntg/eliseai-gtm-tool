@@ -237,7 +237,7 @@ def test_score_company_age_none():
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("seniority,expected", [
-    (None, 0.1),
+    (None, 0.0),
     ("unknown_level", 0.1),
     ("senior", 0.30),
     ("manager", 0.50),
@@ -252,7 +252,7 @@ def test_score_seniority(seniority, expected):
 
 
 @pytest.mark.parametrize("dept,expected", [
-    (None, 0.1),
+    (None, 0.0),
     ("marketing", 0.1),
     ("finance", 0.50),
     ("accounting", 0.50),
@@ -356,8 +356,7 @@ def test_score_lead_returns_all_components():
 def test_score_lead_all_zeros_on_empty_enrichment():
     lead = _make_lead()
     overall, tier, _ = score_lead(lead)
-    # PersonData defaults: is_corporate_email=False → 0, seniority=None → 0.1
-    # so score won't be exactly 0, but should be very low
+    # PersonData defaults: seniority=None → 0, department=None → 0, is_corporate_email=False → 0
     assert overall < 20.0
     assert tier == "Low"
 

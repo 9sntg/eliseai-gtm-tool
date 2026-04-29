@@ -149,9 +149,10 @@ The single most important person signal. Decision-makers with budget authority (
 | director | 0.70 |
 | manager | 0.50 |
 | senior | 0.30 |
-| other / None | 0.1 |
+| unrecognised label | 0.1 |
+| None (no PDL data) | 0.0 |
 
-A floor of 0.1 (not 0.0) for unknown seniority avoids penalising leads where PDL has no data — the person still exists, we just don't know their level.
+`None` scores 0.0 — no data means no signal. An unrecognised label from PDL scores 0.1 since the person exists but their level is unclear. When PDL returns a job title but no seniority level, Claude Haiku classifies the title into one of the 7 known levels as a fallback.
 
 ### Department / Function (7 pts)
 
@@ -162,7 +163,8 @@ Operations and Property Management contacts are EliseAI's primary buyers. Financ
 | operations / property_management | 1.0 |
 | real_estate / leasing | 0.8 |
 | finance / accounting | 0.5 |
-| other / None | 0.1 |
+| unrecognised label | 0.1 |
+| None (no PDL data) | 0.0 |
 
 ### Corporate Email (4 pts)
 

@@ -353,14 +353,14 @@ def score_building_reviews(review_count: int | None) -> float:
 def score_seniority(seniority: str | None) -> float:
     """Score PDL seniority level (c_suite/vp/director have budget authority)."""
     if seniority is None:
-        return 0.1
+        return 0.0
     return SENIORITY_SCORE.get(seniority.lower(), 0.1)
 
 
 def score_department_function(department: str | None) -> float:
     """Score PDL department/function (operations and PM are the primary EliseAI buyers)."""
     if department is None:
-        return 0.1
+        return 0.0
     return DEPARTMENT_SCORE.get(department.lower(), 0.1)
 
 
