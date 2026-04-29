@@ -101,9 +101,10 @@ See `.env.example` for the full list. Required for production:
 - `PDL_API_KEY`: contact seniority and function
 - `ANTHROPIC_API_KEY`: email draft (Sonnet) and extraction tasks (Haiku)
 
-Optional (tool works without these; signals score zero when absent):
-- `BUILTWITH_API_KEY`: tech stack detection
-- `YELP_API_KEY`: company and building Yelp signals
+- `YELP_API_KEY`: company and building Yelp signals (24 pts across Company and Building categories)
+
+Optional (signals score zero when absent):
+- `BUILTWITH_API_KEY`: tech stack detection (paid plan required for named tech detection)
 - `CENSUS_API_KEY`: higher rate limits on the Census API
 
 ## Rules for This Codebase
