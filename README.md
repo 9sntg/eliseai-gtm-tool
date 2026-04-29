@@ -98,13 +98,14 @@ uv run python main.py --schedule 09:00
 uv run streamlit run app.py
 ```
 
-The dashboard has three tabs:
+The dashboard has four tabs:
 
 | Tab | What it does |
 |---|---|
 | Add Lead | Form to add a new lead. Appends a row to `data/leads_input.csv`. |
 | Run Pipeline | Lists unprocessed leads. The run button enriches and scores all pending leads. |
-| View Results | Browse all processed leads with score breakdown and email draft. |
+| Overview | Leads table sorted by score with tier tags and score bars. |
+| Lead Details | Full breakdown for a selected lead: enrichment data, per-signal scores, and email draft. |
 
 ![Dashboard overview — leads table with scores and tier tags](docs/img/dashboard-overview.png)
 
