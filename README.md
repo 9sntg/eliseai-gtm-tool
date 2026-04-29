@@ -106,6 +106,12 @@ The dashboard has three tabs:
 | Run Pipeline | Lists unprocessed leads. The run button enriches and scores all pending leads. |
 | View Results | Browse all processed leads with score breakdown and email draft. |
 
+![Dashboard overview — leads table with scores and tier tags](docs/img/dashboard-overview.png)
+
+![Score breakdown — per-signal earned points and category subtotals](docs/img/dashboard-score.png)
+
+![Email draft — personalized outreach generated from enriched data](docs/img/dashboard-email.png)
+
 
 ## Input Format
 
