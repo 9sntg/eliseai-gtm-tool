@@ -127,7 +127,11 @@ Async orchestration layer:
 - `run_pipeline(leads, outputs_dir)`: processes leads sequentially in the outer loop (to respect API rate limits), async within each lead.
 
 ### `main.py`
-CLI entry point. Reads `data/leads_input.csv`, calls `run_pipeline()`, renders a Rich progress bar and summary table. Optional `--watch` flag wraps the pipeline in a `watchdog` file-watch loop.
+CLI entry point. Reads `data/leads_input.csv`, calls `run_pipeline()`, renders a Rich progress bar and summary table. Three mutually exclusive run modes:
+
+- Default (no flag): runs once and exits.
+- `--watch`: re-runs whenever `leads_input.csv` changes, using `watchdog`.
+- `--schedule HH:MM`: runs immediately on startup, then sleeps until the next daily occurrence of the specified time and repeats. Uses `_seconds_until()` (stdlib `datetime` only, no external scheduler library).
 
 ### `src/gtm/dashboard/helpers.py`
 Rendering helpers and sync pipeline runner for the Streamlit dashboard. Keeps `app.py` under 200 lines by extracting all reusable logic:
@@ -221,3 +225,4 @@ Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.
 | Phase 13 | AI-generated outreach: `generate_email` replaced by `generate_outreach(lead, breakdown)` returning `(email, insights)`; system prompt moved to `src/gtm/outreach/system_prompt.md` with rich EliseAI context (products, named customer outcomes, pain points), combined email + 3 SDR insights task, no-dashes rule; scoring breakdown injected into Claude context; rule-based `generate_insights()` kept as fallback; `test_email_generator.py` rewritten for new interface | ✅ Done |
 | Phase 14 | Signal accuracy + outreach polish: `score_seniority(None)` and `score_department_function(None)` fixed to return 0.0 (no data = no points); `signal_reason()` threshold fixed (`> 0.1` not `>= 0.1`) so absent-data signals display correct reason tier; Claude Haiku fallback in `pdl.py` infers seniority from job title when PDL returns none; email prompt updated with standalone greeting line (`Hi [Name],`) and explicit sign-off (`Best, / EliseAI`) | ✅ Done |
 | Phase 15 | Job postings signal removed (unreliable board-level counts from Serper job query): `POINTS_JOB_POSTINGS` removed from config, `score_job_postings` removed from scorer_signals, Serper reduced to 2 queries/lead, Company Fit baseline 72→60 pts, total baseline 131→119 pts; tier thresholds documented (Low 0–40 / Medium 41–70 / High 71+); enterprise lead batch added (Greystar, RPM Living, Lincoln Property, BH Management, Bell Partners) with real apartment building addresses; all docs, tests, and dashboard helpers updated for 119-pt model | ✅ Done |
+| Phase 16 | Daily scheduler: `--schedule HH:MM` CLI flag added to `main.py` (mutually exclusive with `--watch`); runs pipeline immediately on startup then sleeps until the next daily occurrence of the specified time; `_seconds_until()` helper accepts optional `_now` param for testability without mocking datetime; `tests/test_scheduler.py` with 9 tests covering `_seconds_until` boundaries and `_schedule_loop` behavior; README and rollout-plan updated | ✅ Done |
