@@ -19,6 +19,9 @@ python main.py
 # Keep watching for new rows
 python main.py --watch
 
+# Run on a daily schedule at a fixed time (e.g. every day at 9am)
+python main.py --schedule 09:00
+
 # Launch the Streamlit dashboard
 streamlit run app.py
 ```
