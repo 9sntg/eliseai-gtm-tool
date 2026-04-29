@@ -19,7 +19,7 @@ def _patch_enrichment(mocker) -> None:
     mocker.patch("gtm.pipeline.runner.pdl.enrich", return_value=PersonData())
     mocker.patch("gtm.pipeline.runner.yelp.enrich_company", return_value=CompanyData())
     mocker.patch("gtm.pipeline.runner.yelp.enrich_building", return_value=BuildingData())
-    mocker.patch("gtm.pipeline.runner.generate_email", return_value=None)
+    mocker.patch("gtm.pipeline.runner.generate_outreach", return_value=(None, []))
 
 
 async def test_run_pipeline_writes_three_files(tmp_path, mocker, raw_lead):
@@ -46,14 +46,51 @@ async def test_run_pipeline_skips_existing_folder(tmp_path, mocker, raw_lead):
 
 
 async def test_run_pipeline_assessment_has_required_keys(tmp_path, mocker, raw_lead):
-    """assessment.json contains score, tier, breakdown, and insights."""
+    """assessment.json contains lead_score, tier, category fits, signals, and key_observations."""
     _patch_enrichment(mocker)
 
     results = await run_pipeline([raw_lead], tmp_path)
     lead_dir = tmp_path / results[0].slug
     assessment = json.loads((lead_dir / "assessment.json").read_text())
 
-    assert "score" in assessment
+    assert "lead_score" in assessment
     assert "tier" in assessment
-    assert "breakdown" in assessment
-    assert "insights" in assessment
+    assert "market_fit" in assessment
+    assert "company_fit" in assessment
+    assert "person_fit" in assessment
+    assert "building_fit" in assessment
+    assert "signals" in assessment
+    assert isinstance(assessment["signals"], list)
+    assert "key_observations" in assessment
+
+
+async def test_run_pipeline_enrichment_has_contact_section(tmp_path, mocker, raw_lead):
+    """enrichment.json has contact, market, company, building sections (no raw/person keys)."""
+    _patch_enrichment(mocker)
+
+    results = await run_pipeline([raw_lead], tmp_path)
+    lead_dir = tmp_path / results[0].slug
+    enrichment = json.loads((lead_dir / "enrichment.json").read_text())
+
+    assert "contact" in enrichment
+    assert "market" in enrichment
+    assert "company" in enrichment
+    assert "building" in enrichment
+    assert "raw" not in enrichment
+    assert "person" not in enrichment
+
+
+async def test_run_pipeline_signals_have_required_fields(tmp_path, mocker, raw_lead):
+    """Each entry in assessment.json signals list has name, category, points, max_points, reason."""
+    _patch_enrichment(mocker)
+
+    results = await run_pipeline([raw_lead], tmp_path)
+    lead_dir = tmp_path / results[0].slug
+    assessment = json.loads((lead_dir / "assessment.json").read_text())
+
+    for sig in assessment["signals"]:
+        assert "name" in sig
+        assert "category" in sig
+        assert "points" in sig
+        assert "max_points" in sig
+        assert "reason" in sig

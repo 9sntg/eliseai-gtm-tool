@@ -1,4 +1,4 @@
-"""Streamlit dashboard — Add Lead, Run Pipeline, View Results."""
+"""Streamlit dashboard — Add Lead, Run Pipeline, Overview, Lead Details."""
 
 from __future__ import annotations
 
@@ -8,19 +8,25 @@ from pathlib import Path
 import streamlit as st
 
 from gtm.dashboard.helpers import (
+    _lead_label,
     append_lead_to_csv,
     list_output_folders,
     load_lead_data,
     load_leads_from_csv,
-    render_building_section,
     render_category_metrics,
-    render_company_section,
-    render_email_section,
-    render_market_section,
-    render_person_section,
+    render_insights,
+    render_outreach_section,
+    render_overview_table,
     render_score_header,
+    render_sidebar,
     render_signal_table,
     run_pipeline_sync,
+)
+from gtm.dashboard.render import (
+    render_building_section,
+    render_company_section,
+    render_contact_section,
+    render_market_section,
 )
 from gtm.utils.slug import make_slug
 
@@ -31,9 +37,15 @@ OUTPUTS_DIR = Path("outputs")
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s — %(message)s")
 
 st.set_page_config(page_title="EliseAI GTM Tool", layout="wide")
+
+with st.sidebar:
+    render_sidebar(OUTPUTS_DIR)
+
 st.title("EliseAI GTM Lead Enrichment")
 
-tab_add, tab_run, tab_view = st.tabs(["➕ Add Lead", "▶️ Run Pipeline", "📊 View Results"])
+tab_add, tab_run, tab_overview, tab_details = st.tabs(
+    ["Add Lead", "Run Pipeline", "Overview", "Lead Details"]
+)
 
 
 # ── Tab 1: Add Lead ────────────────────────────────────────────────────────
@@ -69,7 +81,9 @@ with tab_run:
     leads = load_leads_from_csv(LEADS_FILE)
     pending = [
         lead for lead in leads
-        if not (OUTPUTS_DIR / make_slug(lead.company, lead.city, lead.state, lead.property_address or "")).exists()
+        if not (OUTPUTS_DIR / make_slug(
+            lead.company, lead.city, lead.state, lead.property_address or ""
+        )).exists()
     ]
     done_count = len(leads) - len(pending)
 
@@ -81,7 +95,7 @@ with tab_run:
         m2.metric("Already processed", done_count)
 
         if not pending:
-            st.success("All leads are processed. Check the View Results tab.")
+            st.success("All leads processed. Check the Overview or Lead Details tabs.")
         else:
             st.dataframe(
                 [{"Name": lead.name, "Company": lead.company, "City": lead.city, "State": lead.state}
@@ -89,8 +103,8 @@ with tab_run:
                 use_container_width=True,
                 hide_index=True,
             )
-            if st.button("▶️ Run Pipeline", type="primary"):
-                with st.spinner(f"Enriching {len(pending)} lead(s) — ~20s per lead…"):
+            if st.button("Run Pipeline", type="primary"):
+                with st.spinner(f"Enriching {len(pending)} lead(s) — ~20s per lead..."):
                     try:
                         results = run_pipeline_sync(pending, OUTPUTS_DIR)
                         st.success(f"Done — {len(results)} lead(s) enriched.")
@@ -105,33 +119,56 @@ with tab_run:
                         st.error(f"Pipeline error: {exc}")
 
 
-# ── Tab 3: View Results ────────────────────────────────────────────────────
-with tab_view:
-    folders = list_output_folders(OUTPUTS_DIR)
+# ── Tab 3: Overview ────────────────────────────────────────────────────────
+with tab_overview:
+    st.subheader("All Leads")
+    render_overview_table(OUTPUTS_DIR)
 
+
+# ── Tab 4: Lead Details ────────────────────────────────────────────────────
+with tab_details:
+    folders = list_output_folders(OUTPUTS_DIR)
     if not folders:
         st.info("No processed leads yet. Run the pipeline first.")
     else:
-        options = {display: path for display, path in folders}
-        selected = st.selectbox("Select a lead", list(options.keys()))
+        labels = [_lead_label(p) for p in folders]
+        folder_map = dict(zip(labels, folders, strict=True))
 
-        if selected:
-            enrichment, assessment, email_text = load_lead_data(options[selected])
+        default_idx = 0
+        selected_slug = st.session_state.get("selected_lead")
+        if selected_slug:
+            slug_to_idx = {p.name: i for i, p in enumerate(folders)}
+            default_idx = slug_to_idx.get(selected_slug, 0)
 
-            render_score_header(
-                assessment["score"], assessment["tier"], assessment.get("insights", [])
-            )
-            st.divider()
-            render_category_metrics(assessment["breakdown"])
-            render_signal_table(assessment["breakdown"])
-            st.divider()
+        selected_label = st.selectbox("Lead", labels, index=default_idx)
+        selected_folder = folder_map[selected_label]
+        enrichment, assessment, email_text = load_lead_data(selected_folder)
 
-            left, right = st.columns(2)
-            with left:
-                render_market_section(enrichment["market"])
-                render_person_section(enrichment["person"])
-                if enrichment.get("building"):
-                    render_building_section(enrichment["building"])
-            with right:
-                render_company_section(enrichment["company"])
-                render_email_section(email_text)
+        contact  = enrichment.get("contact", {})
+        market   = enrichment.get("market", {})
+        company  = enrichment.get("company", {})
+        building = enrichment.get("building", {})
+
+        inner_enrich, inner_score, inner_outreach = st.tabs(
+            ["Enrichment", "Scoring", "Outreach"]
+        )
+
+        with inner_enrich:
+            col_l, col_r = st.columns(2)
+            with col_l:
+                render_contact_section(contact)
+                render_market_section(market, contact)
+            with col_r:
+                render_company_section(company, contact)
+                render_building_section(building, contact)
+
+        with inner_score:
+            render_score_header(assessment["lead_score"], assessment["tier"])
+            render_insights(assessment.get("key_observations", []))
+            st.markdown("")
+            render_category_metrics(assessment)
+            st.markdown("")
+            render_signal_table(assessment)
+
+        with inner_outreach:
+            render_outreach_section(email_text)

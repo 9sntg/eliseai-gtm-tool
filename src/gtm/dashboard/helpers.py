@@ -1,8 +1,8 @@
-"""Streamlit rendering helpers and sync pipeline runner for the dashboard.
+"""Streamlit helpers, sync pipeline runner, sidebar, and scoring renderers.
 
-File is ~229 lines — over the 200-line limit. All rendering helpers
-belong to the same presentation layer; splitting would create a thin helpers/
-helpers_rendering.py split for no real gain. Accepted as-is.
+File exceeds the 200-line limit. All content belongs to a single responsibility:
+dashboard utilities and presentation. Splitting would require passing constants
+and tag helpers across thin modules with no behavioural gain. Accepted as-is.
 """
 
 from __future__ import annotations
@@ -12,41 +12,81 @@ import contextlib
 import csv
 import json
 import threading
+from datetime import datetime
 from pathlib import Path
 
 import streamlit as st
 
+from gtm.config import settings
 from gtm.models.lead import RawLead
 from gtm.pipeline.runner import run_pipeline
 
-SIGNAL_META: list[tuple[str, str, str]] = [
-    ("renter_units",          "Renter-Occupied Units",      "Market"),
-    ("renter_rate",           "Renter Rate",                "Market"),
-    ("median_rent",           "Median Gross Rent",          "Market"),
-    ("population_growth",     "Population Growth YoY",      "Market"),
-    ("economic_momentum",     "Economic Momentum",          "Market"),
-    ("job_postings",          "Job Postings",               "Company"),
-    ("portfolio_news",        "Portfolio / Web Presence",   "Company"),
-    ("tech_stack",            "Tech Stack",                 "Company"),
-    ("employee_count",        "Employee Count",             "Company"),
-    ("company_age",           "Company Age",                "Company"),
-    ("portfolio_size",        "Portfolio Size",             "Company"),
-    ("social_presence",       "Social Media Presence",      "Company"),
-    ("yelp_company_rating",   "Yelp Rating vs. Market",     "Company"),
-    ("google_company_rating", "Google Rating",              "Company"),
-    ("company_pain_themes",   "Resident Pain Themes",       "Company"),
-    ("competitor_rank",       "Competitor Rank (Yelp)",     "Company"),
-    ("seniority",             "Contact Seniority",          "Person"),
-    ("department_function",   "Department / Function",      "Person"),
-    ("corporate_email",       "Corporate Email",            "Person"),
-    ("building_rating",       "Building Yelp Rating",       "Building"),
-    ("building_reviews",      "Building Review Volume",     "Building"),
-    ("building_price_tier",   "Building Price Tier",        "Building"),
-    ("building_pain_themes",  "Building Pain Themes",       "Building"),
-]
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
 
-TIER_COLOR: dict[str, str] = {"High": "🟢", "Medium": "🟡", "Low": "🔴"}
+# Tag color presets: (background, foreground)
+TAG_SENIO = ("#EDE9FE", "#5B21B6")   # purple  — seniority level
+TAG_DEPT  = ("#DBEAFE", "#1E40AF")   # blue    — department / function
+TAG_PAIN  = ("#FEE2E2", "#991B1B")   # red     — pain / complaint themes
+TAG_TECH  = ("#D1FAE5", "#065F46")   # green   — tech stack
+TAG_PRICE = ("#FEF3C7", "#92400E")   # amber   — price tier
 
+_TAG_CAT: dict[str, tuple[str, str]] = {
+    "Market":   ("#DBEAFE", "#1E40AF"),
+    "Company":  ("#EDE9FE", "#5B21B6"),
+    "Person":   ("#D1FAE5", "#065F46"),
+    "Building": ("#FEF3C7", "#92400E"),
+}
+
+TIER_STYLE: dict[str, tuple[str, str]] = {
+    "High":   ("#D1FAE5", "#065F46"),
+    "Medium": ("#FEF3C7", "#92400E"),
+    "Low":    ("#FEE2E2", "#991B1B"),
+}
+
+_TIER_TEXT_COLOR = {"High": "#16A34A", "Medium": "#D97706", "Low": "#DC2626"}
+
+_TH = (
+    'style="padding:8px 12px;text-align:left;background:#F9FAFB;color:#6B7280;'
+    'font-size:0.8rem;font-weight:600;border-bottom:2px solid #E5E7EB;font-family:inherit"'
+)
+_TD = (
+    'style="padding:8px 12px;border-bottom:1px solid #F3F4F6;'
+    'font-size:0.875rem;color:#1F2937;font-family:inherit"'
+)
+
+
+def _tag(text: str, bg: str, fg: str) -> str:
+    """Single HTML tag chip, title-cased."""
+    style = (
+        f"background:{bg};color:{fg};padding:2px 9px;border-radius:4px;"
+        f"font-size:0.8rem;font-weight:500;display:inline-block;margin:1px 2px"
+    )
+    return f'<span style="{style}">{text.title()}</span>'
+
+
+def _tags(items: list[str], bg: str, fg: str) -> str:
+    """Multiple HTML tag chips joined from a list."""
+    return " ".join(_tag(t, bg, fg) for t in items) if items else ""
+
+
+def _html_table(header_cells: list[str], rows: list[list[str]]) -> str:
+    """Build a borderless HTML table string."""
+    ths = "".join(f"<th {_TH}>{h}</th>" for h in header_cells)
+    trs = "".join(
+        "<tr>" + "".join(f"<td {_TD}>{cell}</td>" for cell in row) + "</tr>"
+        for row in rows
+    )
+    return (
+        f'<table style="width:100%;border-collapse:collapse">'
+        f"<thead><tr>{ths}</tr></thead><tbody>{trs}</tbody></table>"
+    )
+
+
+# ---------------------------------------------------------------------------
+# I/O utilities
+# ---------------------------------------------------------------------------
 
 def load_leads_from_csv(path: Path) -> list[RawLead]:
     """Read RawLead objects from CSV; silently skip malformed rows."""
@@ -73,13 +113,12 @@ def append_lead_to_csv(data: dict, path: Path) -> None:
         writer.writerow(data)
 
 
-def list_output_folders(outputs_dir: Path) -> list[tuple[str, Path]]:
-    """Return (display_name, path) for every complete lead output folder."""
+def list_output_folders(outputs_dir: Path) -> list[Path]:
+    """Return paths for every complete lead output folder, sorted."""
     if not outputs_dir.exists():
         return []
     return [
-        (p.name.replace("-", " ").title(), p)
-        for p in sorted(outputs_dir.iterdir())
+        p for p in sorted(outputs_dir.iterdir())
         if p.is_dir() and (p / "assessment.json").exists()
     ]
 
@@ -90,6 +129,18 @@ def load_lead_data(folder: Path) -> tuple[dict, dict, str]:
     assessment = json.loads((folder / "assessment.json").read_text())
     email_text = (folder / "email.txt").read_text() if (folder / "email.txt").exists() else ""
     return enrichment, assessment, email_text
+
+
+def _lead_label(folder: Path) -> str:
+    """Return 'Company · City, State' label for a lead folder."""
+    with contextlib.suppress(Exception):
+        enrichment = json.loads((folder / "enrichment.json").read_text())
+        contact = enrichment.get("contact", {})
+        company = contact.get("company") or folder.name
+        city, state = contact.get("city", ""), contact.get("state", "")
+        suffix = f" · {city}, {state}" if city and state else ""
+        return f"{company}{suffix}"
+    return folder.name.replace("-", " ").title()
 
 
 def run_pipeline_sync(leads: list[RawLead], outputs_dir: Path) -> list:
@@ -115,115 +166,221 @@ def run_pipeline_sync(leads: list[RawLead], outputs_dir: Path) -> list:
     return results
 
 
-def render_score_header(score: float, tier: str, insights: list[str]) -> None:
-    """Render the lead score, tier badge, and insight bullets."""
-    icon = TIER_COLOR.get(tier, "⚪")
-    col1, col2 = st.columns([1, 3])
-    col1.metric("Lead Score", f"{score:.0f} / 131")
-    with col2:
-        st.markdown(f"### {icon} {tier} Priority")
-        for bullet in insights:
-            st.markdown(f"- {bullet}")
+# ---------------------------------------------------------------------------
+# Sidebar
+# ---------------------------------------------------------------------------
+
+def render_sidebar(outputs_dir: Path) -> None:
+    """Render left sidebar: pipeline stats and integration status."""
+    st.markdown("### EliseAI GTM")
+    st.markdown("---")
+    st.markdown("**Pipeline**")
+
+    folders = list_output_folders(outputs_dir)
+    if not folders:
+        st.caption("No leads processed yet.")
+    else:
+        assessments: list[dict] = []
+        for p in folders:
+            with contextlib.suppress(Exception):
+                assessments.append(json.loads((p / "assessment.json").read_text()))
+
+        tier_counts: dict[str, int] = {"High": 0, "Medium": 0, "Low": 0}
+        scores: list[float] = []
+        for a in assessments:
+            t = a.get("tier", "Low")
+            tier_counts[t] = tier_counts.get(t, 0) + 1
+            if a.get("lead_score") is not None:
+                scores.append(a["lead_score"])
+
+        st.metric("Leads Processed", len(assessments))
+
+        tier_parts = " ".join(
+            _tag(f"{tier}  {tier_counts[tier]}", *TIER_STYLE[tier])
+            for tier in ("High", "Medium", "Low")
+        )
+        st.markdown(tier_parts, unsafe_allow_html=True)
+
+        if scores:
+            st.markdown(f"**Avg score:** {sum(scores)/len(scores):.1f} / 131")
+
+        mtimes = [p.stat().st_mtime for p in folders]
+        if mtimes:
+            last_run = datetime.fromtimestamp(max(mtimes)).strftime("%b %d, %H:%M")
+            st.caption(f"Last run: {last_run}")
+
+    st.markdown("---")
+    st.markdown("**Integrations**")
+
+    integrations = [
+        ("Serper",    bool(settings.serper_api_key)),
+        ("PDL",       bool(settings.pdl_api_key)),
+        ("Anthropic", bool(settings.anthropic_api_key)),
+        ("Yelp",      bool(settings.yelp_api_key)),
+        ("BuiltWith", bool(settings.builtwith_api_key)),
+        ("Census",    bool(settings.census_api_key)),
+    ]
+    for name, active in integrations:
+        dot_color = "#16A34A" if active else "#D1D5DB"
+        status_color = "#6B7280" if active else "#D1D5DB"
+        status = "active" if active else "not configured"
+        st.markdown(
+            f'<span style="color:{dot_color}">●</span>&nbsp;'
+            f'<span style="font-size:0.88em">{name}</span>&nbsp;'
+            f'<span style="color:{status_color};font-size:0.75em">{status}</span>',
+            unsafe_allow_html=True,
+        )
 
 
-def render_category_metrics(breakdown: dict) -> None:
-    """Render Market / Company / Person / Building subtotals as metric tiles."""
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Market Fit",   f"{breakdown.get('market_score',   0):.1f} / 100")
-    c2.metric("Company Fit",  f"{breakdown.get('company_score',  0):.1f} / 100")
-    c3.metric("Person Fit",   f"{breakdown.get('person_score',   0):.1f} / 100")
-    c4.metric("Building Fit", f"{breakdown.get('building_score', 0):.1f} / 100")
+# ---------------------------------------------------------------------------
+# Overview table
+# ---------------------------------------------------------------------------
+
+def render_overview_table(outputs_dir: Path) -> None:
+    """Sorted leads table with priority-colored score bars and tier tags."""
+    folders = list_output_folders(outputs_dir)
+    if not folders:
+        st.info("No processed leads yet. Run the pipeline first.")
+        return
+
+    rows: list[dict] = []
+    for p in folders:
+        with contextlib.suppress(Exception):
+            a = json.loads((p / "assessment.json").read_text())
+            label = _lead_label(p)
+            parts = label.split(" · ", 1)
+            rows.append({
+                "company":  parts[0],
+                "location": parts[1] if len(parts) > 1 else "",
+                "score":    round(a.get("lead_score", 0)),
+                "tier":     a.get("tier", ""),
+            })
+
+    rows.sort(key=lambda r: r["score"], reverse=True)
+
+    table_rows = []
+    for r in rows:
+        tier_color = _TIER_TEXT_COLOR.get(r["tier"], "#9CA3AF")
+        pct = round(r["score"] / 131 * 100)
+        bar = (
+            f'<div style="display:flex;align-items:center;gap:8px">'
+            f'<div style="background:#E5E7EB;border-radius:4px;height:8px;width:80px;flex-shrink:0">'
+            f'<div style="width:{pct}%;background:{tier_color};border-radius:4px;height:8px"></div>'
+            f'</div>'
+            f'<span style="font-size:0.875rem;color:#1F2937">{r["score"]} / 131</span>'
+            f'</div>'
+        )
+        table_rows.append([
+            f'<span style="font-weight:600">{r["company"]}</span>',
+            f'<span style="color:#6B7280">{r["location"]}</span>',
+            bar,
+            _tag(r["tier"], *TIER_STYLE.get(r["tier"], ("#F3F4F6", "#374151"))),
+        ])
+
+    st.markdown(
+        '<div style="border-radius:4px;overflow:hidden;border:1px solid #E5E7EB">'
+        + _html_table(["Company", "Location", "Score", "Tier"], table_rows)
+        + "</div>",
+        unsafe_allow_html=True,
+    )
 
 
-def render_signal_table(breakdown: dict) -> None:
-    """Render all 13 scoring signals as a colour-coded markdown table."""
-    with st.expander("Signal Breakdown", expanded=False):
-        rows = ["| Signal | Category | Score |", "|---|---|---|"]
-        for key, label, category in SIGNAL_META:
-            val = breakdown.get(key, 0.0)
-            dot = "🟢" if val >= 0.75 else "🟡" if val >= 0.40 else "🔴"
-            rows.append(f"| {label} | {category} | {dot} {val:.0%} |")
-        st.markdown("\n".join(rows))
+# ---------------------------------------------------------------------------
+# Scoring tab renderers
+# ---------------------------------------------------------------------------
+
+def render_score_header(score: float, tier: str) -> None:
+    """Render score metric and tier as matching side-by-side metric widgets."""
+    bg, fg = TIER_STYLE.get(tier, ("#F3F4F6", "#374151"))
+    c1, c2 = st.columns(2)
+    c1.metric("Lead Score", f"{score:.1f} / 131")
+    c2.markdown(
+        f'<div style="padding-top:2px">'
+        f'<p style="font-size:0.8rem;color:#6B7280;font-weight:600;margin:0 0 6px 0">Priority</p>'
+        f'<span style="background:{bg};color:{fg};padding:6px 18px;border-radius:4px;'
+        f'font-size:1.6rem;font-weight:400;display:inline-block">{tier}</span>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
 
-def render_market_section(market: dict) -> None:
-    """Render market enrichment fields in a labelled expander."""
-    with st.expander("📍 Market Data", expanded=True):
-        _field(market, "renter_occupied_units", "Renter-occupied units",  lambda v: f"{v:,}")
-        _field(market, "total_housing_units",   "Total housing units",    lambda v: f"{v:,}")
-        _field(market, "renter_rate",           "Renter rate",            lambda v: f"{v:.1%}")
-        _field(market, "median_gross_rent",     "Median gross rent",      lambda v: f"${v:,}/mo")
-        _field(market, "total_population",      "Total population",       lambda v: f"{v:,}")
-        _field(market, "population_growth_yoy", "Population growth YoY",  lambda v: f"{v:+.2%}")
-        _field(market, "median_household_income","Median household income",lambda v: f"${v:,}")
-        _field(market, "median_income_growth_yoy","Income growth YoY",    lambda v: f"{v:+.2%}")
+def render_category_metrics(assessment: dict) -> None:
+    """Render category subtotals as colored mini cards matching category tag colors."""
+    cats = [
+        ("Market Fit",   "market_fit",   "#DBEAFE", "#1D4ED8"),
+        ("Company Fit",  "company_fit",  "#EDE9FE", "#5B21B6"),
+        ("Person Fit",   "person_fit",   "#D1FAE5", "#065F46"),
+        ("Building Fit", "building_fit", "#FEF3C7", "#92400E"),
+    ]
+    for col, (title, key, bg, _fg) in zip(st.columns(4), cats, strict=True):
+        score = assessment.get(key, 0)
+        col.markdown(
+            f'<div style="background:{bg};border-radius:4px;padding:16px;text-align:center">'
+            f'<div style="color:#1F2937;font-size:0.875rem;font-weight:400;margin-bottom:8px">{title}</div>'
+            f'<div style="color:#1F2937;font-size:1.8rem;font-weight:400;line-height:1">{score:.1f}%</div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
 
-def render_company_section(company: dict) -> None:
-    """Render company enrichment fields in a labelled expander."""
-    with st.expander("🏢 Company Data", expanded=True):
-        _field(company, "linkedin_employee_count", "Employees",      lambda v: f"{v:,}+")
-        _field(company, "founded_year",            "Founded",        lambda v: str(v))
-        if company.get("is_publicly_traded"):
-            st.write("**Publicly traded:** Yes")
-        if company.get("tech_stack"):
-            st.write(f"**Tech stack:** {', '.join(company['tech_stack'])}")
-        job_count = len(company.get("serper_jobs", {}).get("organic", []))
-        if job_count:
-            st.write(f"**Open leasing roles:** {job_count}")
-        kg = company.get("serper_property_management", {}).get("knowledge_graph_title")
-        if kg:
-            st.write(f"**Google Knowledge Graph:** {kg}")
-        if company.get("yelp_rating") is not None:
-            market_avg = company.get("yelp_market_avg_rating")
-            avg_str = f" (market avg {market_avg:.1f})" if market_avg else ""
-            st.write(f"**Yelp rating:** {company['yelp_rating']}/5 — {company.get('yelp_review_count', 0)} reviews{avg_str}")
-        if company.get("google_rating") is not None:
-            st.write(f"**Google rating:** {company['google_rating']}/5")
-        if company.get("yelp_pain_themes"):
-            st.write(f"**Yelp pain themes:** {', '.join(company['yelp_pain_themes'])}")
-        if company.get("serper_pain_themes"):
-            st.write(f"**Google pain themes:** {', '.join(company['serper_pain_themes'])}")
-        if company.get("competitor_rank_pct") is not None:
-            pct = company["competitor_rank_pct"]
-            st.write(f"**Competitor rank:** {pct:.0%} of local PM cos rate higher on Yelp")
-        if company.get("yelp_year_established"):
-            st.write(f"**Year established (Yelp):** {company['yelp_year_established']}")
+def render_signal_table(assessment: dict) -> None:
+    """Signal table: sorted by earned pts, per-signal colored bars, category tags, Reason column."""
+    signals = assessment.get("signals", [])
+
+    table_rows = []
+    for sig in signals:
+        max_pts = sig["max_points"]
+        earned = sig["points"]
+        val = earned / max_pts if max_pts else 0.0
+        bar_color = "#16A34A" if val >= 0.75 else "#D97706" if val >= 0.40 else "#9CA3AF"
+        cat_bg, cat_fg = _TAG_CAT.get(sig["category"], ("#F3F4F6", "#374151"))
+        pct = int(val * 100)
+        bar = (
+            f'<div style="display:flex;align-items:center;gap:8px">'
+            f'<div style="background:#E5E7EB;border-radius:3px;height:6px;width:56px;flex-shrink:0">'
+            f'<div style="width:{pct}%;background:{bar_color};border-radius:3px;height:6px"></div>'
+            f'</div>'
+            f'<span style="color:#1F2937;font-size:0.875rem;white-space:nowrap">'
+            f'{earned:.1f} / {int(max_pts)} pts</span>'
+            f'</div>'
+        )
+        table_rows.append([
+            f'<span style="color:#1F2937">{sig["name"]}</span>',
+            _tag(sig["category"], cat_bg, cat_fg),
+            bar,
+            f'<span style="color:#6B7280;font-size:0.875rem">{sig["reason"]}</span>',
+        ])
+
+    st.markdown(
+        '<div style="border-radius:4px;overflow:hidden;border:1px solid #E5E7EB">'
+        + _html_table(["Signal", "Category", "Score", "Reason"], table_rows)
+        + "</div>",
+        unsafe_allow_html=True,
+    )
 
 
-def render_person_section(person: dict) -> None:
-    """Render person enrichment fields in a labelled expander."""
-    with st.expander("👤 Person Data", expanded=True):
-        _field(person, "job_title",   "Title",      lambda v: v)
-        _field(person, "seniority",   "Seniority",  lambda v: v.replace("_", " ").title())
-        _field(person, "department",  "Department", lambda v: v.replace("_", " ").title())
-        st.write(f"**Corporate email:** {'Yes' if person.get('is_corporate_email') else 'No'}")
-        _field(person, "pdl_likelihood", "PDL match confidence", lambda v: f"{v}/10")
+def render_insights(insights: list[str]) -> None:
+    """Render key observations derived from enrichment data."""
+    if not insights:
+        return
+    st.markdown("")
+    st.markdown("**Key Observations**")
+    st.markdown(
+        '<hr style="margin:2px 0 6px 0;border:none;border-top:1px solid #E5E7EB">',
+        unsafe_allow_html=True,
+    )
+    st.caption(
+        "Rule-based highlights generated from the enrichment data above. "
+        "Each bullet fires when a specific signal threshold is met: "
+        "large rental market, decision-maker contact, legacy PM tech detected, etc."
+    )
+    for bullet in insights:
+        st.markdown(f"- {bullet}")
 
 
-def render_building_section(building: dict) -> None:
-    """Render building enrichment fields in a labelled expander."""
-    with st.expander("🏢 Building Data", expanded=True):
-        _field(building, "name",              "Building name",  lambda v: v)
-        _field(building, "address",           "Address",        lambda v: v)
-        _field(building, "yelp_rating",       "Yelp rating",    lambda v: f"{v}/5")
-        _field(building, "yelp_review_count", "Yelp reviews",   lambda v: f"{v:,}")
-        _field(building, "price_tier",        "Price tier",     lambda v: v)
-        if building.get("pain_themes"):
-            st.write(f"**Resident pain themes:** {', '.join(building['pain_themes'])}")
-
-
-def render_email_section(email_text: str) -> None:
+def render_outreach_section(email_text: str) -> None:
     """Render the email draft in a copyable text area."""
-    with st.expander("✉️ Email Draft", expanded=True):
-        if email_text.strip():
-            st.text_area("", value=email_text, height=220, label_visibility="collapsed")
-        else:
-            st.info("No email draft — ANTHROPIC_API_KEY not configured.")
-
-
-def _field(data: dict, key: str, label: str, fmt) -> None:
-    """Write a single labelled field if value is not None."""
-    val = data.get(key)
-    if val is not None:
-        st.write(f"**{label}:** {fmt(val)}")
+    if email_text.strip():
+        st.text_area("", value=email_text, height=300, label_visibility="collapsed")
+    else:
+        st.info("No email draft. Configure ANTHROPIC_API_KEY to enable.")

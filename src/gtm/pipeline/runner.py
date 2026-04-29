@@ -16,7 +16,8 @@ from gtm.models.enriched import EnrichedLead
 from gtm.models.lead import RawLead
 from gtm.models.market import MarketData
 from gtm.models.person import PersonData
-from gtm.outreach.email_generator import generate_email
+from gtm.outreach.email_generator import generate_outreach
+from gtm.scoring.reasons import SIGNAL_META, SIGNAL_POINTS, signal_reason
 from gtm.scoring.scorer import generate_insights, score_lead
 from gtm.utils.cache import FileCache
 from gtm.utils.slug import make_slug, unique_slug
@@ -74,19 +75,38 @@ def _write_outputs(lead: EnrichedLead, lead_dir: Path) -> None:
     """Write enrichment.json, assessment.json, and email.txt to lead_dir."""
     lead_dir.mkdir(parents=True, exist_ok=True)
 
+    contact = {**lead.raw.model_dump(mode="json"), **lead.person.model_dump(mode="json")}
     enrichment_payload = {
+        "contact": contact,
         "market": lead.market.model_dump(mode="json"),
         "company": lead.company.model_dump(mode="json"),
-        "person": lead.person.model_dump(mode="json"),
         "building": lead.building.model_dump(mode="json"),
     }
     (lead_dir / "enrichment.json").write_text(json.dumps(enrichment_payload, indent=2))
 
+    bd = lead.score_breakdown
+    signals = []
+    for key, name, category in SIGNAL_META:
+        val = getattr(bd, key, 0.0) or 0.0 if bd else 0.0
+        max_pts = SIGNAL_POINTS[key]
+        signals.append({
+            "name": name,
+            "category": category,
+            "points": round(val * max_pts, 1),
+            "max_points": max_pts,
+            "reason": signal_reason(key, val),
+        })
+    signals.sort(key=lambda s: s["points"], reverse=True)
+
     assessment_payload = {
-        "score": lead.score,
+        "lead_score": lead.score,
         "tier": lead.tier,
-        "breakdown": lead.score_breakdown.model_dump(mode="json") if lead.score_breakdown else None,
-        "insights": lead.insights,
+        "key_observations": lead.insights,
+        "market_fit": round(bd.market_score, 2) if bd else 0.0,
+        "company_fit": round(bd.company_score, 2) if bd else 0.0,
+        "person_fit": round(bd.person_score, 2) if bd else 0.0,
+        "building_fit": round(bd.building_score, 2) if bd else 0.0,
+        "signals": signals,
     }
     (lead_dir / "assessment.json").write_text(json.dumps(assessment_payload, indent=2))
 
@@ -144,8 +164,9 @@ async def enrich_lead(
         building=building_data, slug=slug,
     )
     overall, tier, breakdown = score_lead(enriched)
-    insights = generate_insights(enriched, breakdown)
-    email_draft = generate_email(enriched)
+    email_draft, insights = generate_outreach(enriched, breakdown)
+    if not insights:
+        insights = generate_insights(enriched, breakdown)
 
     enriched = enriched.model_copy(update={
         "score": overall,
