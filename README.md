@@ -89,9 +89,11 @@ uv run python main.py
 # Watch for new rows and process automatically
 uv run python main.py --watch
 
-# Process a specific input file
-uv run python main.py --input path/to/leads.csv
+# Run on a daily schedule at a fixed time (e.g. every day at 9am)
+uv run python main.py --schedule 09:00
 ```
+
+`--watch` and `--schedule` are mutually exclusive. Both run the pipeline once immediately on startup, then continue based on their trigger (file change vs. clock time).
 
 ### Dashboard
 

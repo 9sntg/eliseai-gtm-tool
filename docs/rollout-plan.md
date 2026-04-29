@@ -95,7 +95,7 @@ Scoring model calibration: collect SDR feedback on leads they marked as "poor fi
 
 **Operational changes:**
 - `leads_input.csv` is replaced by a shared Airtable base (or HubSpot list) that all SDRs can append to.
-- The pipeline runs on a scheduled cron job (or `python main.py --watch`) on a shared VM, with no manual "Run Pipeline" click needed.
+- The pipeline runs on a daily schedule on a shared VM using `python main.py --schedule 09:00`. This starts the pipeline at 9am each day, processing any new leads added since the last run. No manual "Run Pipeline" click needed.
 - The dashboard moves to a shared internal URL (Streamlit Community Cloud or internal Heroku app).
 
 **Guardrail retained permanently:** No email is ever sent directly by the tool. The SDR reviews every draft before sending. The tool is a research accelerator, not an auto-sender.

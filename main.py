@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import csv
+import datetime
 import logging
 import time
 from pathlib import Path
@@ -19,6 +20,7 @@ from gtm.pipeline.runner import run_pipeline
 DATA_DIR = Path("data")
 LEADS_FILE = DATA_DIR / "leads_input.csv"
 OUTPUTS_DIR = Path("outputs")
+SCHEDULE_FORMAT: str = "%H:%M"
 
 console = Console()
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s — %(message)s")
@@ -79,6 +81,35 @@ def run_once() -> None:
     _render_summary(results)
 
 
+def _seconds_until(hour: int, minute: int, _now: datetime.datetime | None = None) -> float:
+    """Return seconds from now until the next occurrence of HH:MM today or tomorrow."""
+    now = _now or datetime.datetime.now()
+    target = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    if target <= now:
+        target += datetime.timedelta(days=1)
+    return (target - now).total_seconds()
+
+
+def _schedule_loop(time_str: str) -> None:
+    """Run pipeline immediately, then repeat daily at the specified HH:MM time."""
+    try:
+        parsed = datetime.datetime.strptime(time_str, SCHEDULE_FORMAT)
+    except ValueError:
+        console.print(f"[red]Invalid schedule time '{time_str}'. Use HH:MM format (e.g. 09:00).[/red]")
+        return
+    hour, minute = parsed.hour, parsed.minute
+    console.print(f"[bold green]Scheduler started. Running daily at {time_str}. Ctrl+C to stop.[/bold green]")
+    run_once()
+    try:
+        while True:
+            secs = _seconds_until(hour, minute)
+            console.print(f"[dim]Next run in {secs / 3600:.1f}h (at {time_str}).[/dim]")
+            time.sleep(secs)
+            run_once()
+    except KeyboardInterrupt:
+        console.print("[dim]Scheduler stopped.[/dim]")
+
+
 def _watch_loop() -> None:
     """Re-run the pipeline whenever leads_input.csv changes."""
     from watchdog.events import FileSystemEventHandler
@@ -107,13 +138,17 @@ def _watch_loop() -> None:
 
 
 def main() -> None:
-    """Parse arguments and dispatch to run_once or watch loop."""
+    """Parse arguments and dispatch to run_once, watch loop, or schedule loop."""
     parser = argparse.ArgumentParser(description="EliseAI GTM Lead Enrichment Tool")
-    parser.add_argument("--watch", action="store_true", help="Re-run on CSV changes")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--watch", action="store_true", help="Re-run on CSV changes")
+    group.add_argument("--schedule", metavar="HH:MM", help="Run daily at the specified time (e.g. 09:00)")
     args = parser.parse_args()
 
     if args.watch:
         _watch_loop()
+    elif args.schedule:
+        _schedule_loop(args.schedule)
     else:
         run_once()
 
