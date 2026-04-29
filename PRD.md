@@ -179,11 +179,12 @@ A CSV file at `data/leads_input.csv` with columns:
 
 ### Trigger
 
-Three ways to run the pipeline:
+Four ways to run the pipeline:
 
 1. **CLI:** `python main.py` processes all leads in `leads_input.csv` that do not already have an output folder.
 2. **Streamlit dashboard:** the "Run Pipeline" button in `app.py` runs the same logic with live progress in the UI.
 3. **File-watch mode:** `python main.py --watch` keeps running and re-processes whenever `leads_input.csv` changes, using the `watchdog` library.
+4. **Daily schedule:** `python main.py --schedule 09:00` runs the pipeline immediately on startup, then repeats every day at the specified time. Useful for unattended overnight or morning runs on a shared VM. `--schedule` and `--watch` are mutually exclusive.
 
 ### Graceful Degradation
 
