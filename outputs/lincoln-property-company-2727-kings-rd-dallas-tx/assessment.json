@@ -1,0 +1,169 @@
+{
+  "lead_score": 74.8,
+  "tier": "High",
+  "key_observations": [
+    "Lincoln Property Company carries a 1.3 out of 5 Yelp rating against a market average of 4.66, with complaint themes centering on staff attitude and management quality. Lead with EliseAI as a consistency layer that standardizes resident communication so that individual staff variability stops driving the experience, framing this as a pattern common across large operators rather than a critique of Lincoln.",
+    "The building-level data shows that a management transition negatively impacted perceived quality at one property, which signals that resident trust is sensitive to operational continuity. Emphasize how EliseAI maintains a consistent communication presence through any staffing or leadership change, reducing the resident-facing disruption that typically follows transitions.",
+    "J. Rickards holds a VP title in an advisory capacity at one of the most established property companies in the country. This contact likely thinks in terms of portfolio-wide standards and risk management rather than individual property wins, so anchor the conversation around scalable consistency and the kind of outcomes that move metrics across an entire operation."
+  ],
+  "market_fit": 75.0,
+  "company_fit": 42.5,
+  "person_fit": 62.86,
+  "building_fit": 38.0,
+  "signals": [
+    {
+      "name": "Renter-Occupied Units",
+      "category": "Market",
+      "points": 15.0,
+      "max_points": 15.0,
+      "reason": "Large rental market with high unit count. Top threshold met for full points."
+    },
+    {
+      "name": "Contact Seniority",
+      "category": "Person",
+      "points": 8.5,
+      "max_points": 10.0,
+      "reason": "Contact is at C-suite, VP, Director, or Owner level. Budget authority confirmed."
+    },
+    {
+      "name": "Portfolio / Web Presence",
+      "category": "Company",
+      "points": 6.0,
+      "max_points": 8.0,
+      "reason": "Strong web presence with a verified Google Knowledge Graph entry. Established brand."
+    },
+    {
+      "name": "Yelp Rating vs. Market",
+      "category": "Company",
+      "points": 6.0,
+      "max_points": 6.0,
+      "reason": "Yelp rating is notably below the local market average. Strong resident pain signal."
+    },
+    {
+      "name": "Economic Momentum",
+      "category": "Market",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Strong year-over-year income growth. Healthy economic trajectory for the city."
+    },
+    {
+      "name": "Company Age",
+      "category": "Company",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Established company with significant operating history. Likely carries legacy tech debt."
+    },
+    {
+      "name": "Social Media Presence",
+      "category": "Company",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Active on multiple social platforms. Engaged digital presence."
+    },
+    {
+      "name": "Renter Rate",
+      "category": "Market",
+      "points": 4.0,
+      "max_points": 8.0,
+      "reason": "Moderate renter rate in this city. Some PM opportunity present."
+    },
+    {
+      "name": "Corporate Email",
+      "category": "Person",
+      "points": 4.0,
+      "max_points": 4.0,
+      "reason": "Email uses a verified company domain. Contact legitimacy confirmed."
+    },
+    {
+      "name": "Building Yelp Rating",
+      "category": "Building",
+      "points": 4.0,
+      "max_points": 8.0,
+      "reason": "Building has a below-average Yelp rating. Some resident dissatisfaction present."
+    },
+    {
+      "name": "Resident Pain Themes",
+      "category": "Company",
+      "points": 3.5,
+      "max_points": 5.0,
+      "reason": "Some resident complaint themes identified from Yelp or web reviews."
+    },
+    {
+      "name": "Population Growth YoY",
+      "category": "Market",
+      "points": 2.5,
+      "max_points": 5.0,
+      "reason": "Stable population growth. Steady market conditions."
+    },
+    {
+      "name": "Median Gross Rent",
+      "category": "Market",
+      "points": 2.0,
+      "max_points": 5.0,
+      "reason": "Median rent falls in the mid range, representing an average US rental market."
+    },
+    {
+      "name": "Building Review Volume",
+      "category": "Building",
+      "points": 2.0,
+      "max_points": 4.0,
+      "reason": "Moderate review volume present for this building."
+    },
+    {
+      "name": "Building Pain Themes",
+      "category": "Building",
+      "points": 1.6,
+      "max_points": 4.0,
+      "reason": "Some complaint themes found for this specific building."
+    },
+    {
+      "name": "Department / Function",
+      "category": "Person",
+      "points": 0.7,
+      "max_points": 7.0,
+      "reason": "No department data available or contact is outside the property management function."
+    },
+    {
+      "name": "Tech Stack",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "No tech stack data. BuiltWith key not configured or no tools detected."
+    },
+    {
+      "name": "Employee Count",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "Company is below the minimum headcount threshold or LinkedIn data is unavailable."
+    },
+    {
+      "name": "Portfolio Size",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 6.0,
+      "reason": "No portfolio size data could be extracted."
+    },
+    {
+      "name": "Google Rating",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No Google rating data available or rating is above the scoring threshold."
+    },
+    {
+      "name": "Competitor Rank (Yelp)",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 5.0,
+      "reason": "No competitor data available or company ranks well relative to competitors."
+    },
+    {
+      "name": "Building Price Tier",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No price tier data from Yelp or the building is at the budget tier."
+    }
+  ]
+}

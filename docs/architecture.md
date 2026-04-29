@@ -37,8 +37,8 @@ data/leads_input.csv
         │
         ▼
   [Scoring Layer]
-  scorer.py → 0–131 pts score + ScoreBreakdown
-  (Market: 38 pts, Company: 72 pts, Person: 21 pts, Building: bonus up to +20 pts)
+  scorer.py → 0–119 pts score + ScoreBreakdown
+  (Market: 38 pts, Company: 60 pts, Person: 21 pts, Building: bonus up to +20 pts)
         │
         ▼
   [Email Generation]
@@ -61,23 +61,23 @@ data/leads_input.csv
 ## Components
 
 ### `src/gtm/config.py`
-Centralized settings via `pydantic-settings`. Loads all API keys from `.env` (including `YELP_API_KEY`). Defines all scoring point values as named constants (`POINTS_RENTER_UNITS`, `POINTS_SENIORITY`, etc.) so no magic numbers appear in scoring logic. An assertion at module level confirms that the 19 baseline signals sum to exactly 131 pts. Building Fit bonus signals (`POINTS_BUILDING_RATING`, `POINTS_BUILDING_REVIEWS`, `POINTS_BUILDING_PRICE_TIER`, `POINTS_BUILDING_PAIN_THEMES`) sit outside the 131-pt baseline.
+Centralized settings via `pydantic-settings`. Loads all API keys from `.env` (including `YELP_API_KEY`). Defines all scoring point values as named constants (`POINTS_RENTER_UNITS`, `POINTS_SENIORITY`, etc.) so no magic numbers appear in scoring logic. An assertion at module level confirms that the 22 baseline signals sum to exactly 119 pts. Building Fit bonus signals (`POINTS_BUILDING_RATING`, `POINTS_BUILDING_REVIEWS`, `POINTS_BUILDING_PRICE_TIER`, `POINTS_BUILDING_PAIN_THEMES`) sit outside the 119-pt baseline.
 
 ### `src/gtm/models/`
 Pydantic models for every data shape in the system (one module per concern, re-exported from `gtm.models`):
-- `RawLead` — raw input from CSV
-- `MarketData` — Census + DataUSA fields (all optional, default None)
-- `CompanyData` — Serper (3 buckets), LinkedIn-extracted employee count + founded year, Haiku-extracted portfolio size, job count from regex extraction, yelp alias, Yelp rating/review/market-avg/pain-themes/year-established/competitor-rank-pct, Google rating, Serper pain themes, social platform count, EDGAR public flag, BuiltWith tech stack (all optional)
-- `BuildingData` — Yelp building-level data: name (resolved via Serper), address, alias, rating, review count, price tier, pain themes (all optional)
-- `PersonData` — PDL fields + `is_corporate_email` (derived locally)
-- `ScoreBreakdown` — one float per signal + `market_score`, `company_score`, `person_score`, `building_score` subtotals
-- `EnrichedLead` — full record: raw lead + all enrichment + building + score + insights + email draft + slug
+- `RawLead`: raw input from CSV
+- `MarketData`: Census and DataUSA fields (all optional, default None)
+- `CompanyData`: Serper (2 buckets), LinkedIn-extracted employee count and founded year, Haiku-extracted portfolio size, Yelp alias, Yelp rating/review/market-avg/pain-themes/year-established/competitor-rank-pct, Google rating, Serper pain themes, social platform count, EDGAR public flag, BuiltWith tech stack (all optional)
+- `BuildingData`: Yelp building-level data including name (resolved via Serper), address, alias, rating, review count, price tier, and pain themes (all optional)
+- `PersonData`: PDL fields plus `is_corporate_email` (derived locally)
+- `ScoreBreakdown`: one float per signal plus `market_score`, `company_score`, `person_score`, and `building_score` subtotals
+- `EnrichedLead`: full record combining raw lead, all enrichment models, building data, score, insights, email draft, and slug
 
 ### `src/gtm/utils/geocoder.py`
-Converts `city + state` → `(state_fips, place_fips)` using the Census Geocoder API (free). Required before any Census or DataUSA queries because those APIs use numeric FIPS codes, not city names. Results are cached to avoid redundant calls for repeated cities.
+Converts `city + state` to `(state_fips, place_fips)` using the Census Geocoder API (free, no key required). This step is required before any Census or DataUSA queries because those APIs use numeric FIPS codes, not city names. Results are cached to avoid redundant calls for repeated cities.
 
 ### `src/gtm/utils/slug.py`
-Generates the output folder name for each lead: `{company}-{city}-{state}` (lowercased, non-alphanumeric stripped, spaces to hyphens). Handles slug collisions by appending `-2`, `-3`, etc.
+Generates the output folder name for each lead in the format `{company}-{address}-{city}-{state}` (lowercased, non-alphanumeric stripped, spaces to hyphens). Including the address ensures that the same company can have multiple leads for different buildings without slug collision. Handles remaining collisions by appending `-2`, `-3`, etc.
 
 ### `src/gtm/utils/cache.py`
 Simple JSON file cache backed by `.cache/`. Keyed by SHA-256 of the cache key string. TTL of 24 hours. Used by all enrichment modules to avoid re-hitting APIs during development or re-runs.
@@ -87,44 +87,44 @@ Eight modules, one per API. All share the same async interface:
 ```python
 async def enrich(lead: RawLead, client: httpx.AsyncClient) -> DataType
 ```
-All wrap API calls in `try/except`. All return an empty/default model on failure — never raise. Each logs a warning when data is missing.
+All wrap API calls in `try/except`. All return an empty or default model on failure and never raise. Each logs a warning when data is missing.
 
 | Module | API | Returns | Notes |
 |---|---|---|---|
 | `census.py` | U.S. Census ACS5 | `MarketData` partial | Requires FIPS from geocoder |
 | `datausa.py` | Census ACS5 (multi-year) | `MarketData` (growth fields) | Compares 2022 vs 2021 ACS for YoY growth |
-| `serper.py` | Serper (Google) | `CompanyData` partial | 3 queries: PM presence, jobs, LinkedIn profile; Google rating from knowledgeGraph |
+| `serper.py` | Serper (Google) | `CompanyData` partial | 2 queries: PM presence, LinkedIn profile; Google rating from knowledgeGraph |
 | `edgar.py` | SEC EDGAR EFTS | `CompanyData` partial | Public company detection; insight only, not scored |
 | `builtwith.py` | BuiltWith | `CompanyData` partial | Optional (paid key required) |
 | `pdl.py` | People Data Labs | `PersonData` | Email-only lookup |
-| `yelp.py` | Yelp Fusion v3 | `CompanyData` + `BuildingData` | `enrich_company`: rating, reviews, market avg, pain themes; `enrich_building`: building-level Yelp data. Both optional — requires `YELP_API_KEY`. |
+| `yelp.py` | Yelp Fusion v3 | `CompanyData` + `BuildingData` | `enrich_company`: rating, reviews, market avg, pain themes. `enrich_building`: building-level Yelp data. Both are optional and require `YELP_API_KEY`. |
 
 ### `src/gtm/scoring/scorer_signals.py`
-All 18 signal functions and their threshold constants. Each function takes one or two enrichment fields and returns a `float` in `[0.0, 1.0]`. None input always returns `0.0`. No I/O, no config reads — pure computation. Threshold constants are named at module level (no magic numbers in function bodies).
+All 22 signal functions and their threshold constants. Each function takes one or two enrichment fields and returns a `float` in `[0.0, 1.0]`. A None input always returns `0.0`. There is no I/O or config reads; this is pure computation. Threshold constants are named at module level so no magic numbers appear in function bodies.
 
 ### `src/gtm/scoring/scorer.py`
-Orchestrates signal functions into a final score using an additive point model. Each signal contributes 0–N points when it fires, 0 when data is absent — no redistribution needed. Baseline max is 131 pts; four Building Fit bonus signals can push the score above 131. Computes category subtotals (normalised to 0–100 for display), maps the score to a tier, and generates 3–5 insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
+Orchestrates signal functions into a final score using an additive point model. Each signal contributes 0 to N points when it fires, and 0 when data is absent. No redistribution is needed. Baseline max is 119 pts. Four Building Fit bonus signals can push the score above 119. Computes category subtotals (normalised to 0–100 for display), maps the score to a tier, and generates SDR insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
 
-**Scoring signals (baseline 131 pts):**
+**Scoring signals (baseline 119 pts):**
 
 | Category | Points | Signals |
 |---|---|---|
 | Market Fit | 38 pts | Renter units (15), renter rate (8), median rent (5), population growth (5), economic momentum (5) |
-| Company Fit | 72 pts | Job postings (12), portfolio news (8), tech stack (8), employee count (8), company age (5), portfolio size (6), social media presence (5), Yelp company rating vs. market avg (6), Google company rating (4), company pain themes / Yelp+Serper (5), competitor rank on Yelp (5) |
+| Company Fit | 60 pts | Portfolio news (8), tech stack (8), employee count (8), company age (5), portfolio size (6), social media presence (5), Yelp company rating vs. market avg (6), Google company rating (4), company pain themes / Yelp+Serper (5), competitor rank on Yelp (5) |
 | Person Fit | 21 pts | Seniority (10), function/department (7), corporate email (4) |
-| Building Fit (bonus) | up to +20 pts | Building rating inverted (8), building review count (4), building price tier (4), building pain themes (4) — score 0 when Yelp data absent |
+| Building Fit (bonus) | up to +20 pts | Building rating inverted (8), building review count (4), building price tier (4), building pain themes (4). Scores 0 when Yelp building data is absent. |
 
 ### `src/gtm/outreach/email_generator.py`
-Drafts a personalized 150–200 word outreach email via Claude Sonnet 4.6. Public entry point: `generate_email(lead) → str | None`.
+Drafts a personalized 150–200 word outreach email and three SDR insight bullets via Claude Sonnet 4.6. Public entry point: `generate_outreach(lead, breakdown) → (str | None, list[str])`.
 
-- `_build_context(lead)` assembles a structured user message from non-None enrichment fields only (contact, market signals, company signals, score). Fields that are None are silently omitted — the email is grounded only in data that was actually retrieved.
-- The system prompt (EliseAI context, tone guidelines, no-hallucination constraint, word count) is a module-level constant sent with `cache_control: {"type": "ephemeral"}` — one cache hit covers all leads in a batch.
-- Returns `None` on any failure (missing key, API error, empty response). Never returns a generic template.
+- `_build_context(lead)` assembles a structured user message from non-None enrichment fields only (contact, market signals, company signals, score). Fields that are None are silently omitted so the email is grounded only in data that was actually retrieved.
+- The system prompt (EliseAI context, tone guidelines, no-hallucination constraint, word count) is loaded from `system_prompt.md` and sent with `cache_control: {"type": "ephemeral"}`. One cache hit covers all leads in a batch.
+- Returns `(None, [])` on any failure (missing key, API error, empty response). Never returns a generic template.
 
 ### `src/gtm/pipeline/runner.py`
 Async orchestration layer:
-- `enrich_lead(lead, outputs_dir)`: generates slug, skips if output folder exists, fires all 8 enrichment calls concurrently (including `yelp.enrich_company` and `yelp.enrich_building`), scores, generates email, writes 3 output files
-- `run_pipeline(leads, outputs_dir)`: processes leads sequentially (outer loop respects rate limits), async within each lead
+- `enrich_lead(lead, outputs_dir)`: generates slug, skips if output folder exists, fires all 8 enrichment calls concurrently (including `yelp.enrich_company` and `yelp.enrich_building`), scores, generates email, writes 3 output files.
+- `run_pipeline(leads, outputs_dir)`: processes leads sequentially in the outer loop (to respect API rate limits), async within each lead.
 
 ### `main.py`
 CLI entry point. Reads `data/leads_input.csv`, calls `run_pipeline()`, renders a Rich progress bar and summary table. Optional `--watch` flag wraps the pipeline in a `watchdog` file-watch loop.
@@ -163,22 +163,24 @@ The pipeline checks for slug folder existence before processing any lead. This i
 ## Key Architectural Decisions
 
 ### Why async?
-All 8 enrichment calls per lead are fully independent of each other. Firing them concurrently via `asyncio.gather()` brings per-lead enrichment time from ~8s (sequential) to ~2–3s. The outer loop stays sequential to respect API rate limits.
+From the pipeline runner's perspective, all 8 enrichment calls per lead are fully independent of each other. `runner.py` fires them concurrently via `asyncio.gather()`, bringing per-lead enrichment time from approximately 8 seconds (sequential) to 2–3 seconds. The outer loop stays sequential to respect API rate limits.
+
+Internally, some modules have sequential steps that are invisible to the caller. `census.py` and `datausa.py` both call the Census Geocoder first, then issue their ACS queries. `yelp.enrich_company` runs a search, then fires profile, reviews, and highlights concurrently with an internal `asyncio.gather()`. These internal sequences are each module's private concern and do not block other modules from running.
 
 ### Why file-based output instead of a database?
-For an MVP with tens to low-hundreds of leads, a filesystem is the most portable and inspectable option. Each lead's folder is self-contained — no schema migrations, no connection strings, and an SDR can open any file directly. A future production version would push these records into a CRM via API.
+For an MVP with tens to low-hundreds of leads, a filesystem is the most portable and inspectable option. Each lead's folder is self-contained, with no schema migrations or connection strings required. An SDR can open any file directly. A future production version would push these records into a CRM via API.
 
 ### Why per-lead folders instead of a flat CSV?
 A CSV cell cannot cleanly hold a multi-paragraph email, a full enrichment JSON, and a score breakdown simultaneously. Per-lead folders give each piece of data its natural format (`.json` for structured data, `.txt` for prose) while remaining trivially readable and portable.
 
 ### Why BuiltWith is optional
-BuiltWith's free tier does not expose named technology detections (only group counts). Detecting Yardi/RealPage/Entrata requires a paid plan. Rather than hardcoding a broken signal, the tool treats BuiltWith as an enhancement: present if a key is configured and returning data, absent otherwise. In the additive model, absent signals simply contribute 0 pts — no redistribution needed.
+BuiltWith's free tier does not expose named technology detections, only group counts. Detecting Yardi/RealPage/Entrata requires a paid plan. Rather than hardcoding a broken signal, the tool treats BuiltWith as an enhancement that is present if a key is configured and returning data, and absent otherwise. In the additive model, absent signals simply contribute 0 pts. No redistribution is needed.
 
 ### Why prompt caching for email generation?
-All leads in a batch share the same system prompt (EliseAI context, tone, constraints). Anthropic's `cache_control: ephemeral` caches this token block across requests within the 5-minute TTL window. For a 5-lead batch, this cuts input tokens ~80% on leads 2–5.
+All leads in a batch share the same system prompt (EliseAI context, tone, constraints). Anthropic's `cache_control: ephemeral` caches this token block across requests within the 5-minute TTL window. For a 5-lead batch, this cuts input tokens by approximately 80% on leads 2 through 5.
 
 ### Why Census Geocoder as a prerequisite step?
-The Census ACS API requires FIPS place codes. The Geocoder API converts free-text city names to FIPS codes. This is a free, keyless API with generous rate limits. The result is cached per city so repeat cities (common in a real lead list) only pay the cost once.
+The Census ACS API requires FIPS place codes. The Geocoder API converts free-text city names to FIPS codes. It is a free, keyless API with generous rate limits. The result is cached per city so repeat cities (common in a real lead list) only pay the geocoding cost once.
 
 ---
 
@@ -218,3 +220,4 @@ Per-API endpoints, quirks, and response envelopes are summarized in [`api-notes.
 | Phase 12 | Dashboard UI overhaul (sidebar stats + integrations, Overview table with score bars, Lead Details with inner Enrichment/Scoring/Outreach tabs, tag chips for categorical fields, consistent HTML table style across all 8 tables, category mini-cards, signal table with per-signal bars and reason sentences); output format restructure (`enrichment.json`: 4 sections — contact/market/company/building; `assessment.json`: lead_score, tier, key_observations, market_fit/company_fit/person_fit/building_fit, signals list with name/category/points/max_points/reason); new `src/gtm/scoring/reasons.py` shared by pipeline writer and dashboard | ✅ Done |
 | Phase 13 | AI-generated outreach: `generate_email` replaced by `generate_outreach(lead, breakdown)` returning `(email, insights)`; system prompt moved to `src/gtm/outreach/system_prompt.md` with rich EliseAI context (products, named customer outcomes, pain points), combined email + 3 SDR insights task, no-dashes rule; scoring breakdown injected into Claude context; rule-based `generate_insights()` kept as fallback; `test_email_generator.py` rewritten for new interface | ✅ Done |
 | Phase 14 | Signal accuracy + outreach polish: `score_seniority(None)` and `score_department_function(None)` fixed to return 0.0 (no data = no points); `signal_reason()` threshold fixed (`> 0.1` not `>= 0.1`) so absent-data signals display correct reason tier; Claude Haiku fallback in `pdl.py` infers seniority from job title when PDL returns none; email prompt updated with standalone greeting line (`Hi [Name],`) and explicit sign-off (`Best, / EliseAI`) | ✅ Done |
+| Phase 15 | Job postings signal removed (unreliable board-level counts from Serper job query): `POINTS_JOB_POSTINGS` removed from config, `score_job_postings` removed from scorer_signals, Serper reduced to 2 queries/lead, Company Fit baseline 72→60 pts, total baseline 131→119 pts; tier thresholds documented (Low 0–40 / Medium 41–70 / High 71+); enterprise lead batch added (Greystar, RPM Living, Lincoln Property, BH Management, Bell Partners) with real apartment building addresses; all docs, tests, and dashboard helpers updated for 119-pt model | ✅ Done |

@@ -1,0 +1,169 @@
+{
+  "lead_score": 71.7,
+  "tier": "High",
+  "key_observations": [
+    "Bell Partners carries a 1.6 out of 5 rating across 765 Yelp reviews, well below the market average of 3.24, with recurring complaints around maintenance responsiveness and unresponsive management. Lead with how EliseAI closes the communication gap on maintenance workflows, since that is the sharpest pain signal in the data.",
+    "The building at 70 Perimeter Center E has its own review trail citing unresponsive management and property safety concerns, which reinforces that the issue is systemic across properties rather than isolated. This gives you a concrete, local reference point if Jon pushes back on the relevance of the pitch.",
+    "Jon is chairman and a partner, meaning he is a strategic decision maker rather than an operational one. Frame the conversation around portfolio-level efficiency and resident retention rather than day-to-day workflow details, and be prepared to connect him to someone on his operations team if he expresses interest."
+  ],
+  "market_fit": 55.26,
+  "company_fit": 35.0,
+  "person_fit": 70.0,
+  "building_fit": 75.0,
+  "signals": [
+    {
+      "name": "Contact Seniority",
+      "category": "Person",
+      "points": 10.0,
+      "max_points": 10.0,
+      "reason": "Contact is at C-suite, VP, Director, or Owner level. Budget authority confirmed."
+    },
+    {
+      "name": "Building Yelp Rating",
+      "category": "Building",
+      "points": 8.0,
+      "max_points": 8.0,
+      "reason": "Building Yelp rating is low. Residents are unhappy, creating a strong pitch angle."
+    },
+    {
+      "name": "Renter Rate",
+      "category": "Market",
+      "points": 6.0,
+      "max_points": 8.0,
+      "reason": "High share of housing is renter-occupied. Strong property management market."
+    },
+    {
+      "name": "Portfolio / Web Presence",
+      "category": "Company",
+      "points": 6.0,
+      "max_points": 8.0,
+      "reason": "Strong web presence with a verified Google Knowledge Graph entry. Established brand."
+    },
+    {
+      "name": "Yelp Rating vs. Market",
+      "category": "Company",
+      "points": 6.0,
+      "max_points": 6.0,
+      "reason": "Yelp rating is notably below the local market average. Strong resident pain signal."
+    },
+    {
+      "name": "Economic Momentum",
+      "category": "Market",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Strong year-over-year income growth. Healthy economic trajectory for the city."
+    },
+    {
+      "name": "Company Age",
+      "category": "Company",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Established company with significant operating history. Likely carries legacy tech debt."
+    },
+    {
+      "name": "Corporate Email",
+      "category": "Person",
+      "points": 4.0,
+      "max_points": 4.0,
+      "reason": "Email uses a verified company domain. Contact legitimacy confirmed."
+    },
+    {
+      "name": "Building Pain Themes",
+      "category": "Building",
+      "points": 4.0,
+      "max_points": 4.0,
+      "reason": "Multiple complaint themes found in building-specific reviews."
+    },
+    {
+      "name": "Renter-Occupied Units",
+      "category": "Market",
+      "points": 3.8,
+      "max_points": 15.0,
+      "reason": "Moderate rental market by unit count. Partial score based on size tier."
+    },
+    {
+      "name": "Median Gross Rent",
+      "category": "Market",
+      "points": 3.8,
+      "max_points": 5.0,
+      "reason": "Above-average median gross rent. High-value market with strong PM opportunity."
+    },
+    {
+      "name": "Building Review Volume",
+      "category": "Building",
+      "points": 3.0,
+      "max_points": 4.0,
+      "reason": "High review volume for this building. Signal is statistically reliable."
+    },
+    {
+      "name": "Population Growth YoY",
+      "category": "Market",
+      "points": 2.5,
+      "max_points": 5.0,
+      "reason": "Stable population growth. Steady market conditions."
+    },
+    {
+      "name": "Social Media Presence",
+      "category": "Company",
+      "points": 2.5,
+      "max_points": 5.0,
+      "reason": "Some social media presence detected."
+    },
+    {
+      "name": "Resident Pain Themes",
+      "category": "Company",
+      "points": 1.5,
+      "max_points": 5.0,
+      "reason": "Some resident complaint themes identified from Yelp or web reviews."
+    },
+    {
+      "name": "Department / Function",
+      "category": "Person",
+      "points": 0.7,
+      "max_points": 7.0,
+      "reason": "No department data available or contact is outside the property management function."
+    },
+    {
+      "name": "Tech Stack",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "No tech stack data. BuiltWith key not configured or no tools detected."
+    },
+    {
+      "name": "Employee Count",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "Company is below the minimum headcount threshold or LinkedIn data is unavailable."
+    },
+    {
+      "name": "Portfolio Size",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 6.0,
+      "reason": "No portfolio size data could be extracted."
+    },
+    {
+      "name": "Google Rating",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No Google rating data available or rating is above the scoring threshold."
+    },
+    {
+      "name": "Competitor Rank (Yelp)",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 5.0,
+      "reason": "No competitor data available or company ranks well relative to competitors."
+    },
+    {
+      "name": "Building Price Tier",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No price tier data from Yelp or the building is at the budget tier."
+    }
+  ]
+}

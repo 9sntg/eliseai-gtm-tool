@@ -1,0 +1,178 @@
+{
+  "contact": {
+    "name": "Paul Jones",
+    "email": "paul.jones@rpmliving.com",
+    "company": "RPM Living",
+    "property_address": "415 Colorado St",
+    "city": "Austin",
+    "state": "TX",
+    "job_title": "regional vice president of facilities",
+    "seniority": "vp",
+    "department": "advisory",
+    "years_experience": null,
+    "pdl_likelihood": 9,
+    "is_corporate_email": true
+  },
+  "market": {
+    "renter_occupied_units": 188029,
+    "total_housing_units": 449452,
+    "renter_rate": 0.4184,
+    "median_gross_rent": 1549,
+    "total_population": 958202,
+    "population_growth_yoy": 0.0143,
+    "median_household_income": 86556,
+    "median_income_growth_yoy": 0.0961,
+    "real_estate_employment": null,
+    "median_property_value": null
+  },
+  "company": {
+    "serper_property_management": {
+      "query": "RPM Living property management",
+      "organic": [
+        {
+          "title": "RPM Living: Home",
+          "link": "https://rpmliving.com/",
+          "snippet": "Featured Properties. 10X Fort Lauderdale. Fort Lauderdale, Florida. Nestled within a coastal paradise, 10X Fort Lauderdale Apartment Homes ...",
+          "position": 1
+        },
+        {
+          "title": "RPM Living (@RPMLiving) - Facebook",
+          "link": "https://www.facebook.com/RPMLiving/",
+          "snippet": "Exceeding every need by offering next-level service to the residents who call an RPM community home. \udb85\udfb4 Property Management Company \u00b7 \udb85\udeea (512) 480 ...",
+          "position": 2
+        },
+        {
+          "title": "RPM Living | LinkedIn",
+          "link": "https://www.linkedin.com/company/rpmliving",
+          "snippet": "RPM Living is a full-service multifamily management, investment and development company offering an innovative and personalized approach to real estate ...",
+          "position": 3
+        },
+        {
+          "title": "RPM LIVING - Updated April 2026 - 64 Photos & 187 Reviews - Yelp",
+          "link": "https://www.yelp.com/biz/rpm-living-austin-2",
+          "snippet": "I have lived in this apartment complex for seven years and have watched it deteriorate significantly under the management of RPM Living. Maintenance is abysmal.",
+          "position": 4
+        },
+        {
+          "title": "RPM Development Group",
+          "link": "https://www.rpmdev.com/",
+          "snippet": "Property Management. RPM Management sets itself apart with a comprehensive management strategy that anticipates residents needs and actively recognizes the ...",
+          "position": 5
+        },
+        {
+          "title": "RPM Property Management Company - Apartments.com",
+          "link": "https://www.apartments.com/pmc/rpm/jmdlmn4/",
+          "snippet": "RPM is a property management company serving several markets accross the USA.",
+          "position": 6
+        },
+        {
+          "title": "RPM Living \"properties\" Reviews | Glassdoor",
+          "link": "https://www.glassdoor.com/Reviews/RPM-Living-properties-Reviews-EI_IE702672.0,10_KH11,21.htm",
+          "snippet": "RPM Living has an overall rating of 3.9 out of 5, based on over 751 reviews left anonymously by employees. This rating has been stable over the past 12 months.",
+          "position": 7
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "serper_linkedin": {
+      "query": "site:linkedin.com/company RPM Living",
+      "organic": [
+        {
+          "title": "RPM Living | LinkedIn",
+          "link": "https://www.linkedin.com/company/rpmliving",
+          "snippet": "RPM Living is a full-service multifamily management, investment and development company offering an innovative and personalized approach to real estate ...",
+          "position": 1
+        },
+        {
+          "title": "RPM Living | \u9886\u82f1",
+          "link": "https://cn.linkedin.com/company/rpmliving?trk=ppro_cprof",
+          "snippet": "\u5173\u4e8e\u6211\u4eec ; \u7f51\u7ad9: https://www.rpmliving.com/. RPM Living\u7684\u5916\u90e8\u94fe\u63a5 ; \u6240\u5c5e\u884c\u4e1a: \u623f\u5730\u4ea7 ; \u89c4\u6a21: 1,001-5,000 \u4eba ; \u603b\u90e8: Austin\uff0cTexas ; \u7c7b\u578b: \u79c1\u4eba\u6301\u80a1.",
+          "position": 2
+        },
+        {
+          "title": "RPM Investments | LinkedIn",
+          "link": "https://www.linkedin.com/company/rpmlivinginvestments",
+          "snippet": "Headquartered in Austin, Texas, RPM is the 6th largest property management company on the NMHC Top 50 Manager and is strategically positioned across the country ...",
+          "position": 3
+        },
+        {
+          "title": "RPM Living | LinkedIn",
+          "link": "https://www.linkedin.com/company/rpm-livingusa",
+          "snippet": "Website: https://rpmliving.com/. External link for RPM Living ; Industry: Marketing Services ; Company size: 5,001-10,000 employees ; Type: Public Company ...",
+          "position": 4
+        },
+        {
+          "title": "RPM Living: Jobs - LinkedIn",
+          "link": "https://www.linkedin.com/company/rpmliving/jobs",
+          "snippet": "RPM Living | 103044 followers on LinkedIn. Powered by Extraordinary People. | RPM Living is a full-service multifamily management, investment and ...",
+          "position": 5
+        },
+        {
+          "title": "RPM Living: Culture - LinkedIn",
+          "link": "https://www.linkedin.com/company/rpmliving/life",
+          "snippet": "RPM Living | 103037 followers on LinkedIn. Powered by Extraordinary People. | RPM Living is a full-service multifamily management, investment and ...",
+          "position": 6
+        },
+        {
+          "title": "RPM Living | \u9886\u82f1",
+          "link": "https://cn.linkedin.com/company/rpmliving?trk=public_profile_experience-item_profile-section-card_image-click",
+          "snippet": "\u5173\u4e8e\u6211\u4eec ; \u7f51\u7ad9: https://www.rpmliving.com/. RPM Living\u7684\u5916\u90e8\u94fe\u63a5 ; \u6240\u5c5e\u884c\u4e1a: \u623f\u5730\u4ea7 ; \u89c4\u6a21: 1,001-5,000 \u4eba ; \u603b\u90e8: Austin\uff0cTexas ; \u7c7b\u578b: \u79c1\u4eba\u6301\u80a1.",
+          "position": 7
+        },
+        {
+          "title": "Hawthorne Residential Partners | LinkedIn",
+          "link": "https://fr.linkedin.com/company/hawthorne-residential-partners",
+          "snippet": "RPM Living. Immobilier. Austin, Texas \u00b7 Asset Living. Immobilier. Houston, Texas \u00b7 Bell Partners Inc. Immobilier. Greensboro, NC \u00b7 Pegasus Residential.",
+          "position": 8
+        },
+        {
+          "title": "RPM Management, LLC | LinkedIn",
+          "link": "https://www.linkedin.com/company/rpm-management-llc",
+          "snippet": "Partnering with Homeowner Associations in MN of all Types, Sizes & Scopes to Deliver Exceptional Management Services. \u00b7 Report this company \u00b7 Close menu.",
+          "position": 9
+        },
+        {
+          "title": "Bell Partners Inc | LinkedIn",
+          "link": "https://www.linkedin.com/company/bellpartnersinc",
+          "snippet": "Established in 1976, Bell Partners Inc. is a privately held apartment investment and management company focused on quality multifamily rental communities.",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "linkedin_employee_count": null,
+    "founded_year": null,
+    "is_publicly_traded": false,
+    "portfolio_size": null,
+    "yelp_alias": "rpm-living-austin-2",
+    "social_platform_count": 1,
+    "tech_stack": [],
+    "yelp_rating": 1.4,
+    "yelp_review_count": 187,
+    "yelp_market_avg_rating": 4.5,
+    "yelp_pain_themes": [
+      "bad communication",
+      "no follow-ups on emails and calls",
+      "unfriendly and disrespectful staff",
+      "delayed responses"
+    ],
+    "yelp_year_established": null,
+    "google_rating": null,
+    "serper_pain_themes": [],
+    "competitor_rank_pct": null
+  },
+  "building": {
+    "address": "415 Colorado St",
+    "name": "415 Colorado",
+    "yelp_alias": "415-colorado-austin",
+    "yelp_rating": 5.0,
+    "yelp_review_count": 2,
+    "pain_themes": [],
+    "price_tier": null,
+    "google_rating": null
+  }
+}

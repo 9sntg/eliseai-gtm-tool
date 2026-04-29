@@ -7,7 +7,7 @@
 
 EliseAI is an AI company automating leasing and resident operations for property management companies. When a new inbound lead comes in, it contains only basic information: contact name, email, company name, and a property address with city and state. An SDR then manually researches, prioritizes, and drafts outreach for each lead.
 
-This tool automates that entire top-of-funnel process using public APIs. It takes a raw lead list, enriches each lead with market and company intelligence, scores each lead 0–100, and generates a personalized draft outreach email — so the SDR can act immediately instead of spending 20+ minutes researching each one.
+This tool automates that entire top-of-funnel process using public APIs. It takes a raw lead list, enriches each lead with market, company, building, and person intelligence, scores each lead on an additive point model up to 119 pts (plus up to 20 building bonus pts), and generates a personalized draft outreach email so the SDR can act immediately instead of spending 20+ minutes researching each one.
 
 ---
 
@@ -20,17 +20,19 @@ A lead in this context is a **property management company** that has expressed i
 | Contact name | John Smith |
 | Email | john@greystar.com |
 | Company name | Greystar |
-| Property address | 1234 Main St |
-| City | Austin |
+| Property address | 3333 Harry Hines Blvd |
+| City | Dallas |
 | State | TX |
 
-The tool does **not** look up the company directly via the address. Instead, it uses the city and state as a geographic anchor to assess the market the company operates in, then uses the company domain and name to assess the company and contact directly.
+The `property_address` field is a specific apartment building the company manages in that city. It is used to find the building on Yelp and extract building-level signals (tenant reviews, price tier, pain themes). The city and state serve as the geographic anchor for all market-level signals.
+
+**Geographic scope:** This version of the tool is US-only. The data sources it depends on (U.S. Census ACS, Census Geocoder, SEC EDGAR, and Yelp Fusion's US-market depth) are either exclusively US-based or significantly more complete for US cities than for international markets. A future iteration could support Canada and the UK by substituting equivalent national statistics APIs (Statistics Canada, ONS) and adjusting the Yelp and Serper queries for local address formats.
 
 ---
 
 ## 3. Why This Matters for EliseAI
 
-EliseAI's ideal customer is a **large property management company** operating in a **renter-dense, growing market**. The bigger the portfolio, the more leasing conversations EliseAI automates, and the more valuable the contract. A company running legacy software (Yardi, RealPage, Entrata) is a direct displacement opportunity. A company actively hiring leasing consultants is paying people to do exactly what EliseAI replaces.
+EliseAI's ideal customer is a **large property management company** operating in a **renter-dense, growing market**. The bigger the portfolio, the more leasing conversations EliseAI automates, and the more valuable the contract. A company running legacy software (Yardi, RealPage, Entrata) is a direct displacement opportunity. A company whose tenants are complaining on Yelp is already experiencing the pain that EliseAI's AI leasing agent solves.
 
 ---
 
@@ -38,115 +40,106 @@ EliseAI's ideal customer is a **large property management company** operating in
 
 ### Market Level
 
-**U.S. Census API** (free, no key required for basic queries)
-- Renter-occupied housing units in the city
-- Total housing units
-- Renter rate (%)
-- Median gross rent
-- Population
-- Used to assess: market size and density
+**U.S. Census API** (free; optional key for higher rate limits)
 
-**DataUSA API** (free, no key required)
-- Population growth rate (YoY)
-- Median household income
-- Real estate sector employment
-- Median property value
-- Used to assess: market momentum and economic health
+Provides renter-occupied housing units, total housing units, renter rate, median gross rent, and population at the city level. Used to assess market size and density. See [`docs/api-notes.md`](docs/api-notes.md) for endpoint details.
+
+**Census ACS Multi-Year** (same API, two consecutive years)
+
+`datausa.py` queries the Census ACS5 API for two consecutive years (2022 and 2021) and computes year-over-year growth rates for population and median household income. Used to assess market momentum.
+
+**Census Geocoder API** (free; no key required)
+
+Converts `city + state` to `(state_fips, place_fips)` FIPS codes, which are required by all Census ACS queries. Results are cached per city to avoid redundant calls. Implemented in [`src/gtm/utils/geocoder.py`](src/gtm/utils/geocoder.py).
 
 ### Company Level
 
-**Serper API** (`SERPER_API_KEY`)
-- Two queries per lead:
-  1. `"[company name] property management"` — surfaces company description, portfolio size, news, recent acquisitions
-  2. `"[company name] leasing consultant jobs"` — surfaces active hiring signals
-- Used to assess: company scale, growth signals, timing signals (new leadership, portfolio expansion, job postings)
+**Serper API** (`SERPER_API_KEY`, paid; 2,500 searches on free tier)
 
-**OpenCorporates API** (free tier)
-- Legal company name
-- Incorporation date
-- Jurisdiction
-- Status (active/inactive)
-- Number of filings
-- Used to assess: company legitimacy and age
+Two queries per lead: `"{company} property management"` and `site:linkedin.com/company {company}`. The first surfaces company description, portfolio news, Google rating (from knowledge graph), Yelp alias, and social media presence. The second surfaces LinkedIn snippet for employee count, founding year, and portfolio size extraction via Claude Haiku.
 
-**Hunter.io API** (`HUNTER_API_KEY`, free tier: 25 req/month)
-- Company name from domain
-- Industry
-- Employee count estimate
-- Used to assess: company size from email domain
+**SEC EDGAR EFTS** (free; no key required)
 
-**BuiltWith API** (`BUILTWITH_API_KEY`, paid plan required for tech stack detection)
-- Technology stack running on company website
-- Key signal: if they run Yardi, RealPage, or Entrata → large operator on legacy software → displacement opportunity
-- Used to assess: operational scale and technology maturity
-- **Note:** BuiltWith's free tier returns technology group counts only, not named technologies. Detecting Yardi/RealPage/Entrata requires a paid plan. When no key is present or the API returns no data, the 8% weight for this signal redistributes proportionally to the Serper portfolio signal, which can surface tech stack mentions in search snippets as a weaker proxy.
+Detects whether the company is publicly traded by searching for 10-K filings. Used as an insight signal only (not scored), since most EliseAI targets are private companies. Surfaces as an insight bullet for SDR context.
 
-**Census Geocoder API** (free, no key required)
-- Prerequisite for Census and DataUSA queries
-- Converts `city + state` → `(state_fips, place_fips)` FIPS codes
-- Census ACS API requires numeric FIPS codes, not city names
-- Results are cached per city to avoid redundant calls
-- Implemented in `src/utils/geocoder.py`
+**BuiltWith API** (`BUILTWITH_API_KEY`, paid plan required for named tech detection)
+
+Detects property management software running on the company's website. A company on Yardi, RealPage, or Entrata is on legacy software and is a direct displacement opportunity. When the key is absent or no data is returned, the signal scores zero.
+
+**Yelp Fusion v3** (`YELP_API_KEY`, free tier; 500 req/day)
+
+Two distinct calls per lead. `enrich_company` finds the company's Yelp page, fetches its rating, review count, and review highlights, and computes a market average rating from comparable property management businesses in the same city. `enrich_building` resolves the `property_address` to an apartment complex name via Serper, then fetches the building's Yelp page for rating, review count, price tier, and resident pain themes. See [`docs/api-notes.md`](docs/api-notes.md) for full endpoint details.
 
 ### Person Level
 
 **People Data Labs (PDL) API** (`PDL_API_KEY`, free tier: 100 req/month)
-- Job title
-- Seniority level (c_suite, vp, director, manager, individual)
-- Department / function
-- Years of experience
-- Used to assess: whether the contact is a decision maker with budget authority
+
+Email-only lookup returning job title, seniority level (c_suite, vp, director, manager, etc.), and department/function. Used to assess whether the contact is a decision maker with budget authority. When PDL returns a title but no seniority classification, Claude Haiku infers the level from the title.
+
+### AI Extraction
+
+**Anthropic Claude** (`ANTHROPIC_API_KEY`, pay-per-use)
+
+Used for three distinct tasks: (1) Claude Haiku extracts structured JSON (`employee_count`, `founded_year`, `portfolio_size`) from LinkedIn and PM search snippets. (2) Claude Haiku extracts pain themes from Yelp review highlights and Serper organic snippets. (3) Claude Sonnet generates the personalized outreach email and three SDR insight bullets per lead. The email system prompt is cached with `cache_control: ephemeral` to reduce token costs across a batch.
 
 ---
 
 ## 5. Scoring Model
 
-Scores range from **0 to 100**. Three tiers:
-- **0–40**: Low — deprioritize, nurture only
-- **41–70**: Medium — worth outreach, not urgent
-- **71–100**: High — prioritize immediately, SDR action required
+Scores use an **additive point model**. Each signal contributes 0 to N points when it fires and 0 when data is absent. Absent signals do not affect other signals.
 
-Signals are grouped into three categories that map to the three questions a sales rep asks: _Is this market worth targeting? Is this company a real opportunity? Is this contact a decision maker?_
+**Baseline total: 119 pts** across three categories. Four Building Fit bonus signals can push the score above 119 when Yelp building data is available.
 
-### Market Fit — 38%
+**Tier thresholds:**
+- **High (71+ pts):** Strong fit. Multiple signals align. Prioritize for immediate SDR outreach.
+- **Medium (41–70 pts):** Qualified target. Enough signal to warrant outreach, not yet a priority.
+- **Low (0–40 pts):** Weak fit. Limited enrichment data or market and company signals absent.
 
-| Signal | Source | Weight |
+### Market Fit (38 pts)
+
+| Signal | Source | Points |
 |---|---|---|
-| Renter-occupied units in city | Census | 15% |
-| Renter rate % | Census | 8% |
-| Median gross rent (portfolio value proxy) | Census | 5% |
-| Population growth rate (YoY) | DataUSA | 5% |
-| Economic momentum (median income growth) | DataUSA | 5% |
+| Renter-occupied units in city | Census ACS5 | 15 |
+| Renter rate (%) | Census ACS5 | 8 |
+| Median gross rent (portfolio value proxy) | Census ACS5 | 5 |
+| Population growth rate (YoY) | Census ACS5 multi-year | 5 |
+| Economic momentum (median income growth) | Census ACS5 multi-year | 5 |
 
-### Company Fit — 41%
+### Company Fit (60 pts)
 
-| Signal | Source | Weight |
+| Signal | Source | Points |
 |---|---|---|
-| Active leasing job postings | Serper | 12% |
-| Leadership changes / portfolio news | Serper | 8% |
-| Legacy tech stack (Yardi / RealPage / Entrata) | BuiltWith (optional) | 8% |
-| Employee count estimate | Hunter.io | 8% |
-| Company age and legitimacy | OpenCorporates | 5% |
+| Portfolio and company news (web presence) | Serper | 8 |
+| Legacy tech stack (Yardi, RealPage, Entrata, MRI, AppFolio) | BuiltWith | 8 |
+| Employee count | Serper / LinkedIn (Haiku-extracted) | 8 |
+| Company age | LinkedIn (Haiku-extracted) or Yelp | 5 |
+| Portfolio size (units under management) | Serper / LinkedIn (Haiku-extracted) | 6 |
+| Social media presence | Serper (organic link scan) | 5 |
+| Yelp company rating vs. market average | Yelp Fusion | 6 |
+| Google company rating | Serper knowledge graph | 4 |
+| Company pain themes (Yelp + Serper combined) | Yelp + Serper (Haiku-extracted) | 5 |
+| Competitor rank on Yelp | Yelp Fusion (comparables search) | 5 |
 
-### Person Fit — 21%
+### Person Fit (21 pts)
 
-| Signal | Source | Weight |
+| Signal | Source | Points |
 |---|---|---|
-| Seniority level | PDL | 10% |
-| Function / department (ops, tech, leasing) | PDL | 7% |
-| Corporate email domain (vs. Gmail / Hotmail) | Email parse | 4% |
+| Seniority level | PDL (Haiku fallback) | 10 |
+| Function and department | PDL | 7 |
+| Corporate email domain | Email parse (local) | 4 |
 
-### Scoring Logic Notes (documented assumptions)
+### Building Fit Bonus (up to +20 pts)
 
-- **Renter units**: >100,000 = max score; 50,000–100,000 = high; 10,000–50,000 = medium; <10,000 = low
-- **Renter rate**: >50% = max; 40–50% = high; 30–40% = medium; <30% = low
-- **Tech stack**: Running Yardi/RealPage/Entrata = max (displacement opportunity); no recognized PM software = medium (greenfield); modern alternatives = low
-- **Seniority**: C-suite/VP = max; Director = high; Manager = medium; Individual contributor = low
-- **Function**: Operations/Technology/Leasing/Property Management = max; Finance/HR = low; unknown = medium
-- **Email domain**: Corporate domain = max; Gmail/Hotmail/Yahoo = zero
-- **Job postings**: 5+ leasing consultant postings found = max; 1–4 = medium; none = zero
-- **Company age**: >10 years = established operator = high; 5–10 = medium; <5 = low
-- **Employee count**: >500 = large operator = max; 100–500 = high; <100 = low
+These signals fire when Yelp building-level data is available. Their absence never penalizes a lead.
+
+| Signal | Source | Points |
+|---|---|---|
+| Building rating (inverted — lower rating scores higher) | Yelp Fusion | 8 |
+| Building review count (signal confidence) | Yelp Fusion | 4 |
+| Building price tier ($ to $$$$) | Yelp Fusion | 4 |
+| Building pain themes | Yelp (Haiku-extracted) | 4 |
+
+Full threshold documentation: [`docs/scoring-logic.md`](docs/scoring-logic.md)
 
 ---
 
@@ -154,26 +147,26 @@ Signals are grouped into three categories that map to the three questions a sale
 
 For each lead the tool generates:
 
-1. **Enriched data record** — all raw API responses structured into typed Pydantic models
-2. **Lead score** (0–100) with tier label (Low / Medium / High)
-3. **Score breakdown** — per-signal scores + Market / Company / Person category subtotals
-4. **Sales insights summary** — 3–5 bullet points an SDR needs to know before reaching out
-5. **Draft outreach email** — personalized using enriched data, Claude API
+1. **Enriched data record:** all raw API responses structured into typed Pydantic models
+2. **Lead score** (0–119, higher with building bonus) with tier label (Low / Medium / High)
+3. **Score breakdown:** per-signal scores plus Market / Company / Person / Building category subtotals
+4. **SDR insight bullets:** 3 bullets generated by Claude Sonnet, grounded in actual signal findings
+5. **Draft outreach email:** personalized using enriched data, written by Claude Sonnet
 
 ### Output Format
 
 Each lead gets its own folder under `outputs/` at the project root:
 
 ```
-outputs/{company}-{city}-{state}/
-  enrichment.json   ← structured API data (MarketData, CompanyData, PersonData)
-  assessment.json   ← score, tier, ScoreBreakdown, insights
+outputs/{company}-{address-slug}-{city}-{state}/
+  enrichment.json   ← structured API data (contact, market, company, building sections)
+  assessment.json   ← lead_score, tier, key_observations, category subtotals, signals list
   email.txt         ← full personalized outreach draft
 ```
 
-**Slug naming:** company name + city + state, lowercased and hyphenated (e.g., `greystar-austin-tx`, `lincoln-property-company-charlotte-nc`).
+**Slug naming:** company name plus address slug plus city and state, lowercased and hyphenated (e.g., `greystar-3333-harry-hines-blvd-dallas-tx`). The address is included so that the same company can have multiple leads for different buildings without collision.
 
-The pipeline is **incremental**: it checks whether a lead's output folder already exists before processing. Re-running is always safe — only new leads are enriched.
+The pipeline is **incremental**: it checks whether a lead's output folder already exists before processing. Re-running is always safe.
 
 ---
 
@@ -187,13 +180,14 @@ A CSV file at `data/leads_input.csv` with columns:
 ### Trigger
 
 Three ways to run the pipeline:
-1. **CLI**: `python main.py` — processes all leads in `leads_input.csv` that don't already have an output folder
-2. **Streamlit dashboard**: "Run Pipeline" button in the `app.py` dashboard — same behavior, with live progress in the UI
-3. **File-watch mode**: `python main.py --watch` — keeps running and re-processes whenever `leads_input.csv` changes (uses `watchdog`)
 
-### Graceful degradation
+1. **CLI:** `python main.py` processes all leads in `leads_input.csv` that do not already have an output folder.
+2. **Streamlit dashboard:** the "Run Pipeline" button in `app.py` runs the same logic with live progress in the UI.
+3. **File-watch mode:** `python main.py --watch` keeps running and re-processes whenever `leads_input.csv` changes, using the `watchdog` library.
 
-If any API call fails or returns no data for a lead, that signal scores zero and the pipeline continues. Missing data is logged and flagged in the output. The tool never crashes on a single bad API response.
+### Graceful Degradation
+
+If any API call fails or returns no data for a lead, that signal scores zero and the pipeline continues. Missing data is logged and the signal shows in the breakdown as 0 pts. The tool never crashes on a single bad API response.
 
 ---
 
@@ -201,82 +195,69 @@ If any API call fails or returns no data for a lead, that signal scores zero and
 
 ```
 eliseai-gtm-tool/
-│
 ├── CLAUDE.md                        # Global project memory and architecture summary
 ├── PRD.md                           # This file
 ├── README.md                        # Human-facing overview
 ├── pyproject.toml                   # Dependencies (uv), ruff, pytest config
 ├── main.py                          # CLI entry point
 ├── app.py                           # Streamlit dashboard
-├── .env                             # API keys — never committed
+├── .env                             # API keys (never committed)
 ├── .env.example                     # Template showing required keys
-├── .gitignore
 │
 ├── .claude/
-│   ├── settings.json                # Permissions, model — commit this
-│   ├── settings.local.json          # Personal overrides — gitignore this
-│   │
-│   ├── rules/
-│   │   ├── enrichment.md            # Wrap API calls in try/except. Cache. Respect rate limits.
-│   │   ├── scoring.md               # No magic numbers. Document every weight. Scores 0–100.
-│   │   ├── outreach.md              # Never hallucinate lead data. Only use enriched fields.
-│   │   └── tests.md                 # Mock all external calls. No test touches the network.
-│   │
-│   └── commands/
-│       ├── enrich.md                # /enrich — runs pipeline on leads_input.csv
-│       ├── score.md                 # /score — reruns scoring on already-enriched data
-│       └── test-lead.md             # /test-lead — runs a single lead end to end
+│   └── rules/
+│       ├── enrichment.md            # Wrap API calls in try/except. Cache. Respect rate limits.
+│       ├── scoring.md               # No magic numbers. Document every weight.
+│       ├── outreach.md              # Never hallucinate lead data. Only use enriched fields.
+│       └── tests.md                 # Mock all external calls. No test touches the network.
 │
 ├── docs/
 │   ├── architecture.md              # Living system design doc — updated each phase
-│   ├── scoring-logic.md             # Full scoring assumptions and weight rationale
+│   ├── scoring-logic.md             # Full scoring assumptions and threshold rationale
 │   ├── api-notes.md                 # Per-API quirks, endpoints, rate limits
 │   └── rollout-plan.md              # Project plan for rolling out to the sales org
 │
 ├── src/
-│   ├── config.py                    # Centralized settings via pydantic-settings; scoring weights as constants
-│   ├── models.py                    # Pydantic models: RawLead, MarketData, CompanyData, PersonData, EnrichedLead, ScoreBreakdown
-│   ├── utils/
-│   │   ├── __init__.py
-│   │   ├── geocoder.py              # city+state → FIPS codes (Census Geocoder API)
-│   │   ├── slug.py                  # Lead slug generation and collision handling
-│   │   └── cache.py                 # JSON file cache (24hr TTL)
-│   ├── enrichment/
-│   │   ├── __init__.py
-│   │   ├── census.py                # U.S. Census ACS API
-│   │   ├── datausa.py               # DataUSA API
-│   │   ├── serper.py                # Serper API (company + hiring queries)
-│   │   ├── opencorporates.py        # OpenCorporates API
-│   │   ├── hunter.py                # Hunter.io API
-│   │   ├── builtwith.py             # BuiltWith API (optional)
-│   │   └── pdl.py                   # People Data Labs API
-│   ├── scoring/
-│   │   ├── __init__.py
-│   │   └── scorer.py                # Scoring logic — 3-category model
-│   ├── outreach/
-│   │   ├── __init__.py
-│   │   └── email_generator.py       # Claude API with prompt caching
-│   └── pipeline/
-│       ├── __init__.py
-│       └── runner.py                # Async orchestration: enrichment → scoring → output
+│   └── gtm/
+│       ├── config.py                # Centralized settings; scoring point values as constants
+│       ├── models/                  # Pydantic models: RawLead, MarketData, CompanyData,
+│       │                            #   PersonData, BuildingData, EnrichedLead, ScoreBreakdown
+│       ├── utils/
+│       │   ├── geocoder.py          # city+state to FIPS codes (Census Geocoder API)
+│       │   ├── slug.py              # Lead slug generation and collision handling
+│       │   └── cache.py             # JSON file cache (24-hr TTL)
+│       ├── enrichment/
+│       │   ├── census.py            # U.S. Census ACS API
+│       │   ├── datausa.py           # Census ACS multi-year (growth signals)
+│       │   ├── serper.py            # Serper API (PM presence + LinkedIn queries)
+│       │   ├── serper_helpers.py    # Serper extraction helpers (Haiku, regex, alias scan)
+│       │   ├── edgar.py             # SEC EDGAR (public company detection)
+│       │   ├── builtwith.py         # BuiltWith API (tech stack detection)
+│       │   ├── pdl.py               # People Data Labs (person enrichment + Haiku fallback)
+│       │   ├── yelp.py              # Yelp Fusion (company + building enrichment)
+│       │   └── yelp_helpers.py      # Yelp extraction helpers (Haiku pain themes, rank)
+│       ├── scoring/
+│       │   ├── scorer.py            # Additive point model; tier mapping; insight generation
+│       │   ├── scorer_signals.py    # 22 individual signal functions with threshold constants
+│       │   └── reasons.py           # Signal reason sentences for dashboard and assessment.json
+│       ├── outreach/
+│       │   ├── email_generator.py   # Claude Sonnet email + insight generation
+│       │   └── system_prompt.md     # Cached system prompt with EliseAI context
+│       └── pipeline/
+│           └── runner.py            # Async orchestration: enrichment -> scoring -> output
 │
 ├── data/
-│   └── leads_input.csv              # Input: raw lead list (output goes to outputs/)
+│   └── leads_input.csv              # Input: raw lead list
 │
-├── outputs/                         # Per-lead output folders
-│   └── {company}-{city}-{state}/
-│       ├── enrichment.json
-│       ├── assessment.json
-│       └── email.txt
+├── outputs/                         # Per-lead output folders (one per processed lead)
 │
-├── tests/
-│   ├── __init__.py
-│   ├── conftest.py                  # Shared fixtures and mock API responses
-│   ├── test_enrichment.py           # Unit tests per enrichment module (mocked)
-│   ├── test_scorer.py               # Unit tests for scoring logic
-│   └── test_pipeline.py             # Integration test for full pipeline (mocked)
-│
-└── main.py                          # CLI entry point
+└── tests/
+    ├── conftest.py                  # Shared fixtures and mock API responses
+    ├── test_enrichment.py           # Unit tests per enrichment module (mocked)
+    ├── test_scorer.py               # Unit tests for scoring logic and signal boundaries
+    ├── test_email_generator.py      # Unit tests for outreach generation
+    ├── test_pipeline.py             # Integration test for full pipeline (mocked)
+    └── test_config.py               # Validates point constants sum to correct baseline
 ```
 
 ---
@@ -287,35 +268,35 @@ Add these to `.env`:
 
 ```
 SERPER_API_KEY=
-HUNTER_API_KEY=
-BUILTWITH_API_KEY=
 PDL_API_KEY=
 ANTHROPIC_API_KEY=
-CENSUS_API_KEY=       # optional, rate limit is generous without one
+BUILTWITH_API_KEY=       # optional
+YELP_API_KEY=            # optional
+CENSUS_API_KEY=          # optional; rate limit is generous without one
 ```
 
 ---
 
 ## 10. Production Upgrade Path
 
-This MVP uses free API tiers and public data only. A production version would add:
+This MVP uses free API tiers and public data. A production version would add:
 
-- **Clearbit or ZoomInfo** — paid company-level enrichment with verified employee count and revenue
-- **Bombora** — intent data showing if a company has been searching for leasing automation tools
-- **ProxyCurl** — full LinkedIn profile enrichment from email
-- **Playwright** — headless browser for JS-heavy company websites
-- **Clay** — full waterfall enrichment orchestration replacing the manual API stack
-- **Salesforce / HubSpot integration** — push scored leads directly into CRM
+- **Clearbit or ZoomInfo:** paid company-level enrichment with verified employee count and revenue
+- **Bombora:** intent data showing whether a company has been searching for leasing automation tools
+- **ProxyCurl:** full LinkedIn profile enrichment from email
+- **Clay:** full waterfall enrichment orchestration replacing the manual API stack
+- **Salesforce or HubSpot integration:** push scored leads directly into CRM instead of writing files
 
 ---
 
 ## 11. Done Criteria
 
-- [ ] Pipeline runs end to end on a sample CSV of 5 leads without errors
-- [ ] All 7 APIs return data for at least one sample lead
-- [ ] Scoring produces a 0–100 score with per-signal breakdown for each lead
-- [ ] Draft outreach email is personalized with at least 2 enriched data points per lead
-- [ ] Output CSV is clean and readable by a non-technical SDR
-- [ ] Trigger fires automatically when a new row is added to leads_input.csv
-- [ ] All external API calls are mocked in tests — no test touches the network
-- [ ] README explains how to run the tool in under 5 minutes
+- [x] Pipeline runs end to end on a 17-lead CSV without errors
+- [x] All 8 enrichment modules return data for at least one lead
+- [x] Scoring produces an additive point score with per-signal breakdown for each lead
+- [x] Draft outreach email is personalized with enriched data points per lead
+- [x] Tier thresholds are documented (Low 0–40, Medium 41–70, High 71+)
+- [x] Trigger fires automatically when a new row is added to leads_input.csv (--watch flag)
+- [x] All external API calls are mocked in tests; no test touches the network
+- [x] README explains how to run the tool in under 5 minutes
+- [x] Streamlit dashboard provides a no-code interface for the full pipeline

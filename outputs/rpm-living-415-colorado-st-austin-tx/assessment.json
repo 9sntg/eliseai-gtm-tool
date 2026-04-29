@@ -1,0 +1,169 @@
+{
+  "lead_score": 61.8,
+  "tier": "Medium",
+  "key_observations": [
+    "RPM Living carries a 1.4 out of 5 Yelp rating against a market average of 4.5, with resident complaints centering on poor communication, missed follow-ups, and slow response times. Lead with EliseAI's resident communication automation as a direct fit for these patterns, framing it as the kind of friction that compounds at scale across large portfolios.",
+    "Paul is a regional VP of facilities, which means his day-to-day pain is likely tied to maintenance workflows and operational follow-through rather than leasing volume. Anchor the conversation around maintenance request intake, automated status updates, and how EliseAI reduces the manual burden on facilities teams specifically.",
+    "Austin is showing strong income growth at 9.6% year over year alongside a large renter population of over 188,000 units. This signals a market where resident expectations are rising and retention is competitively important, which gives you a credible reason to connect communication quality directly to business outcomes."
+  ],
+  "market_fit": 69.74,
+  "company_fit": 32.5,
+  "person_fit": 62.86,
+  "building_fit": 13.0,
+  "signals": [
+    {
+      "name": "Renter-Occupied Units",
+      "category": "Market",
+      "points": 11.2,
+      "max_points": 15.0,
+      "reason": "Large rental market with high unit count. Top threshold met for full points."
+    },
+    {
+      "name": "Contact Seniority",
+      "category": "Person",
+      "points": 8.5,
+      "max_points": 10.0,
+      "reason": "Contact is at C-suite, VP, Director, or Owner level. Budget authority confirmed."
+    },
+    {
+      "name": "Portfolio / Web Presence",
+      "category": "Company",
+      "points": 6.0,
+      "max_points": 8.0,
+      "reason": "Strong web presence with a verified Google Knowledge Graph entry. Established brand."
+    },
+    {
+      "name": "Yelp Rating vs. Market",
+      "category": "Company",
+      "points": 6.0,
+      "max_points": 6.0,
+      "reason": "Yelp rating is notably below the local market average. Strong resident pain signal."
+    },
+    {
+      "name": "Economic Momentum",
+      "category": "Market",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Strong year-over-year income growth. Healthy economic trajectory for the city."
+    },
+    {
+      "name": "Resident Pain Themes",
+      "category": "Company",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Multiple resident complaint themes identified from reviews. Clear pain points for pitch."
+    },
+    {
+      "name": "Renter Rate",
+      "category": "Market",
+      "points": 4.0,
+      "max_points": 8.0,
+      "reason": "Moderate renter rate in this city. Some PM opportunity present."
+    },
+    {
+      "name": "Corporate Email",
+      "category": "Person",
+      "points": 4.0,
+      "max_points": 4.0,
+      "reason": "Email uses a verified company domain. Contact legitimacy confirmed."
+    },
+    {
+      "name": "Median Gross Rent",
+      "category": "Market",
+      "points": 3.8,
+      "max_points": 5.0,
+      "reason": "Above-average median gross rent. High-value market with strong PM opportunity."
+    },
+    {
+      "name": "Population Growth YoY",
+      "category": "Market",
+      "points": 2.5,
+      "max_points": 5.0,
+      "reason": "Stable population growth. Steady market conditions."
+    },
+    {
+      "name": "Social Media Presence",
+      "category": "Company",
+      "points": 2.5,
+      "max_points": 5.0,
+      "reason": "Some social media presence detected."
+    },
+    {
+      "name": "Building Yelp Rating",
+      "category": "Building",
+      "points": 1.6,
+      "max_points": 8.0,
+      "reason": "Building has a below-average Yelp rating. Some resident dissatisfaction present."
+    },
+    {
+      "name": "Building Review Volume",
+      "category": "Building",
+      "points": 1.0,
+      "max_points": 4.0,
+      "reason": "Moderate review volume present for this building."
+    },
+    {
+      "name": "Department / Function",
+      "category": "Person",
+      "points": 0.7,
+      "max_points": 7.0,
+      "reason": "No department data available or contact is outside the property management function."
+    },
+    {
+      "name": "Tech Stack",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "No tech stack data. BuiltWith key not configured or no tools detected."
+    },
+    {
+      "name": "Employee Count",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "Company is below the minimum headcount threshold or LinkedIn data is unavailable."
+    },
+    {
+      "name": "Company Age",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 5.0,
+      "reason": "Early-stage company or no founding year data is available."
+    },
+    {
+      "name": "Portfolio Size",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 6.0,
+      "reason": "No portfolio size data could be extracted."
+    },
+    {
+      "name": "Google Rating",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No Google rating data available or rating is above the scoring threshold."
+    },
+    {
+      "name": "Competitor Rank (Yelp)",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 5.0,
+      "reason": "No competitor data available or company ranks well relative to competitors."
+    },
+    {
+      "name": "Building Price Tier",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No price tier data from Yelp or the building is at the budget tier."
+    },
+    {
+      "name": "Building Pain Themes",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No building-level complaint themes were extracted from reviews."
+    }
+  ]
+}

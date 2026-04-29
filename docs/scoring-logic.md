@@ -6,16 +6,26 @@ Threshold rationale for all signals. Constants live in `src/gtm/scoring/scorer_s
 
 ## Scoring Overview
 
-The pipeline uses an **additive point model**. Each of the 19 baseline signals contributes 0–N points when it fires and 0 when data is absent — absent signals do not affect other signals. Four bonus Building Fit signals can push the final score above the 131-pt baseline.
+The pipeline uses an **additive point model**. Each of the 22 baseline signals contributes 0 to N points when it fires, and 0 when data is absent. Absent signals do not affect other signals. Four bonus Building Fit signals can push the final score above the 119-pt baseline.
 
 | Category | Points | Rationale |
 |---|---|---|
 | Market Fit | 38 pts | Market size and rental demand determine how many units EliseAI could automate |
-| Company Fit | 72 pts | Company signals indicate likelihood to buy, budget, and proximity to decision |
+| Company Fit | 60 pts | Company signals indicate likelihood to buy, budget, and proximity to decision |
 | Person Fit | 21 pts | Contact quality determines email deliverability and whether the pitch reaches a buyer |
 | Building Fit (bonus) | up to +20 pts | Building-level Yelp signals; absence never penalises a lead |
+| **Baseline max** | **119 pts** | |
+| **With building bonus** | **up to ~139 pts** | |
 
-**Tier thresholds (applied to final score):** 0–40 Low · 41–70 Medium · 71–131 High · > 131 still "High" (Building bonus can push past 131)
+**Tier thresholds (applied to final score):**
+
+| Tier | Score range | Meaning |
+|---|---|---|
+| **Low** | 0 – 40 | Weak fit — limited enrichment data or market/company signals absent |
+| **Medium** | 41 – 70 | Qualified target — enough signal to warrant outreach, not yet a priority |
+| **High** | 71+ | Strong fit — multiple signals align; prioritise for immediate SDR outreach |
+
+Scores above 119 are possible when Building Fit bonus signals fire on top of a near-perfect baseline.
 
 ---
 
@@ -77,20 +87,7 @@ YoY income growth (same formula, applied to median household income). Rising inc
 
 ---
 
-## Company Fit Signals (72 pts baseline)
-
-### Job Postings (12 pts)
-
-Open leasing consultant / property manager roles signal that the company is actively growing. The count is extracted via regex from Indeed/ZipRecruiter snippets in the jobs Serper query — not the organic result count, which is always ~7–10.
-
-Regex: `(\d[\d,]*)\s+(?:\w+\s+){0,3}jobs?` — captures the largest real job count found.
-
-| Job count | Signal |
-|---|---|
-| ≥ 5 | 1.0 |
-| ≥ 3 | 0.6 |
-| ≥ 1 | 0.3 |
-| 0 | 0.0 |
+## Company Fit Signals (60 pts baseline)
 
 ### Portfolio / Company News (8 pts)
 
@@ -105,7 +102,7 @@ Measures company web presence: Google Knowledge Graph entry + organic result cou
 
 ### Tech Stack (8 pts)
 
-Uses BuiltWith to detect property management software. PM platforms (Yardi, RealPage, Entrata, MRI, AppFolio) indicate a company locked into legacy tools — the strongest replacement pitch. When BuiltWith is absent, this signal contributes 0 pts; other signals are unaffected (additive model — no redistribution).
+Uses BuiltWith to detect property management software. PM platforms (Yardi, RealPage, Entrata, MRI, AppFolio) indicate a company locked into legacy tools, which is the strongest replacement pitch for EliseAI. When BuiltWith is absent, this signal contributes 0 pts. Other signals are unaffected because the additive model requires no redistribution.
 
 | Stack | Signal |
 |---|---|
@@ -115,7 +112,7 @@ Uses BuiltWith to detect property management software. PM platforms (Yardi, Real
 
 ### Employee Count (8 pts)
 
-EliseAI's ICP is **mid-market to enterprise** property management companies (Greystar, Summit PM, Landmark Properties — 1,000+ units). Solo operators below ~20 employees rarely have the scale or budget. Signal is binary: past solo-operator scale = full marks.
+EliseAI's ICP is **mid-market to enterprise** property management companies such as Greystar, Summit PM, and Landmark Properties (1,000+ units). Solo operators below approximately 20 employees rarely have the scale or budget. The signal is binary: past solo-operator scale earns full marks.
 
 | Employees | Signal | Rationale |
 |---|---|---|
@@ -152,7 +149,7 @@ The single most important person signal. Decision-makers with budget authority (
 | unrecognised label | 0.1 |
 | None (no PDL data) | 0.0 |
 
-`None` scores 0.0 — no data means no signal. An unrecognised label from PDL scores 0.1 since the person exists but their level is unclear. When PDL returns a job title but no seniority level, Claude Haiku classifies the title into one of the 7 known levels as a fallback.
+`None` scores 0.0 because no data means no signal. An unrecognised label from PDL scores 0.1 since the person exists but their level is unclear. When PDL returns a job title but no seniority level, Claude Haiku classifies the title into one of the 7 known levels as a fallback.
 
 ### Department / Function (7 pts)
 
@@ -199,7 +196,7 @@ Distinct non-LinkedIn social platforms (Facebook, Instagram, YouTube, Twitter/X,
 
 ### Yelp Company Rating vs. Market Avg (6 pts)
 
-How the company's Yelp rating compares to the average rating of comparable property management businesses in the same city. A company that performs **worse** than its local market is the strongest pitch target — their tenants are already complaining.
+How the company's Yelp rating compares to the average rating of comparable property management businesses in the same city. A company that performs **worse** than its local market is the strongest pitch target because their tenants are already complaining.
 
 | Condition | Signal | Rationale |
 |---|---|---|
@@ -215,7 +212,7 @@ Market avg is computed from 3–5 comparable businesses (same category + city) v
 
 ### Google Company Rating (4 pts)
 
-Google star rating from Serper's knowledge graph, scored **independently** of the Yelp company rating. The same inverted logic applies: a low Google rating signals resident dissatisfaction and strengthens the EliseAI pitch. This signal uses the Google rating only — it never falls back to Yelp data.
+Google star rating from Serper's knowledge graph, scored **independently** of the Yelp company rating. The same inverted logic applies: a low Google rating signals resident dissatisfaction and strengthens the EliseAI pitch. This signal uses the Google rating only and never falls back to Yelp data.
 
 | Rating | Signal | Rationale |
 |---|---|---|
@@ -241,7 +238,7 @@ Haiku prompt instructs: return only themes with direct evidence from snippets. D
 
 ### Competitor Rank on Yelp (5 pts)
 
-The fraction of Yelp comparable property management businesses in the same city that rate **higher** than this company. A company ranked at the bottom of its local market has the strongest pain signal — its tenants are already choosing competitors (or complaining publicly).
+The fraction of Yelp comparable property management businesses in the same city that rate **higher** than this company. A company ranked at the bottom of its local market has the strongest pain signal because its tenants are already choosing competitors or complaining publicly.
 
 | % above | Signal | Rationale |
 |---|---|---|
@@ -255,13 +252,13 @@ The fraction of Yelp comparable property management businesses in the same city 
 
 ## Building Fit Signals (bonus, up to +20 pts)
 
-Building Fit signals fire when Yelp building-level data is available and contribute 0 when absent. Their absence never penalises a lead — they sit outside the 131-pt baseline and are computed from the building's own Yelp page (separate from the company page).
+Building Fit signals fire when Yelp building-level data is available and contribute 0 when absent. Their absence never penalizes a lead. They sit outside the 119-pt baseline and are computed from the building's own Yelp page, which is separate from the company page.
 
 Building name resolution: if the lead has a `property_address`, `yelp.py` uses a Serper query (`{address} {city} {state} apartments`) to resolve it to a proper apartment complex name, which is then used as the Yelp search term. This dramatically improves Yelp match rates versus searching by street address.
 
 ### Building Rating — Inverted (8 pts)
 
-Low building ratings indicate tenant pain — exactly the environment where EliseAI's AI leasing agent creates the most value (faster responses, consistent communication). The signal is **inverted**: a worse rating scores higher.
+Low building ratings indicate tenant pain, which is exactly the environment where EliseAI's AI leasing agent creates the most value through faster responses and consistent communication. The signal is **inverted**: a worse rating scores higher.
 
 | Rating | Signal | Rationale |
 |---|---|---|
@@ -285,7 +282,7 @@ More reviews means stronger signal confidence. A 2-star rating from 3 reviews is
 
 ### Building Price Tier (4 pts)
 
-Yelp's `price` field (`$` – `$$$$`) for the building. Higher-tier buildings have premium tenants who have higher expectations for responsiveness and communication — exactly where EliseAI creates the most visible impact.
+Yelp's `price` field (`$` to `$$$$`) for the building. Higher-tier buildings have premium tenants with higher expectations for responsiveness and communication, which is exactly where EliseAI creates the most visible impact.
 
 | Tier | Signal | Rationale |
 |---|---|---|
@@ -312,8 +309,8 @@ Resident pain themes extracted from the building's own Yelp review highlights + 
 
 | Signal | Reason not scored |
 |---|---|
-| `is_publicly_traded` (EDGAR) | Biased toward large-cap public REITs — most EliseAI targets are private. Present as insight bullet only. |
-| `yelp_alias` | Identifier used to look up Yelp profile, reviews, and highlights. The alias itself is not a scoring signal — only the rating and review count that come from that profile are scored. |
+| `is_publicly_traded` (EDGAR) | Biased toward large-cap public REITs. Most EliseAI targets are private. Present as an insight bullet only. |
+| `yelp_alias` | Identifier used to look up Yelp profile, reviews, and highlights. The alias itself is not a scoring signal. Only the rating and review count from that profile are scored. |
 
 ---
 
@@ -322,5 +319,5 @@ Resident pain themes extracted from the building's own Yelp review highlights + 
 See `CLAUDE.local.md` for open calibration items. Key items to revisit after end-to-end testing:
 
 - Growth thresholds (2% high / 0% flat) should be validated against actual Census output distributions.
-- Bonus signal point values (6.0 and 5.0) are provisional — adjust after more lead runs.
+- Bonus signal point values (6.0 and 5.0) are provisional. Adjust after more lead runs.
 - Renter unit tiers should be calibrated against EliseAI's current customer portfolio sizes.

@@ -1,0 +1,169 @@
+{
+  "lead_score": 65.8,
+  "tier": "Medium",
+  "key_observations": [
+    "Greystar is already a strategic investor in EliseAI, which means Laird likely has some awareness of the platform. Lead with that relationship as a warm anchor rather than treating this as a cold introduction, and frame the conversation around how development teams are specifically putting EliseAI to work at the asset level.",
+    "Confirmed resident complaint themes include slow maintenance response at the building level and disrespectful management treatment at the company level. These are exactly the friction points EliseAI addresses through automated maintenance intake and consistent resident communication. Frame these as patterns common across large operators, and position EliseAI as the layer that keeps resident experience consistent without adding headcount.",
+    "Laird is a senior managing director on the development side, not a traditional property management or operations contact. Tailor the conversation toward how EliseAI supports new assets from lease-up through stabilization, and be prepared to ask who owns the technology and resident experience decisions on the operations side so you can map the right stakeholders."
+  ],
+  "market_fit": 75.0,
+  "company_fit": 38.33,
+  "person_fit": 36.67,
+  "building_fit": 33.0,
+  "signals": [
+    {
+      "name": "Renter-Occupied Units",
+      "category": "Market",
+      "points": 15.0,
+      "max_points": 15.0,
+      "reason": "Large rental market with high unit count. Top threshold met for full points."
+    },
+    {
+      "name": "Portfolio / Web Presence",
+      "category": "Company",
+      "points": 8.0,
+      "max_points": 8.0,
+      "reason": "Strong web presence with a verified Google Knowledge Graph entry. Established brand."
+    },
+    {
+      "name": "Yelp Rating vs. Market",
+      "category": "Company",
+      "points": 6.0,
+      "max_points": 6.0,
+      "reason": "Yelp rating is notably below the local market average. Strong resident pain signal."
+    },
+    {
+      "name": "Economic Momentum",
+      "category": "Market",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Strong year-over-year income growth. Healthy economic trajectory for the city."
+    },
+    {
+      "name": "Company Age",
+      "category": "Company",
+      "points": 5.0,
+      "max_points": 5.0,
+      "reason": "Established company with significant operating history. Likely carries legacy tech debt."
+    },
+    {
+      "name": "Renter Rate",
+      "category": "Market",
+      "points": 4.0,
+      "max_points": 8.0,
+      "reason": "Moderate renter rate in this city. Some PM opportunity present."
+    },
+    {
+      "name": "Corporate Email",
+      "category": "Person",
+      "points": 4.0,
+      "max_points": 4.0,
+      "reason": "Email uses a verified company domain. Contact legitimacy confirmed."
+    },
+    {
+      "name": "Building Yelp Rating",
+      "category": "Building",
+      "points": 4.0,
+      "max_points": 8.0,
+      "reason": "Building has a below-average Yelp rating. Some resident dissatisfaction present."
+    },
+    {
+      "name": "Contact Seniority",
+      "category": "Person",
+      "points": 3.0,
+      "max_points": 10.0,
+      "reason": "Contact has seniority that influences purchasing decisions."
+    },
+    {
+      "name": "Population Growth YoY",
+      "category": "Market",
+      "points": 2.5,
+      "max_points": 5.0,
+      "reason": "Stable population growth. Steady market conditions."
+    },
+    {
+      "name": "Social Media Presence",
+      "category": "Company",
+      "points": 2.5,
+      "max_points": 5.0,
+      "reason": "Some social media presence detected."
+    },
+    {
+      "name": "Median Gross Rent",
+      "category": "Market",
+      "points": 2.0,
+      "max_points": 5.0,
+      "reason": "Median rent falls in the mid range, representing an average US rental market."
+    },
+    {
+      "name": "Building Pain Themes",
+      "category": "Building",
+      "points": 1.6,
+      "max_points": 4.0,
+      "reason": "Some complaint themes found for this specific building."
+    },
+    {
+      "name": "Resident Pain Themes",
+      "category": "Company",
+      "points": 1.5,
+      "max_points": 5.0,
+      "reason": "Some resident complaint themes identified from Yelp or web reviews."
+    },
+    {
+      "name": "Building Review Volume",
+      "category": "Building",
+      "points": 1.0,
+      "max_points": 4.0,
+      "reason": "Moderate review volume present for this building."
+    },
+    {
+      "name": "Department / Function",
+      "category": "Person",
+      "points": 0.7,
+      "max_points": 7.0,
+      "reason": "No department data available or contact is outside the property management function."
+    },
+    {
+      "name": "Tech Stack",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "No tech stack data. BuiltWith key not configured or no tools detected."
+    },
+    {
+      "name": "Employee Count",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 8.0,
+      "reason": "Company is below the minimum headcount threshold or LinkedIn data is unavailable."
+    },
+    {
+      "name": "Portfolio Size",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 6.0,
+      "reason": "No portfolio size data could be extracted."
+    },
+    {
+      "name": "Google Rating",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No Google rating data available or rating is above the scoring threshold."
+    },
+    {
+      "name": "Competitor Rank (Yelp)",
+      "category": "Company",
+      "points": 0.0,
+      "max_points": 5.0,
+      "reason": "No competitor data available or company ranks well relative to competitors."
+    },
+    {
+      "name": "Building Price Tier",
+      "category": "Building",
+      "points": 0.0,
+      "max_points": 4.0,
+      "reason": "No price tier data from Yelp or the building is at the budget tier."
+    }
+  ]
+}

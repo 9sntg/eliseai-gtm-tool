@@ -1,0 +1,177 @@
+{
+  "contact": {
+    "name": "Laird Sparks",
+    "email": "lsparks@greystar.com",
+    "company": "Greystar",
+    "property_address": "3333 Harry Hines Blvd",
+    "city": "Dallas",
+    "state": "TX",
+    "job_title": "senior managing director, development",
+    "seniority": "senior",
+    "department": "advisory",
+    "years_experience": null,
+    "pdl_likelihood": 9,
+    "is_corporate_email": true
+  },
+  "market": {
+    "renter_occupied_units": 218575,
+    "total_housing_units": 578996,
+    "renter_rate": 0.3775,
+    "median_gross_rent": 1305,
+    "total_population": 1300642,
+    "population_growth_yoy": 0.0003,
+    "median_household_income": 63985,
+    "median_income_growth_yoy": 0.0988,
+    "real_estate_employment": null,
+    "median_property_value": null
+  },
+  "company": {
+    "serper_property_management": {
+      "query": "Greystar property management",
+      "organic": [
+        {
+          "title": "Greystar: Apartments & Homes for Rent",
+          "link": "https://www.greystar.com/",
+          "snippet": "At Greystar, we offer apartments in desirable locations near shopping, dining, and workplaces. Browse through our wide selection of apartments for rent and ...",
+          "position": 1
+        },
+        {
+          "title": "Greystar - Wikipedia",
+          "link": "https://en.wikipedia.org/wiki/Greystar",
+          "snippet": "Greystar Real Estate Partners is an international real estate developer and manager based in the United States. As of 2023, Greystar had over $76 billion in ...",
+          "position": 2
+        },
+        {
+          "title": "Read Customer Service Reviews of www.greystar.com - Trustpilot",
+          "link": "https://www.trustpilot.com/review/www.greystar.com",
+          "snippet": "At Greystar, we offer fully renovated apartments in desirable locations near shopping, dining, and workplaces. Browse through our wide selection of apartments ...",
+          "position": 3
+        },
+        {
+          "title": "Greystar Property Management Company | Apartments.com",
+          "link": "https://www.apartments.com/pmc/greystar/dv0gtnl/",
+          "snippet": "Greystar is a property management company serving several markets accross the USA.",
+          "position": 4
+        },
+        {
+          "title": "Greystar Apartments (@greystarapartments) - Instagram",
+          "link": "https://www.instagram.com/greystarapartments/",
+          "snippet": "24K followers \u00b7 31 following \u00b7 775 posts \u00b7 @greystarapartments: \u201cExplore our beautiful living environments and find your new home\u201d",
+          "position": 5
+        },
+        {
+          "title": "Greystar - Apartments For Rent | ApartmentRatings\u00a9",
+          "link": "https://www.apartmentratings.com/management/greystar_4125/",
+          "snippet": "View and compare all 3824 communities managed by Greystar. Use ApartmentRatings.com's epIQ Index \ufe60 renter reviews to make an informed ...",
+          "position": 6
+        },
+        {
+          "title": "Greystar Real Estate Partners",
+          "link": "https://www.aagdallas.com/contacts/greystar-real-estate-partners",
+          "snippet": "We provide end-to-end property management services for residential housing, apartment homes, furnished corporate housing, and mixed-use properties ...",
+          "position": 7
+        }
+      ],
+      "knowledge_graph_title": "Greystar",
+      "knowledge_graph_description": "Greystar Real Estate Partners is an international real estate developer and manager based in the United States. As of 2023, Greystar had over $76 billion in gross assets under management, and operated in 17 countries.",
+      "knowledge_graph_rating": null
+    },
+    "serper_linkedin": {
+      "query": "site:linkedin.com/company Greystar",
+      "organic": [
+        {
+          "title": "Greystar | LinkedIn",
+          "link": "https://www.linkedin.com/company/greystar",
+          "snippet": "Founded in 1993, Greystar provides world-class service in the residential rental housing industry. Our innovative vertically integrated business model",
+          "position": 1
+        },
+        {
+          "title": "Greystar: Culture | LinkedIn",
+          "link": "https://www.linkedin.com/company/greystar/life/d1d95869-a33f-45ac-98cf-55e042a40237?trk=org-guest_content-selector-option",
+          "snippet": "Greystar is the largest manager of Active Adult communities in the US. Across the active adult market, resident retention and resident satisfaction is ranked ...",
+          "position": 2
+        },
+        {
+          "title": "Greystar: Jobs - LinkedIn",
+          "link": "https://www.linkedin.com/company/greystar/jobs",
+          "snippet": "Greystar | 456776 followers on LinkedIn. Founded in 1993, Greystar provides world-class service in the residential rental housing industry.",
+          "position": 3
+        },
+        {
+          "title": "Greystar: Culture | LinkedIn",
+          "link": "https://www.linkedin.com/company/greystar/life/ffd31294-904a-4b27-aca3-c8db9e0a11be?trk=org-guest_content-selector-option",
+          "snippet": "Ranked as the #1 developer by the National Multifamily Housing Council, our projects span every form of rental housing from student to senior and from urban ...",
+          "position": 4
+        },
+        {
+          "title": "Greystar: Culture | LinkedIn",
+          "link": "https://www.linkedin.com/company/greystar/life/30dd0e49-25e4-4e5f-b48f-d7774889f26b?trk=org-guest_content-selector-option",
+          "snippet": "Greystar is committed to supporting early career talent and their development. The culture is built on collaboration, meaningful relationships, and shared ...",
+          "position": 5
+        },
+        {
+          "title": "Greystar | LinkedIn",
+          "link": "https://www.linkedin.com/company/greystar-blog",
+          "snippet": "Greystar's vertically integrated platform leverages extensive local market knowledge to deliver projects that reflect our remarkable commitment to quality.",
+          "position": 6
+        },
+        {
+          "title": "Greystar (International) - LinkedIn",
+          "link": "https://uk.linkedin.com/company/greystar-europe",
+          "snippet": "At Greystar, we approach investing in, developing, and operating residential real estate with discipline and integrity. A company built on trust.",
+          "position": 7
+        },
+        {
+          "title": "Greystar: Culture | LinkedIn",
+          "link": "https://www.linkedin.com/company/greystar/life/57a8887c-2303-4b21-9c46-36b11b122380",
+          "snippet": "Greystar | 451417 followers on LinkedIn. Founded in 1993, Greystar provides world-class service in the residential rental housing industry.",
+          "position": 8
+        },
+        {
+          "title": "GreyStar Construction Inc. - LinkedIn",
+          "link": "https://www.linkedin.com/company/greystar-construction-inc-",
+          "snippet": "A blue-chip company that operated with the highest integrity and character in delivering world-class services to residents, property owners, and investors.",
+          "position": 9
+        },
+        {
+          "title": "Greystar: Jobs - LinkedIn",
+          "link": "https://il.linkedin.com/company/greystar/jobs",
+          "snippet": "Greystar | 449835 \u05e2\u05d5\u05e7\u05d1\u05d9\u05dd \u05e2\u05dc \u05dc\u05d9\u05e0\u05e7\u05d3\u05d0\u05d9\u05df. Founded in 1993, Greystar provides world-class service in the residential rental housing industry.",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "linkedin_employee_count": null,
+    "founded_year": 1993,
+    "is_publicly_traded": false,
+    "portfolio_size": null,
+    "yelp_alias": "lantower-residential-dallas",
+    "social_platform_count": 1,
+    "tech_stack": [],
+    "yelp_rating": 1.0,
+    "yelp_review_count": 1,
+    "yelp_market_avg_rating": 4.66,
+    "yelp_pain_themes": [
+      "disrespectful management treatment"
+    ],
+    "yelp_year_established": null,
+    "google_rating": null,
+    "serper_pain_themes": [],
+    "competitor_rank_pct": null
+  },
+  "building": {
+    "address": "3333 Harry Hines Blvd",
+    "name": "The Arcadian",
+    "yelp_alias": "the-arcadian-dallas",
+    "yelp_rating": 4.0,
+    "yelp_review_count": 4,
+    "pain_themes": [
+      "slow maintenance response"
+    ],
+    "price_tier": null,
+    "google_rating": null
+  }
+}

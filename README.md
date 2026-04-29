@@ -1,24 +1,25 @@
 # EliseAI GTM Lead Enrichment Tool
 
-Automates the top-of-funnel SDR workflow for property management leads. Takes a raw lead list, enriches each lead with market and company intelligence, scores it 0–100, and drafts a personalized outreach email — so reps act immediately instead of spending 20+ minutes researching.
+Automates the top-of-funnel SDR workflow for property management leads. Takes a raw lead list, enriches each lead with market, company, building, and person intelligence, scores it using an additive point model (119-pt baseline, up to +20 building bonus), and drafts a personalized outreach email. Reps act immediately instead of spending 20+ minutes researching each lead.
 
 ---
 
 ## What It Does
 
-1. **Enriches** each lead across three layers using public APIs:
-   - **Market** — renter density, rent levels, population growth (Census, DataUSA)
-   - **Company** — portfolio signals, hiring activity, tech stack, employee count, portfolio size, social presence (Serper, BuiltWith, SEC EDGAR)
-   - **Person** — seniority, department, decision-maker signals (People Data Labs)
+1. **Enriches** each lead across four layers using public APIs:
+   - **Market:** renter density, rent levels, population growth (Census ACS5)
+   - **Company:** portfolio signals, tech stack, employee count, Yelp rating, pain themes, social presence (Serper, BuiltWith, SEC EDGAR, Yelp Fusion)
+   - **Building:** Yelp data for the specific apartment building the company manages (rating, price tier, resident pain themes)
+   - **Person:** seniority, department, decision-maker signals (People Data Labs)
 
-2. **Scores** each lead using an additive point model (baseline 100 pts, bonus signals add up to +11):
-   - Market Fit (38 pts) · Company Fit (41 pts) · Person Fit (21 pts) · Bonus signals (+11 pts max)
+2. **Scores** each lead using an additive point model with 22 signals across four categories:
+   - Market Fit (38 pts) · Company Fit (60 pts) · Person Fit (21 pts) · Building Fit bonus (up to +20 pts)
 
-3. **Drafts** a personalized outreach email using Claude, grounded only in enriched data
+3. **Drafts** a personalized outreach email using Claude Sonnet, grounded only in enriched data
 
-4. **Outputs** structured files per lead — enrichment data, score breakdown, and email draft
+4. **Outputs** structured files per lead: enrichment data, score breakdown, and email draft
 
-5. **Dashboard** — a Streamlit UI to add leads, run the pipeline, and browse results
+5. **Dashboard:** a Streamlit UI to add leads, run the pipeline, and browse results
 
 ---
 
@@ -102,9 +103,9 @@ The dashboard has three tabs:
 
 | Tab | What it does |
 |---|---|
-| Add Lead | Form to add a new lead — appends to `data/leads_input.csv` |
-| Run Pipeline | Lists unprocessed leads; run button enriches and scores them |
-| View Results | Browse all processed leads with score breakdown and email draft |
+| Add Lead | Form to add a new lead. Appends a row to `data/leads_input.csv`. |
+| Run Pipeline | Lists unprocessed leads. The run button enriches and scores all pending leads. |
+| View Results | Browse all processed leads with score breakdown and email draft. |
 
 ---
 
@@ -125,40 +126,41 @@ Each processed lead gets its own folder under `outputs/`:
 
 ```
 outputs/
-  greystar-austin-tx/
-    enrichment.json    ← structured data from all 7 API modules
-    assessment.json    ← score (0–100), tier, category breakdown, insights
+  greystar-3333-harry-hines-blvd-dallas-tx/
+    enrichment.json    ← structured data from all 8 enrichment modules
+    assessment.json    ← lead_score, tier, category subtotals, per-signal breakdown
     email.txt          ← personalized outreach draft
 ```
 
-The pipeline is **incremental** — it checks for existing output folders before processing. Re-running is always safe.
+The pipeline is **incremental**: it checks for existing output folders before processing. Re-running is always safe.
+
+The slug includes the property address so the same company can have multiple leads for different buildings without collision.
 
 ### Score Tiers
 
 | Range | Tier | SDR Action |
 |---|---|---|
-| 71–100 | High | Prioritize — reach out today |
-| 41–70 | Medium | Worth outreach, not urgent |
-| 0–40 | Low | Nurture only |
+| 71+ | High | Prioritize. Reach out today. |
+| 41–70 | Medium | Worth outreach, not urgent. |
+| 0–40 | Low | Nurture only. |
 
 ---
 
 ## Scoring Model
 
-Additive point model — each signal contributes 0–N points when it fires, 0 when data is absent. Missing signals don't affect other signals. Baseline max is 100 pts; two bonus signals can push above that.
+Additive point model: each signal contributes 0 to N points when it fires, and 0 when data is absent. Missing signals do not affect other signals. Baseline max is 119 pts across three categories. Four Building Fit bonus signals can push the total above 119 when Yelp building data is available.
 
-**Market Fit (38 pts)** — Is this market worth targeting?
+**Market Fit (38 pts):** Is this market worth targeting?
 - Renter-occupied units (15 pts), renter rate (8 pts), median rent (5 pts), population growth (5 pts), economic momentum (5 pts)
 
-**Company Fit (41 pts)** — Is this company a real opportunity?
-- Active leasing job postings (12 pts), portfolio news/web presence (8 pts), legacy tech stack (8 pts), employee count (8 pts), company age (5 pts)
+**Company Fit (60 pts):** Is this company a real opportunity?
+- Portfolio news and web presence (8 pts), legacy tech stack (8 pts), employee count (8 pts), company age (5 pts), portfolio size (6 pts), social media presence (5 pts), Yelp rating vs. market average (6 pts), Google rating (4 pts), company pain themes (5 pts), competitor rank on Yelp (5 pts)
 
-**Person Fit (21 pts)** — Is this contact a decision maker?
-- Seniority (10 pts), department/function (7 pts), corporate email domain (4 pts)
+**Person Fit (21 pts):** Is this contact a decision maker?
+- Seniority (10 pts), department and function (7 pts), corporate email domain (4 pts)
 
-**Bonus signals (up to +11 pts)** — fire when data is available, never penalise absence:
-- Portfolio size — units/communities under management (+6 pts)
-- Social media presence — distinct platforms detected (+5 pts)
+**Building Fit bonus (up to +20 pts):** Fires when Yelp building data is available. Absence never penalizes a lead.
+- Building rating inverted (8 pts), review count (4 pts), price tier (4 pts), pain themes (4 pts)
 
 Full threshold documentation: [`docs/scoring-logic.md`](docs/scoring-logic.md)
 

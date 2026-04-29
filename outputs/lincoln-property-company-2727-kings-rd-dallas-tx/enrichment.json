@@ -1,0 +1,178 @@
+{
+  "contact": {
+    "name": "J. Rickards",
+    "email": "srickards@lpc.com",
+    "company": "Lincoln Property Company",
+    "property_address": "2727 Kings Rd",
+    "city": "Dallas",
+    "state": "TX",
+    "job_title": "vice president of property management",
+    "seniority": "vp",
+    "department": "advisory",
+    "years_experience": null,
+    "pdl_likelihood": 6,
+    "is_corporate_email": true
+  },
+  "market": {
+    "renter_occupied_units": 218575,
+    "total_housing_units": 578996,
+    "renter_rate": 0.3775,
+    "median_gross_rent": 1305,
+    "total_population": 1300642,
+    "population_growth_yoy": 0.0003,
+    "median_household_income": 63985,
+    "median_income_growth_yoy": 0.0988,
+    "real_estate_employment": null,
+    "median_property_value": null
+  },
+  "company": {
+    "serper_property_management": {
+      "query": "Lincoln Property Company property management",
+      "organic": [
+        {
+          "title": "Lincoln Property Company",
+          "link": "https://lpc.com/",
+          "snippet": "Lincoln provides leasing, property management, development, and investment services nationwide. Explore properties and connect.",
+          "position": 1
+        },
+        {
+          "title": "Lincoln Property Company - LinkedIn",
+          "link": "https://www.linkedin.com/company/lincolnpropertycompany",
+          "snippet": "Lincoln is one of the largest diversified real estate services companies, with 35 offices across the United States, the United Kingdom, and Europe.",
+          "position": 2
+        },
+        {
+          "title": "Lincoln Property Company - Stone Point Capital",
+          "link": "https://www.stonepoint.com/company/lincoln-property-company/",
+          "snippet": "Lincoln manages, leases, develops and provides investment management and advisory services to owners and occupiers of office, life science, retail, industrial, ...",
+          "position": 3
+        },
+        {
+          "title": "Lincoln Property Company (@lincolnpropertyco) - Instagram",
+          "link": "https://www.instagram.com/lincolnpropertyco/",
+          "snippet": "Top 10 in Houston. Lincoln has been ranked among the Top Commercial Real Estate Developers by the Houston Business ...",
+          "position": 4
+        },
+        {
+          "title": "Lincoln Property Company Careers and Employment | Indeed.com",
+          "link": "https://www.indeed.com/cmp/Lincoln-Property-Company-bf6a2245",
+          "snippet": "Founded in Dallas, Texas in 1965, Lincoln consistently ranks among the top managers and top developers of office, industrial, retail, and mixed-use ...",
+          "position": 5
+        },
+        {
+          "title": "About Lincoln Property Company - YouTube",
+          "link": "https://www.youtube.com/watch?v=1wA-H_v1U6s",
+          "snippet": "In the words of our LPC Associates and Leadership about working for and working with Lincoln Property Company. A company for your success ...",
+          "position": 6
+        },
+        {
+          "title": "LINCOLN PROPERTY COMPANY - Updated April 2026 - Yelp",
+          "link": "https://www.yelp.com/biz/lincoln-property-company-dallas-7",
+          "snippet": "LINCOLN PROPERTY COMPANY, 2000 McKinney Ave, Ste 1100, Dallas, TX 75201, 108 Photos, (214) 740-3300, Mon - 8:00 am - 5:00 pm, Tue - 8:00 am - 5:00 pm, ...",
+          "position": 7
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "serper_linkedin": {
+      "query": "site:linkedin.com/company Lincoln Property Company",
+      "organic": [
+        {
+          "title": "Lincoln Property Company - LinkedIn",
+          "link": "https://www.linkedin.com/company/lincolnpropertycompany",
+          "snippet": "Lincoln is one of the largest diversified real estate services companies, with 35 offices across the United States, the United Kingdom, and Europe.",
+          "position": 1
+        },
+        {
+          "title": "Lincoln Property Company: Jobs - LinkedIn",
+          "link": "https://www.linkedin.com/company/lincolnpropertycompany/jobs",
+          "snippet": "Lincoln Property Company | 100612 followers on LinkedIn. Lincoln is one of the largest diversified real estate services companies, with 35 offices across ...",
+          "position": 2
+        },
+        {
+          "title": "Willow Bridge Property Company | LinkedIn",
+          "link": "https://www.linkedin.com/company/willow-bridge-pc",
+          "snippet": "For over half a century, we've been the standard of excellence in the property industry. As the residential team at Lincoln Property Company we built a ...",
+          "position": 3
+        },
+        {
+          "title": "Lincoln Property Company - LinkedIn",
+          "link": "https://www.linkedin.com/company/lincolnpropco",
+          "snippet": "About us. This page is no longer active. Please visit @Willow Bridge Property Company for any updates related to our company. Industry: Real Estate. Company ...",
+          "position": 4
+        },
+        {
+          "title": "Lincoln Property 1 | LinkedIn",
+          "link": "https://www.linkedin.com/company/lincoln-property-1",
+          "snippet": "At Lincoln 1 Property, we specialize in duplex, residential, and commercial construction across Sydney, delivering high-quality projects with modern design ...",
+          "position": 5
+        },
+        {
+          "title": "Lincoln Property Group | LinkedIn",
+          "link": "https://fr.linkedin.com/company/lincoln-property-group?trk=similar-pages_result-card_full-click",
+          "snippet": "At the Lincoln Property group we manage a number of companies and brands relating to Property, Services and wellness industries.",
+          "position": 6
+        },
+        {
+          "title": "Lincoln Harris Properties - LinkedIn",
+          "link": "https://www.linkedin.com/company/lincoln-harris-properties",
+          "snippet": "Website: http://www.lincolnharriscsg.com/. External link for Lincoln Harris Properties ; Industry: Commercial Real Estate ; Company size: 2-10 employees.",
+          "position": 7
+        },
+        {
+          "title": "Lincoln Property Company Ltd. - LinkedIn",
+          "link": "https://pr.linkedin.com/company/lincoln-property-co-",
+          "snippet": "Lettings & Property Management in Lincoln At The Lincoln Property Co. we are dedicated to serving the needs of both landlords and tenants throughout Lincoln ...",
+          "position": 8
+        },
+        {
+          "title": "Lincoln Properties | LinkedIn",
+          "link": "https://www.linkedin.com/company/lincoln-properties",
+          "snippet": "Headquartered in Hong Kong, Lincoln Properties is an international real estate business, introducing clients to assets in New York and London.",
+          "position": 9
+        },
+        {
+          "title": "Stream Realty Partners: Jobs | LinkedIn",
+          "link": "https://il.linkedin.com/company/stream-realty-partners/jobs",
+          "snippet": "",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "linkedin_employee_count": null,
+    "founded_year": null,
+    "is_publicly_traded": false,
+    "portfolio_size": null,
+    "yelp_alias": "lincoln-property-company-dallas-7",
+    "social_platform_count": 2,
+    "tech_stack": [],
+    "yelp_rating": 1.3,
+    "yelp_review_count": 73,
+    "yelp_market_avg_rating": 4.66,
+    "yelp_pain_themes": [
+      "staff attitude issues",
+      "management quality concerns"
+    ],
+    "yelp_year_established": 1965,
+    "google_rating": null,
+    "serper_pain_themes": [],
+    "competitor_rank_pct": null
+  },
+  "building": {
+    "address": "2727 Kings Rd",
+    "name": "27TwentySeven",
+    "yelp_alias": "27twentyseven-by-rpm-living-dallas",
+    "yelp_rating": 4.0,
+    "yelp_review_count": 9,
+    "pain_themes": [
+      "management change negatively impacted quality"
+    ],
+    "price_tier": null,
+    "google_rating": null
+  }
+}

@@ -45,7 +45,7 @@ The dashboard is designed for SDR use: no terminal access required after initial
 
 ### The problem this solves
 
-An EliseAI SDR today manually researches a lead before writing an outreach email: checking LinkedIn for company size and tenure, Googling for job postings, looking up local market stats, and drafting a personalized message from scratch. This takes 15–25 minutes per lead. With a typical SDR working 30–40 leads per week, that's 8–17 hours of research time — the majority of an SDR's working week.
+An EliseAI SDR today manually researches a lead before writing an outreach email: checking LinkedIn for company size and tenure, looking up local market stats, and drafting a personalized message from scratch. This takes 15–25 minutes per lead. With a typical SDR working 30–40 leads per week, that is 8–17 hours of research time, which is the majority of an SDR's working week.
 
 This tool collapses that to under 3 minutes (pipeline runtime) + 2 minutes (SDR review). The SDR reads a pre-scored lead card and a ready-to-send draft, tweaks the draft if needed, and sends. The time savings pay for the API costs within the first 2–3 leads processed.
 
@@ -67,7 +67,7 @@ This tool collapses that to under 3 minutes (pipeline runtime) + 2 minutes (SDR 
 **Success criteria for advancing to Phase 2:**
 - Average time-to-send < 5 min (vs. ~20 min baseline)
 - SDR reports draft quality ≥ 3/5 on a quick daily survey ("would you send this without editing?")
-- Zero "bad emails" — the AI never fabricates a stat the SDR has to walk back
+- Zero "bad emails" (the AI never fabricates a stat the SDR has to walk back)
 
 ---
 
@@ -95,7 +95,7 @@ Scoring model calibration: collect SDR feedback on leads they marked as "poor fi
 
 **Operational changes:**
 - `leads_input.csv` is replaced by a shared Airtable base (or HubSpot list) that all SDRs can append to.
-- The pipeline runs on a scheduled cron job (or `python main.py --watch`) on a shared VM — no manual "Run Pipeline" click needed.
+- The pipeline runs on a scheduled cron job (or `python main.py --watch`) on a shared VM, with no manual "Run Pipeline" click needed.
 - The dashboard moves to a shared internal URL (Streamlit Community Cloud or internal Heroku app).
 
 **Guardrail retained permanently:** No email is ever sent directly by the tool. The SDR reviews every draft before sending. The tool is a research accelerator, not an auto-sender.
@@ -106,10 +106,10 @@ Scoring model calibration: collect SDR feedback on leads they marked as "poor fi
 
 After 200+ processed leads, revisit these thresholds with the SDR team:
 
-1. **Job count thresholds** (3/5 boundaries) — calibrate against what "active hiring" looks like in the PM space.
-2. **Portfolio size bonus thresholds** — the 100/1,000/10,000 tiers were set without real data. Adjust based on actual portfolio sizes appearing in extraction.
-3. **Social presence bonus** — confirm whether social media activity is a meaningful signal for PM companies at the ICPs size range.
-4. **Employee count binary cutoff** (currently 20) — may need to shift up if micro-operators are appearing as false positives.
+1. **Portfolio size thresholds** — the 100/1,000/10,000 tiers were set without real data. Adjust based on actual portfolio sizes appearing in extraction.
+2. **Social presence signal** — confirm whether social media activity is a meaningful signal for PM companies at the ICP's size range.
+3. **Employee count binary cutoff** (currently 20) — may need to shift up if micro-operators are appearing as false positives.
+4. **Yelp coverage** — track what % of leads return non-None `yelp_rating` and `competitor_rank_pct`; if < 40%, consider reweighting building fit signals.
 
 ---
 
@@ -129,7 +129,7 @@ The pipeline already produces clean JSON with `.model_dump(mode="json")`, so the
 
 | API | Cost basis | Per-lead estimate | 100 leads/week |
 |---|---|---|---|
-| Serper | ~$0.001/query × 3 | ~$0.003 | ~$0.30 |
+| Serper | ~$0.001/query × 2 | ~$0.002 | ~$0.20 |
 | PDL | ~$0.10/enrichment | ~$0.10 | ~$10 |
 | Anthropic (Haiku) | ~$0.0003/1K tokens | ~$0.002 | ~$0.20 |
 | Anthropic (Sonnet email) | ~$0.003/1K tokens | ~$0.01 | ~$1.00 |

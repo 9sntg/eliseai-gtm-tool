@@ -1,0 +1,196 @@
+{
+  "contact": {
+    "name": "Chantal Gaseor",
+    "email": "cgaseor@livebh.com",
+    "company": "BH Management",
+    "property_address": "103 SW 3rd St",
+    "city": "Des Moines",
+    "state": "IA",
+    "job_title": "senior director of asset management at bh equities, llc",
+    "seniority": "senior",
+    "department": "advisory",
+    "years_experience": null,
+    "pdl_likelihood": 6,
+    "is_corporate_email": true
+  },
+  "market": {
+    "renter_occupied_units": 53580,
+    "total_housing_units": 96245,
+    "renter_rate": 0.5567,
+    "median_gross_rent": 995,
+    "total_population": 213164,
+    "population_growth_yoy": -0.0018,
+    "median_household_income": 62378,
+    "median_income_growth_yoy": 0.0673,
+    "real_estate_employment": null,
+    "median_property_value": null
+  },
+  "company": {
+    "serper_property_management": {
+      "query": "BH Management property management",
+      "organic": [
+        {
+          "title": "Living Here | Live BH",
+          "link": "https://livebh.com/living-here/",
+          "snippet": "Living in a BH community means living more. BH is creating communities for people to thrive. Learn what BH has to offer and review FAQs about living at BH.",
+          "position": 1
+        },
+        {
+          "title": "Live BH: Apartments for Rent",
+          "link": "https://livebh.com/",
+          "snippet": "Whether you're looking for an apartment to rent, a property manager, or a career, BH is a place where you can thrive. Discover what it means to live BH.",
+          "position": 2
+        },
+        {
+          "title": "BH Properties: Leaders in Commercial Real Estate Investing",
+          "link": "https://www.bhproperties.com/",
+          "snippet": "BH Properties is a proven leader in commercial real estate investing. The company owns, operates and re-positions \u201cvalue-add\u201d real estate across the country.",
+          "position": 3
+        },
+        {
+          "title": "Live BH",
+          "link": "http://www.livebh.store/",
+          "snippet": "DES MOINES, Iowa \u2013 September 2, 2025 \u2013 BH Management Services (BH), a Pretium company and one of the nation's premier property management platforms in ...",
+          "position": 4
+        },
+        {
+          "title": "Multifamily Housing Property Management - Live BH",
+          "link": "https://livebh.com/expertise/management/",
+          "snippet": "We don't just specialize in property management, we're experts at creating communities where people live and thrive. From leasing to maintenance to ...",
+          "position": 5
+        },
+        {
+          "title": "BH Management Services, Inc. - Apartments For Rent",
+          "link": "https://www.apartmentratings.com/management/bh-management-services--inc-_10009/",
+          "snippet": "View and compare all 209 communities managed by BH Management Services, Inc.. Use ApartmentRatings.com's epIQ Index \ufe60 renter reviews to ...",
+          "position": 6
+        },
+        {
+          "title": "BH Management Services | Des Moines IA - Facebook",
+          "link": "https://www.facebook.com/LiveAtBH/",
+          "snippet": "Founded in 1993, BH Management Services creates spaces where people live and thrive.... See more. \udb85\udfb4 Apartment & Condo Building.",
+          "position": 7
+        },
+        {
+          "title": "BH Management Services just took over my complex. Any ... - Reddit",
+          "link": "https://www.reddit.com/r/Apartmentliving/comments/1j5xqgm/bh_management_services_just_took_over_my_complex/",
+          "snippet": "There's no such thing as a good property management company, but BH is at the bottom of the barrel in terms of maintenance and competence.",
+          "position": 8
+        },
+        {
+          "title": "Start A Career With BH | Live BH",
+          "link": "https://livebh.com/careers/",
+          "snippet": "Build a fast-paced career in real estate, working alongside fearless innovators, relentless overachievers, and a whole company of people pushing you to succeed.",
+          "position": 9
+        },
+        {
+          "title": "Contact Us | Live BH",
+          "link": "https://livebh.com/contact/",
+          "snippet": "I'm a resident and have a question. Log-in to your Resident Portal to make requests and contact your community.",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "serper_linkedin": {
+      "query": "site:linkedin.com/company BH Management",
+      "organic": [
+        {
+          "title": "BH - LinkedIn",
+          "link": "https://www.linkedin.com/company/liveatbh",
+          "snippet": "BH | 27546 followers on LinkedIn. BH Management Services is setting the standard in multifamily, creating a smarter way to live, invest, manage, and grow.",
+          "position": 1
+        },
+        {
+          "title": "BH Asset Management LLC - LinkedIn",
+          "link": "https://www.linkedin.com/company/bh-asset-management-llc",
+          "snippet": "BH Asset Management is a Securities and Exchange Commission registered investment advisory firm; meeting the needs of private clients, corporations, retirement ...",
+          "position": 2
+        },
+        {
+          "title": "BH Properties - LinkedIn",
+          "link": "https://www.linkedin.com/company/bh-properties",
+          "snippet": "Commercial Real Estate company focusing on value-add transactions, distressed debt, and ground leases.",
+          "position": 3
+        },
+        {
+          "title": "BH | \u9886\u82f1",
+          "link": "https://cn.linkedin.com/company/liveatbh?trk=public_profile_experience-item_profile-section-card_image-click",
+          "snippet": "BH | \u5728\u9886\u82f1\u4e0a\u6709 27411 \u4f4d\u5173\u6ce8\u8005\u3002BH Management Services is setting the standard in multifamily, creating a smarter way to live, invest, manage, and grow.",
+          "position": 4
+        },
+        {
+          "title": "BH-Management - LinkedIn",
+          "link": "https://www.linkedin.com/company/bh-management",
+          "snippet": "Fond\u00e9e en 2012 par des experts dans le domaine, BH-Management est l'agence 360\u00b0 faite pour vous, visant principalement cr\u00e9ativit\u00e9, innovation et efficacit\u00e9.",
+          "position": 5
+        },
+        {
+          "title": "BH Project Management Consultants | LinkedIn",
+          "link": "https://www.linkedin.com/company/bh-project-management-consulants",
+          "snippet": "BH Consulting partners with startups and growing organizations to ensure AI and software initiatives are delivered with clarity, structure, and predictable ...",
+          "position": 6
+        },
+        {
+          "title": "BH Wealth Mangement | LinkedIn",
+          "link": "https://www.linkedin.com/company/bh-wealth-mangement",
+          "snippet": "BH Wealth Management offers comprehensive Life, Financial, and Investment planning for our clients. We specialize in assisting High-Net Worth Multigenerational ...",
+          "position": 7
+        },
+        {
+          "title": "BH Properties | LinkedIn",
+          "link": "https://kr.linkedin.com/company/bh-properties",
+          "snippet": "BH Properties acquires and maximizes the value of underperforming properties, such as former big-box retail sites that have significant vacancies and/or ...",
+          "position": 8
+        },
+        {
+          "title": "BH Hospitality Management - LinkedIn",
+          "link": "https://www.linkedin.com/company/bh-hospitality-management",
+          "snippet": "BH Hospitality Management is a fully integrated management company that prides itself, in producing and maintaining high quality hotels all across the state of ...",
+          "position": 9
+        },
+        {
+          "title": "BH Partners - LinkedIn",
+          "link": "https://www.linkedin.com/company/bhpartnersllc",
+          "snippet": "BH Partners takes value in being a human capital management firm. Building quality relationships with top talented professionals is our niche.",
+          "position": 10
+        }
+      ],
+      "knowledge_graph_title": null,
+      "knowledge_graph_description": null,
+      "knowledge_graph_rating": null
+    },
+    "linkedin_employee_count": null,
+    "founded_year": null,
+    "is_publicly_traded": false,
+    "portfolio_size": null,
+    "yelp_alias": "bh-des-moines-des-moines",
+    "social_platform_count": 1,
+    "tech_stack": [],
+    "yelp_rating": 1.3,
+    "yelp_review_count": 14,
+    "yelp_market_avg_rating": 2.33,
+    "yelp_pain_themes": [
+      "deposit not returned",
+      "unresponsive to tenant communication",
+      "unprofessional staff conduct",
+      "tenant safety concerns"
+    ],
+    "yelp_year_established": null,
+    "google_rating": null,
+    "serper_pain_themes": [],
+    "competitor_rank_pct": null
+  },
+  "building": {
+    "address": "103 SW 3rd St",
+    "name": "Confluence on 3rd Apartments",
+    "yelp_alias": "confluence-on-3rd-apartments-des-moines-8",
+    "yelp_rating": 5.0,
+    "yelp_review_count": 1,
+    "pain_themes": [],
+    "price_tier": null,
+    "google_rating": null
+  }
+}
