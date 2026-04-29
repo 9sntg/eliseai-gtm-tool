@@ -12,47 +12,7 @@ The pipeline is designed to run incrementally: it only processes leads that don'
 
 ## High-Level Data Flow
 
-```
-data/leads_input.csv
-        │
-        ▼
-  [Read & Parse]
-  RawLead objects (Pydantic)
-        │
-        ▼ for each new lead (no output folder yet)
-  ┌─────────────────────────────────────────────────┐
-  │           Enrichment Layer (async)              │
-  │                                                 │
-  │  Market:   census.py ──────── datausa.py        │
-  │  Company:  serper.py ─────── builtwith.py       │
-  │            edgar.py ──────── yelp.py (company) │
-  │  Person:   pdl.py                               │
-  │  Building: yelp.py (building)                   │
-  │                                                 │
-  │  All 8 calls fire concurrently via              │
-  │  asyncio.gather() — ~2–3s per lead              │
-  └─────────────────────────────────────────────────┘
-        │
-        ▼
-  [Scoring Layer]
-  scorer.py → 0–119 pts score + ScoreBreakdown
-  (Market: 38 pts, Company: 60 pts, Person: 21 pts, Building: 20 pts)
-        │
-        ▼
-  [Email Generation]
-  email_generator.py → Claude Sonnet 4.6
-  (system prompt cached across batch)
-        │
-        ▼
-  outputs/{slug}/
-    enrichment.json
-    assessment.json
-    email.txt
-        │
-        ▼
-  [Streamlit Dashboard]
-  app.py — Add leads, run pipeline, browse results
-```
+![Data flow](./img/data-flow.png)
 
 
 ## Components
