@@ -1,6 +1,6 @@
 # EliseAI GTM Lead Enrichment Tool
 
-Automates the top-of-funnel SDR workflow for property management leads. Takes a raw lead list, enriches each lead with market, company, building, and person intelligence, scores it using an additive point model (119-pt baseline across three categories, up to 20 additional pts from Building Fit), and drafts a personalized outreach email. Reps act immediately instead of spending 20+ minutes researching each lead.
+Automates the top-of-funnel SDR workflow for property management leads. Takes a raw lead list, enriches each lead with market, company, building, and person intelligence, scores it using an additive point model (139 pts max across four categories), and drafts a personalized outreach email. Reps act immediately instead of spending 20+ minutes researching each lead.
 
 
 ## What It Does
@@ -59,20 +59,18 @@ uv run streamlit run app.py
 
 ## API Keys
 
-Add these to your `.env` file. The tool degrades gracefully when optional keys are missing — those signals score zero.
+Add these to your `.env` file.
 
 | Key | Required | Free Tier | Get It |
 |---|---|---|---|
 | `ANTHROPIC_API_KEY` | Yes | Pay-per-use | [console.anthropic.com](https://console.anthropic.com) |
 | `SERPER_API_KEY` | Yes | 2,500 searches | [serper.dev](https://serper.dev) |
 | `PDL_API_KEY` | Yes | 100 req/month | [peopledatalabs.com](https://peopledatalabs.com) |
+| `YELP_API_KEY` | Yes | 500 req/day free | [yelp.com/developers](https://www.yelp.com/developers/documentation/v3/authentication) |
 | `BUILTWITH_API_KEY` | No | Paid only for tech stack | [builtwith.com/api](https://builtwith.com/api) |
-| `YELP_API_KEY` | No | 500 req/day free | [yelp.com/developers](https://www.yelp.com/developers/documentation/v3/authentication) |
 | `CENSUS_API_KEY` | No | Generous without key | [api.census.gov](https://api.census.gov/data/key_signup.html) |
 
-> **Note on BuiltWith:** The free tier does not expose named technology detections. Detecting Yardi/RealPage/Entrata requires a paid plan. When absent, the tech stack signal scores 0. Other signals are unaffected (additive model).
-
-> **Note on Yelp:** When absent, all Yelp-based signals score 0 (company rating vs. market average, competitor rank, pain themes, and all four Building Fit signals). The pipeline still runs fully on the remaining signals.
+> **Note on BuiltWith:** The free tier does not expose named technology detections. Detecting Yardi/RealPage/Entrata requires a paid plan. When absent, the tech stack signal scores 0. Other signals are unaffected.
 
 > **Note on SEC EDGAR:** Used for public company detection (free, no key required). Surfaces as an insight bullet only and is not scored, since most PM companies are private.
 
@@ -146,7 +144,7 @@ The slug includes the property address so the same company can have multiple lea
 
 ## Scoring Model
 
-Additive point model: each signal contributes 0 to N points when it fires, and 0 when data is absent. Missing signals do not affect other signals. Baseline max is 119 pts across three categories. Building Fit adds up to 20 pts when Yelp building data is available.
+Additive point model: each signal contributes 0 to N points when it fires, and 0 when data is absent. Missing signals do not affect other signals. Max 139 pts across four categories.
 
 **Market Fit (38 pts):** Is this market worth targeting?
 - Renter-occupied units (15 pts), renter rate (8 pts), median rent (5 pts), population growth (5 pts), economic momentum (5 pts)
@@ -157,7 +155,7 @@ Additive point model: each signal contributes 0 to N points when it fires, and 0
 **Person Fit (21 pts):** Is this contact a decision maker?
 - Seniority (10 pts), department and function (7 pts), corporate email domain (4 pts)
 
-**Building Fit (up to 20 pts):** Scores 0 when Yelp building data is unavailable, consistent with all other signals in the additive model.
+**Building Fit (20 pts):** Building rating inverted (8 pts), review count (4 pts), price tier (4 pts), pain themes (4 pts)
 - Building rating inverted (8 pts), review count (4 pts), price tier (4 pts), pain themes (4 pts)
 
 Full threshold documentation: [`docs/scoring-logic.md`](docs/scoring-logic.md)

@@ -40,7 +40,7 @@ pipeline/runner.py        ← orchestrates everything
 │  yelp.py (company)  yelp.py (building)       │  ← Company + Building signals
 └──────────────────────────────────────────────┘
       ↓
-scoring/scorer.py         ← 0–119 pts score (up to +20 from Building Fit), 4-category breakdown
+scoring/scorer.py         ← 0–139 pts score, 4-category breakdown
       ↓
 outreach/email_generator.py  ← Claude Sonnet email + SDR insights
       ↓
@@ -68,7 +68,7 @@ EliseAI's documented customer base spans **mid-market to enterprise property man
 | Market Fit | 38 pts | Renter units (15), renter rate (8), median rent (5), population growth (5), economic momentum (5) |
 | Company Fit | 60 pts | Portfolio news (8), tech stack (8), employee count (8), company age (5), portfolio size (6), social presence (5), Yelp rating vs. market avg (6), Google rating (4), pain themes (5), competitor rank (5) |
 | Person Fit | 21 pts | Seniority (10), department (7), corporate email (4) |
-| Building Fit | 20 pts | Building rating inverted (8), review count (4), price tier (4), pain themes (4). Scores 0 when Yelp building data is unavailable. |
+| Building Fit | 20 pts | Building rating inverted (8), review count (4), price tier (4), pain themes (4) |
 
 Tiers: 0–40 Low · 41–70 Medium · 71+ High
 

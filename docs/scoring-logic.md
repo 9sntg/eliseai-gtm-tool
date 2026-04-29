@@ -12,8 +12,8 @@ The pipeline uses an **additive point model**. Each of the 26 signals contribute
 | Market Fit | 38 pts | Market size and rental demand determine how many units EliseAI could automate |
 | Company Fit | 60 pts | Company signals indicate likelihood to buy, budget, and proximity to decision |
 | Person Fit | 21 pts | Contact quality determines email deliverability and whether the pitch reaches a buyer |
-| Building Fit | up to 20 pts | Building-level Yelp signals; scores 0 when data is unavailable |
-| **Baseline max** | **119 pts** | Three core categories only |
+| Building Fit | 20 pts | Building-level Yelp signals |
+| **Total max** | **139 pts** | |
 
 **Tier thresholds (applied to final score):**
 
@@ -125,46 +125,6 @@ Older companies have accumulated legacy processes and tech debt, making them mor
 | < 5 years | 0.2 | Early stage — may lack budget or process maturity |
 | None | 0.0 | LinkedIn snippet had no founding year data |
 
-
-## Person Fit Signals (21 pts)
-
-### Seniority (10 pts)
-
-The single most important person signal. Decision-makers with budget authority (C-suite, VP) are the right targets for an EliseAI pitch.
-
-| PDL level | Signal |
-|---|---|
-| c_suite / owner / partner | 1.0 |
-| vp | 0.85 |
-| director | 0.70 |
-| manager | 0.50 |
-| senior | 0.30 |
-| unrecognised label | 0.1 |
-| None (no PDL data) | 0.0 |
-
-`None` scores 0.0 because no data means no signal. An unrecognised label from PDL scores 0.1 since the person exists but their level is unclear. When PDL returns a job title but no seniority level, Claude Haiku classifies the title into one of the 7 known levels as a fallback.
-
-### Department / Function (7 pts)
-
-Operations and Property Management contacts are EliseAI's primary buyers. Finance and Accounting are adjacent (involved in ROI decisions). Marketing or unrelated departments score at the floor.
-
-| PDL department | Signal |
-|---|---|
-| operations / property_management | 1.0 |
-| real_estate / leasing | 0.8 |
-| finance / accounting | 0.5 |
-| unrecognised label | 0.1 |
-| None (no PDL data) | 0.0 |
-
-### Corporate Email (4 pts)
-
-A corporate domain (`@greystar.com`) confirms this is a professional contact at an established org, not a personal address. Derived locally by `utils/email.py` without requiring a PDL response.
-
-| Email | Signal |
-|---|---|
-| Corporate domain | 1.0 |
-| Free provider (Gmail, Yahoo, …) | 0.0 |
-
 ### Portfolio Size (6 pts)
 
 Total units/communities under management, extracted from LinkedIn + PM search snippets by Claude Haiku. Larger portfolios mean more leasing automation opportunity.
@@ -241,7 +201,47 @@ The fraction of Yelp comparable property management businesses in the same city 
 | < 25% | 0.1 | At or near top — lower urgency |
 
 
-## Building Fit Signals (up to 20 pts)
+## Person Fit Signals (21 pts)
+
+### Seniority (10 pts)
+
+The single most important person signal. Decision-makers with budget authority (C-suite, VP) are the right targets for an EliseAI pitch.
+
+| PDL level | Signal |
+|---|---|
+| c_suite / owner / partner | 1.0 |
+| vp | 0.85 |
+| director | 0.70 |
+| manager | 0.50 |
+| senior | 0.30 |
+| unrecognised label | 0.1 |
+| None (no PDL data) | 0.0 |
+
+`None` scores 0.0 because no data means no signal. An unrecognised label from PDL scores 0.1 since the person exists but their level is unclear. When PDL returns a job title but no seniority level, Claude Haiku classifies the title into one of the 7 known levels as a fallback.
+
+### Department / Function (7 pts)
+
+Operations and Property Management contacts are EliseAI's primary buyers. Finance and Accounting are adjacent (involved in ROI decisions). Marketing or unrelated departments score at the floor.
+
+| PDL department | Signal |
+|---|---|
+| operations / property_management | 1.0 |
+| real_estate / leasing | 0.8 |
+| finance / accounting | 0.5 |
+| unrecognised label | 0.1 |
+| None (no PDL data) | 0.0 |
+
+### Corporate Email (4 pts)
+
+A corporate domain (`@greystar.com`) confirms this is a professional contact at an established org, not a personal address. Derived locally by `utils/email.py` without requiring a PDL response.
+
+| Email | Signal |
+|---|---|
+| Corporate domain | 1.0 |
+| Free provider (Gmail, Yahoo, …) | 0.0 |
+
+
+## Building Fit Signals (20 pts)
 
 Building Fit signals score 0 when Yelp building-level data is unavailable, consistent with all other signals in the additive model. They are computed from the building's own Yelp page, which is separate from the company page.
 
@@ -308,5 +308,5 @@ Resident pain themes extracted from the building's own Yelp review highlights + 
 See `CLAUDE.local.md` for open calibration items. Key items to revisit after end-to-end testing:
 
 - Growth thresholds (2% high / 0% flat) should be validated against actual Census output distributions.
-- Bonus signal point values (6.0 and 5.0) are provisional. Adjust after more lead runs.
+- Portfolio Size (6 pts) and Social Media Presence (5 pts) point values are provisional. Adjust after more lead runs.
 - Renter unit tiers should be calibrated against EliseAI's current customer portfolio sizes.

@@ -36,7 +36,7 @@ data/leads_input.csv
         ▼
   [Scoring Layer]
   scorer.py → 0–119 pts score + ScoreBreakdown
-  (Market: 38 pts, Company: 60 pts, Person: 21 pts, Building: up to 20 pts)
+  (Market: 38 pts, Company: 60 pts, Person: 21 pts, Building: 20 pts)
         │
         ▼
   [Email Generation]
@@ -94,13 +94,13 @@ All wrap API calls in `try/except`. All return an empty or default model on fail
 | `edgar.py` | SEC EDGAR EFTS | `CompanyData` partial | Public company detection; insight only, not scored |
 | `builtwith.py` | BuiltWith | `CompanyData` partial | Optional (paid key required) |
 | `pdl.py` | People Data Labs | `PersonData` | Email-only lookup |
-| `yelp.py` | Yelp Fusion v3 | `CompanyData` + `BuildingData` | `enrich_company`: rating, reviews, market avg, pain themes. `enrich_building`: building-level Yelp data. Both are optional and require `YELP_API_KEY`. |
+| `yelp.py` | Yelp Fusion v3 | `CompanyData` + `BuildingData` | `enrich_company`: rating, reviews, market avg, pain themes. `enrich_building`: building-level Yelp data. Requires `YELP_API_KEY`. |
 
 ### `src/gtm/scoring/scorer_signals.py`
 All 22 signal functions and their threshold constants. Each function takes one or two enrichment fields and returns a `float` in `[0.0, 1.0]`. A None input always returns `0.0`. There is no I/O or config reads; this is pure computation. Threshold constants are named at module level so no magic numbers appear in function bodies.
 
 ### `src/gtm/scoring/scorer.py`
-Orchestrates signal functions into a final score using an additive point model. Each signal contributes 0 to N points when it fires, and 0 when data is absent. No redistribution is needed. Baseline max is 119 pts across three categories; Building Fit adds up to 20 pts when Yelp building data is available. Computes category subtotals (normalised to 0–100 for display), maps the score to a tier, and generates SDR insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
+Orchestrates signal functions into a final score using an additive point model. Each signal contributes 0 to N points when it fires, and 0 when data is absent. No redistribution is needed. Max 139 pts across four categories. Computes category subtotals (normalised to 0–100 for display), maps the score to a tier, and generates SDR insight bullets. Public entry point: `score_lead(lead) → (score, tier, breakdown)`.
 
 **Scoring signals:**
 
@@ -109,7 +109,7 @@ Orchestrates signal functions into a final score using an additive point model. 
 | Market Fit | 38 pts | Renter units (15), renter rate (8), median rent (5), population growth (5), economic momentum (5) |
 | Company Fit | 60 pts | Portfolio news (8), tech stack (8), employee count (8), company age (5), portfolio size (6), social media presence (5), Yelp company rating vs. market avg (6), Google company rating (4), company pain themes / Yelp+Serper (5), competitor rank on Yelp (5) |
 | Person Fit | 21 pts | Seniority (10), function/department (7), corporate email (4) |
-| Building Fit | up to 20 pts | Building rating inverted (8), building review count (4), building price tier (4), building pain themes (4). Scores 0 when Yelp building data is absent. |
+| Building Fit | 20 pts | Building rating inverted (8), building review count (4), building price tier (4), building pain themes (4) |
 
 ### `src/gtm/outreach/email_generator.py`
 Drafts a personalized 150–200 word outreach email and three SDR insight bullets via Claude Sonnet 4.6. Public entry point: `generate_outreach(lead, breakdown) → (str | None, list[str])`.
